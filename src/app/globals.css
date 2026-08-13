@@ -1,0 +1,276 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   GLOBAL LUXURY DESIGN SYSTEM (PHASE 1)
+   Inspired by Apple, Aesop, Loewe, Jacquemus, Nothing, Dyson
+   ========================================================================== */
+
+@layer base {
+  :root {
+    /* Color System */
+    --color-bg: #F7F4EF;
+    --color-surface: #F2EEE7;
+    --color-card: #FFFFFF;
+    --color-primary: #1F1F1F;
+    --color-secondary: #66665F;
+    --color-accent: #C8A76E;
+    --color-border: #E4DDD2;
+
+    /* Fallback Font Variables */
+    --font-cormorant: 'Cormorant Garamond', Georgia, serif;
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-manrope: 'Manrope', sans-serif;
+
+    /* Legacy Mappings for Backward Compatibility */
+    --bg-ivory: #F7F4EF;
+    --bg-ivory-light: #FAF8F5;
+    --bg-cream: #F2EEE7;
+    --bg-cream-soft: #EAE5DC;
+    --text-charcoal: #1F1F1F;
+    --text-charcoal-muted: #2A2A26;
+    --text-warm-gray: #66665F;
+    --text-warm-gray-light: #8C8C83;
+    --accent-champagne: #C8A76E;
+    --accent-champagne-hover: #B5945B;
+    --border-light: #E4DDD2;
+    --border-dark: #33332E;
+
+    /* Motion System (GSAP power3.out equivalents) */
+    --ease-power3: cubic-bezier(0.215, 0.61, 0.355, 1);
+    --duration-fast: 0.4s;
+    --duration-medium: 0.8s;
+    --duration-slow: 1.2s;
+  }
+
+  html {
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Luxury Selection */
+  ::selection {
+    background-color: var(--color-accent);
+    color: #FFFFFF;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 0px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #B5945B;
+  }
+}
+
+@layer utilities {
+  /* ------------------------------------------------------------------------
+     TYPOGRAPHY SYSTEM
+     ------------------------------------------------------------------------ */
+  .font-heading {
+    font-family: var(--font-cormorant), 'Cormorant Garamond', Georgia, serif;
+  }
+  .font-body {
+    font-family: var(--font-inter), 'Inter', system-ui, sans-serif;
+  }
+  .font-num {
+    font-family: var(--font-manrope), 'Manrope', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Typography Scale */
+  .text-hero {
+    font-family: var(--font-cormorant), serif;
+    font-size: clamp(2.75rem, 6vw, 80px);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+  }
+
+  .text-section {
+    font-family: var(--font-cormorant), serif;
+    font-size: clamp(2.25rem, 4.5vw, 52px);
+    line-height: 1.05;
+    letter-spacing: -0.015em;
+    font-weight: 400;
+  }
+
+  .text-subheading {
+    font-family: var(--font-cormorant), serif;
+    font-size: clamp(1.25rem, 2vw, 24px);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    font-weight: 400;
+  }
+
+  .text-body-editorial {
+    font-family: var(--font-inter), sans-serif;
+    font-size: clamp(1rem, 1.2vw, 18px);
+    line-height: 1.6;
+    font-weight: 300;
+    color: var(--color-secondary);
+  }
+
+  .text-caption-editorial {
+    font-family: var(--font-inter), sans-serif;
+    font-size: clamp(0.75rem, 1vw, 14px);
+    line-height: 1.5;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--color-secondary);
+  }
+
+  /* Legacy Typography Classes */
+  .text-display-xxl { @apply text-hero; }
+  .text-display-xl { @apply text-section; }
+  .text-display { @apply text-section; }
+  .text-heading-lg { @apply text-section; }
+  .text-subheading-lg { @apply text-subheading; }
+  .text-body-lg { @apply text-body-editorial; }
+  .text-body-md { font-family: var(--font-inter), sans-serif; font-size: 1rem; line-height: 1.6; }
+  .text-caption-md { @apply text-caption-editorial; }
+  .text-btn { font-family: var(--font-inter), sans-serif; font-size: 0.75rem; line-height: 1; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; }
+  .text-lbl { font-family: var(--font-inter), sans-serif; font-size: 0.75rem; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; }
+
+  /* ------------------------------------------------------------------------
+     BUTTON SYSTEM (Height: 56px | Radius: 14px | Micro Shadow | Smooth Lift)
+     ------------------------------------------------------------------------ */
+  .btn-luxury-primary {
+    height: 56px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    border: 1px solid var(--color-primary);
+    border-radius: 14px;
+    font-family: var(--font-inter), sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s var(--ease-power3), background-color 0.4s var(--ease-power3), border-color 0.4s var(--ease-power3), box-shadow 0.4s var(--ease-power3);
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(31, 31, 31, 0.04);
+  }
+  .btn-luxury-primary:hover {
+    background-color: var(--color-accent);
+    border-color: var(--color-accent);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(200, 167, 110, 0.25);
+  }
+
+  .btn-luxury-secondary {
+    height: 56px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    background-color: transparent;
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    border-radius: 14px;
+    font-family: var(--font-inter), sans-serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.4s var(--ease-power3), background-color 0.4s var(--ease-power3), color 0.4s var(--ease-power3), box-shadow 0.4s var(--ease-power3);
+    cursor: pointer;
+  }
+  .btn-luxury-secondary:hover {
+    background-color: var(--color-primary);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(31, 31, 31, 0.12);
+  }
+
+  /* ------------------------------------------------------------------------
+     CARD SYSTEM (Radius: 24px | Thin Border | No Heavy Shadow)
+     ------------------------------------------------------------------------ */
+  .card-luxury {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    border-radius: 24px;
+    padding: 2.5rem;
+    box-shadow: 0 2px 12px rgba(31, 31, 31, 0.03);
+    transition: transform 0.4s var(--ease-power3), border-color 0.4s var(--ease-power3), box-shadow 0.4s var(--ease-power3);
+  }
+  .card-luxury:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(31, 31, 31, 0.06);
+  }
+
+  /* ------------------------------------------------------------------------
+     IMAGE SYSTEM (Radius: 28px | Object-fit Cover)
+     ------------------------------------------------------------------------ */
+  .img-luxury {
+    border-radius: 28px;
+    object-fit: cover;
+    border: 1px solid var(--color-border);
+    overflow: hidden;
+  }
+
+  /* ------------------------------------------------------------------------
+     GRID & CONTAINER SYSTEM (Max-width: 1440px | 12 Columns)
+     ------------------------------------------------------------------------ */
+  .container-editorial {
+    width: 100%;
+    max-width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .container-editorial {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .container-editorial {
+      padding-left: 4rem;
+      padding-right: 4rem;
+    }
+  }
+
+  .grid-12 {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 1024px) {
+    .grid-12 {
+      gap: 2.5rem;
+    }
+  }
+}
