@@ -3,7 +3,15 @@
 import React, { useEffect, useRef, useState, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
+
+const HERO_IMAGES = [
+  { src: '/images/hero/image.png', title: 'Bespoke Artistry & Tailored Aesthetics' },
+  { src: '/images/hero/image copy.png', title: 'Precision Haircuts & Sculpting' },
+  { src: '/images/hero/image copy 2.png', title: 'Couture Hair Coloring & Balayage' },
+  { src: '/images/hero/image copy 10.png', title: 'Master Grooming & Texture Care' },
+];
 
 function Hero() {
   const heroRef = useRef(null);
@@ -21,8 +29,16 @@ function Hero() {
   const sheenRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
 
+  const [activeHeroIdx, setActiveHeroIdx] = useState(0);
   const [isHoveredInteractive, setIsHoveredInteractive] = useState(false);
   const mouseRafId = useRef(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -277,45 +293,74 @@ function Hero() {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="lg:col-span-7 relative flex justify-center lg:justify-end items-center h-full">
+        <div className="lg:col-span-7 relative flex flex-col justify-center lg:justify-end items-center h-full gap-3">
           
-          {/* Main Editorial Image Frame */}
+          {/* Main Editorial Image Frame — no padding, no clipping, full image shown */}
           <div
             ref={imageFrameRef}
-            className="relative w-full h-[52vh] sm:h-[65vh] lg:h-[72vh] max-h-[760px] rounded-[28px] overflow-hidden shadow-[0_35px_80px_-20px_rgba(31,31,28,0.14)] bg-cream border border-charcoal/10 will-change-transform z-10 [perspective:1000px]"
+            className="relative w-full h-[46vh] sm:h-[58vh] lg:h-[65vh] max-h-[680px] rounded-[28px] overflow-hidden shadow-[0_35px_80px_-20px_rgba(31,31,28,0.14)] border border-charcoal/10 will-change-transform z-10 [perspective:1000px] bg-[#F7F4EF]"
           >
-            {/* Inner Scaling & Panning Image Container */}
+            {/* Inner Image Container — fills entire frame, no crop */}
             <div ref={imageInnerRef} className="w-full h-full relative">
-              <Image
-                src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=1400"
-                alt="Salman Hair Studio Haute Coiffure Editorial Campaign"
-                fill
-                priority
-                unoptimized
-                sizes="(max-width: 1024px) 100vw, 55vw"
-                className="object-cover object-top grayscale contrast-[1.06]"
-              />
+              {HERO_IMAGES.map((img, idx) => (
+                <div
+                  key={img.src}
+                  className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                    idx === activeHeroIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'
+                  }`}
+                >
+                  <Image
+                    src={img.src}
+                    alt={`Salman Hair Studio Editorial Campaign ${idx + 1}`}
+                    fill
+                    priority={idx === 0}
+                    unoptimized
+                    sizes="(max-width: 1024px) 100vw, 55vw"
+                    className="object-contain object-center"
+                  />
+                </div>
+              ))}
 
               {/* Periodic Light Sheen Sweep Overlay */}
               <div
                 ref={sheenRef}
-                className="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg] pointer-events-none -translate-x-full"
+                className="absolute top-0 bottom-0 left-0 w-1/3 bg-gradient-to-r from-transparent via-white/20 to-transparent skew-x-[-25deg] pointer-events-none -translate-x-full z-20"
               />
             </div>
+          </div>
 
-            {/* Subtle Luxury Editorial Badge */}
-            <div className="absolute bottom-5 left-5 right-5 p-3.5 bg-ivory/85 backdrop-blur-md border border-white/60 rounded-xl flex items-center justify-between z-20">
-              <div>
+          {/* Editorial Badge & Slider Controls — BELOW the image, never covering it */}
+          <div className="w-full px-1">
+            <div className="p-3.5 bg-ivory/90 backdrop-blur-md border border-charcoal/10 rounded-xl flex items-center justify-between z-30">
+              <div className="flex-1 pr-4">
                 <span className="text-lbl text-[10px] text-champagne tracking-[0.25em] block uppercase mb-0.5 font-semibold">
                   HAUTE COIFFURE CAMPAIGN
                 </span>
-                <span className="font-heading text-xs text-charcoal font-normal">
-                  Bespoke Artistry & Tailored Aesthetics
+                <span className="font-heading text-xs text-charcoal font-normal line-clamp-1">
+                  {HERO_IMAGES[activeHeroIdx].title}
                 </span>
               </div>
-              <span className="text-lbl text-[11px] text-warm-gray font-num">
-                01 / 06
-              </span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setActiveHeroIdx((prev) => (prev === 0 ? HERO_IMAGES.length - 1 : prev - 1))}
+                    aria-label="Previous image"
+                    className="w-7 h-7 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 flex items-center justify-center text-charcoal transition-colors cursor-pointer"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setActiveHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length)}
+                    aria-label="Next image"
+                    className="w-7 h-7 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 flex items-center justify-center text-charcoal transition-colors cursor-pointer"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+                <span className="text-lbl text-[11px] text-warm-gray font-num min-w-[42px] text-right font-medium">
+                  0{activeHeroIdx + 1} / 0{HERO_IMAGES.length}
+                </span>
+              </div>
             </div>
           </div>
         </div>

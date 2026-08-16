@@ -20,11 +20,7 @@ const NAV_ITEMS = [
 function Navbar() {
   const pathname = usePathname();
 
-  // Do not render website Navbar on Admin pages
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
-
+  // All hooks must run unconditionally — admin check happens inside return
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('');
@@ -57,6 +53,8 @@ function Navbar() {
   }, [pathname]);
 
   useEffect(() => {
+    if (pathname?.startsWith('/admin')) return;
+
     if (navRef.current) {
       gsap.fromTo(
         navRef.current,
@@ -111,6 +109,9 @@ function Navbar() {
       }
     }
   };
+
+  // Do not render website Navbar on Admin pages
+  if (pathname?.startsWith('/admin')) return null;
 
   return (
     <>

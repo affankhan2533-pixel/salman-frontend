@@ -49,10 +49,10 @@ const PROCESS_DATA = [
 ];
 
 const GALLERY_IMAGES = [
-  { id: 1, title: 'Atelier Private Suite', collection: 'INTERIOR SANCTUARY', year: '2026', aspect: 'aspect-[4/5]', url: 'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?auto=format&fit=crop&q=80&w=1200' },
-  { id: 2, title: 'Botanical Oil Apothecary', collection: 'INGREDIENTS', year: '2026', aspect: 'aspect-[3/4]', url: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=1200' },
-  { id: 3, title: 'Master Stylist Precision', collection: 'CRAFT IN MOTION', year: '2026', aspect: 'aspect-[16/10]', url: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=1200' },
-  { id: 4, title: 'Couture Balayage Finish', collection: 'HAUTE COIFFURE', year: '2026', aspect: 'aspect-[4/5]', url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200' },
+  { id: 1, title: 'Master Sculpting Laboratory', collection: 'INTERIOR SANCTUARY', year: '2026', aspect: 'aspect-[4/5]', url: '/images/branding/image.png' },
+  { id: 2, title: 'Bespoke Color & Gloss Lab', collection: 'INGREDIENTS & COLOR', year: '2026', aspect: 'aspect-[3/4]', url: '/images/branding/image copy.png' },
+  { id: 3, title: 'Luxury Grooming Sanctuary', collection: 'CRAFT IN MOTION', year: '2026', aspect: 'aspect-[16/10]', url: '/images/branding/image copy 2.png' },
+  { id: 4, title: 'Atelier Heritage Experience', collection: 'HAUTE COIFFURE', year: '2026', aspect: 'aspect-[4/5]', url: '/images/image.png' },
 ];
 
 export default function AboutPage() {
@@ -504,7 +504,7 @@ export default function AboutPage() {
               <div
                 key={img.id}
                 onClick={() => setLightboxIdx(idx)}
-                className={`group relative w-full ${img.aspect} rounded-[28px] overflow-hidden shadow-md hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1.5 transition-all duration-500 bg-cream border border-charcoal/10 cursor-pointer`}
+                className={`group relative w-full ${img.aspect} rounded-[28px] overflow-hidden shadow-md hover:shadow-2xl hover:scale-[1.03] hover:-translate-y-1.5 transition-all duration-500 bg-[#141412] border border-charcoal/10 cursor-pointer p-2`}
               >
                 <Image
                   src={img.url}
@@ -513,7 +513,7 @@ export default function AboutPage() {
                   loading="lazy"
                   unoptimized
                   sizes="(max-width: 1024px) 100vw, 300px"
-                  className="object-cover grayscale contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
+                  className="object-contain object-center contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 p-6 flex flex-col justify-end">
                   <span className="text-lbl text-[10px] text-champagne uppercase font-medium">{img.collection}</span>

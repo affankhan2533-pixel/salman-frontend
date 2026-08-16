@@ -19,56 +19,128 @@ const GALLERY_ITEMS = [
   {
     id: 1,
     category: 'haircuts',
-    title: 'Architectural Sculpted Waves',
-    collection: 'HAUTE COIFFURE',
+    title: 'Signature Precision Fade & Sculpt',
+    collection: 'PRECISION CUTS',
     aspect: 'aspect-[4/5]',
     spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
-    imageUrl: 'https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&q=80&w=1600',
+    imageUrl: '/images/gallery/WhatsApp Image 2026-08-14 at 3.19.34 AM.jpeg',
   },
   {
     id: 2,
-    category: 'color',
-    title: 'Champagne Gloss Balayage',
-    collection: 'COUTURE COLOR',
+    category: 'haircuts',
+    title: 'Architectural Sculpted Layers',
+    collection: 'HAUTE COIFFURE',
     aspect: 'aspect-[16/10]',
     spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
-    imageUrl: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1600',
+    imageUrl: '/images/gallery/image.png',
   },
   {
     id: 3,
-    category: 'haircuts',
-    title: 'Minimalist Precision Perimeter',
-    collection: 'SCULPTURAL CUT',
-    aspect: 'aspect-[16/10]',
-    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
-    imageUrl: 'https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&q=80&w=1600',
+    category: 'color',
+    title: 'Champagne Gloss Balayage',
+    collection: 'COUTURE COLOR',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy.png',
   },
   {
     id: 4,
-    category: 'bridal',
-    title: 'Heritage Bridal Coiffure',
-    collection: 'HAUTE BRIDE',
+    category: 'styling',
+    title: 'Luxury Editorial Waves & Texture',
+    collection: 'ATELIER STYLING',
     aspect: 'aspect-[4/5]',
     spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
-    imageUrl: 'https://images.unsplash.com/photo-1580618672591-eb180b1a973f?auto=format&fit=crop&q=80&w=1600',
+    imageUrl: '/images/gallery/image copy 2.png',
   },
   {
     id: 5,
-    category: 'treatments',
-    title: 'Botanical Scalp & Hair Ritual',
-    collection: 'RESTORATIVE CARE',
-    aspect: 'aspect-[4/5]',
-    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
-    imageUrl: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&q=80&w=1600',
+    category: 'haircuts',
+    title: 'Modern Perimeter Crop & Taper',
+    collection: 'BESPOKE CUT',
+    aspect: 'aspect-[16/10]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
+    imageUrl: '/images/gallery/image copy 3.png',
   },
   {
     id: 6,
-    category: 'styling',
-    title: 'Editorial Runway Movement',
-    collection: 'COUTURE STYLING',
+    category: 'bridal',
+    title: 'Heritage Royal Bridal Coiffure',
+    collection: 'HAUTE BRIDE',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 4.png',
+  },
+  {
+    id: 7,
+    category: 'treatments',
+    title: 'Botanical Scalp & Restorative Ritual',
+    collection: 'HAIR SPA & RITUALS',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 5.png',
+  },
+  {
+    id: 8,
+    category: 'color',
+    title: 'Dimensional Caramel & Honey Melt',
+    collection: 'COUTURE COLOR',
     aspect: 'aspect-[16/10]',
     spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
-    imageUrl: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&q=80&w=1600',
+    imageUrl: '/images/gallery/image copy 6.png',
+  },
+  {
+    id: 9,
+    category: 'styling',
+    title: 'Sleek High-Gloss Precision Finish',
+    collection: 'EDITORIAL STYLING',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 7.png',
+  },
+  {
+    id: 10,
+    category: 'haircuts',
+    title: 'Classic Sculpted Pompadour & Fade',
+    collection: 'HAUTE CUT',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 8.png',
+  },
+  {
+    id: 11,
+    category: 'treatments',
+    title: 'Silk Amino Keratin Restructuring',
+    collection: 'RESTORATIVE CARE',
+    aspect: 'aspect-[16/10]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
+    imageUrl: '/images/gallery/image copy 9.png',
+  },
+  {
+    id: 12,
+    category: 'color',
+    title: 'Platinum & Nordic Frost Tonal Glaze',
+    collection: 'COUTURE COLOR',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 11.png',
+  },
+  {
+    id: 13,
+    category: 'styling',
+    title: 'Red Carpet Glamour & Volume',
+    collection: 'HAUTE STYLING',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/gallery/image copy 12.png',
+  },
+  {
+    id: 14,
+    category: 'bridal',
+    title: 'Couture Bridal Crown & Pinning',
+    collection: 'HAUTE BRIDE',
+    aspect: 'aspect-[16/10]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-8',
+    imageUrl: '/images/gallery/image copy 13.png',
   },
 ];
 
@@ -119,9 +191,9 @@ const GalleryCard = memo(function GalleryCard({ item, idx, onOpenLightbox }) {
     <div
       ref={cardRef}
       onClick={() => onOpenLightbox(idx)}
-      className={`group relative w-full ${item.aspect} ${item.spanClass} rounded-[28px] overflow-hidden bg-cream border border-charcoal/10 cursor-pointer shadow-[0_20px_50px_-15px_rgba(31,31,28,0.1)] hover:shadow-[0_30px_70px_-15px_rgba(31,31,28,0.18)] transition-shadow duration-500 select-none`}
+      className={`group relative w-full ${item.aspect} ${item.spanClass} rounded-[28px] overflow-hidden bg-[#F7F4EF] border border-charcoal/10 cursor-pointer shadow-[0_20px_50px_-15px_rgba(31,31,28,0.1)] hover:shadow-[0_30px_70px_-15px_rgba(31,31,28,0.18)] transition-shadow duration-500 select-none`}
     >
-      {/* Image Container */}
+      {/* Image Container — no padding so full image is visible */}
       <div ref={imageInnerRef} className="w-full h-full relative transition-transform duration-700 ease-out">
         <Image
           src={item.imageUrl}
@@ -130,7 +202,7 @@ const GalleryCard = memo(function GalleryCard({ item, idx, onOpenLightbox }) {
           loading="lazy"
           unoptimized
           sizes="(max-width: 1024px) 100vw, 60vw"
-          className="object-cover grayscale contrast-[1.05]"
+          className="object-contain object-center"
         />
       </div>
 
@@ -359,15 +431,15 @@ function GallerySection() {
             </button>
           </div>
 
-          {/* Center Main Image Frame */}
-          <div className="relative w-full max-w-5xl mx-auto h-[60vh] sm:h-[68vh] rounded-[28px] overflow-hidden border border-white/20 shadow-2xl my-auto">
+          {/* Center Main Image Frame — object-contain to show full image without cropping */}
+          <div className="relative w-full max-w-5xl mx-auto h-[65vh] sm:h-[72vh] rounded-[28px] overflow-hidden border border-white/20 shadow-2xl my-auto bg-charcoal/50">
             <Image
               src={activeItem.imageUrl}
               alt={activeItem.title}
               fill
               unoptimized
               sizes="100vw"
-              className="object-cover"
+              className="object-contain object-center"
             />
           </div>
 
