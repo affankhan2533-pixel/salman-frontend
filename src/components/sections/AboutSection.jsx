@@ -237,7 +237,6 @@ function AboutSection() {
                   alt="Salman Hair Studio Salon Experience & Heritage"
                   fill
                   loading="lazy"
-                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-contain object-center transition-transform duration-700 group-hover:scale-105"
                 />
@@ -313,7 +312,6 @@ function AboutSection() {
                     alt={brand.title}
                     fill
                     loading="lazy"
-                    unoptimized
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     className="object-contain object-center transition-transform duration-700 group-hover:scale-105"
                   />

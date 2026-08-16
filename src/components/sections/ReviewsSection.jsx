@@ -203,7 +203,6 @@ function ReviewsSection() {
                   src={FEATURED_REVIEW.avatarUrl}
                   alt={FEATURED_REVIEW.author}
                   fill
-                  unoptimized
                   sizes="56px"
                   className="object-cover"
                 />
@@ -245,7 +244,6 @@ function ReviewsSection() {
                     src={review.avatarUrl}
                     alt={review.author}
                     fill
-                    unoptimized
                     sizes="44px"
                     className="object-cover"
                   />

@@ -6,28 +6,48 @@ import { Play, Pause, Volume2, VolumeX, Maximize2, Sparkles } from 'lucide-react
 export default function StudioVideoSection() {
   const videoRef = useRef(null);
   const containerRef = useRef(null);
-  const [isPlaying, setIsPlaying] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(true);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
-    // Force autoplay when component mounts
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => {
-        // Fallback for strict browser autoplay policies
-        setIsPlaying(false);
-      });
-    }
+    if (!containerRef.current) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setShouldLoad(true);
+            if (videoRef.current) {
+              videoRef.current
+                .play()
+                .then(() => setIsPlaying(true))
+                .catch(() => setIsPlaying(false));
+            }
+          } else {
+            if (videoRef.current && !videoRef.current.paused) {
+              videoRef.current.pause();
+              setIsPlaying(false);
+            }
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
   }, []);
 
   const togglePlay = () => {
     if (!videoRef.current) return;
+    if (!shouldLoad) setShouldLoad(true);
     if (isPlaying) {
       videoRef.current.pause();
       setIsPlaying(false);
     } else {
-      videoRef.current.play();
-      setIsPlaying(true);
+      videoRef.current.play().then(() => setIsPlaying(true)).catch(() => setIsPlaying(false));
     }
   };
 
@@ -74,16 +94,11 @@ export default function StudioVideoSection() {
           ref={containerRef}
           className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[680px] rounded-[28px] overflow-hidden shadow-[0_30px_90px_-20px_rgba(0,0,0,0.6)] border border-white/15 bg-black group"
         >
-          {/*
-            CROP IN LEFT AND RIGHT BOTH SIDES + REMOVE BLACK BARS + LOOP REQUIREMENT:
-            - `loop`, `autoPlay`, `muted`, `playsInline` attributes ensure continuous loop playback.
-            - `scale-[1.35] sm:scale-[1.30]` crops out left and right black pillarboxing completely.
-          */}
           <video
             ref={videoRef}
-            src="/videos/WhatsApp 2026-08-16 22-00-16.mp4"
+            src={shouldLoad ? "/videos/WhatsApp 2026-08-16 22-00-16.mp4" : undefined}
+            preload="none"
             loop
-            autoPlay
             muted
             playsInline
             onLoadedData={() => setIsLoaded(true)}

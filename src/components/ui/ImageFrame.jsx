@@ -11,7 +11,7 @@ export default function ImageFrame({
   className = '',
   aspectRatio = 'aspect-[4/5]',
   priority = false,
-  unoptimized = true,
+  unoptimized = false,
   sizes = '(max-width: 1024px) 100vw, 50vw',
   caption = null,
   ...props

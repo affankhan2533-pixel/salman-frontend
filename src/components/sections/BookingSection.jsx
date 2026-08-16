@@ -383,7 +383,7 @@ function BookingSection() {
                           }`}
                         >
                           <div className="relative w-20 h-20 rounded-full overflow-hidden border border-champagne/40 mx-auto">
-                            <Image src={st.avatarUrl} alt={st.name} fill unoptimized sizes="80px" className="object-cover" />
+                            <Image src={st.avatarUrl} alt={st.name} fill sizes="80px" className="object-cover" />
                           </div>
                           <div>
                             <h4 className="font-heading text-lg text-charcoal font-medium">{st.name}</h4>

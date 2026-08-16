@@ -207,7 +207,6 @@ function TransformationsSection() {
                   alt={`${current.name} After Transformation`}
                   fill
                   loading="lazy"
-                  unoptimized
                   sizes="(max-width: 1440px) 100vw, 900px"
                   className="object-cover"
                 />
@@ -227,7 +226,6 @@ function TransformationsSection() {
                     alt={`${current.name} Before Transformation`}
                     fill
                     loading="lazy"
-                    unoptimized
                     sizes="(max-width: 1440px) 100vw, 900px"
                     className="object-cover grayscale contrast-[1.05]"
                   />

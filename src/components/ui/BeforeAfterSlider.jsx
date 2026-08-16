@@ -44,8 +44,7 @@ function BeforeAfterSlider({ beforeImage, afterImage, title = 'Transformation' }
             src={afterImage}
             alt={`${title} After`}
             fill
-            unoptimized
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
             className="object-cover"
           />
         </div>
@@ -59,8 +58,7 @@ function BeforeAfterSlider({ beforeImage, afterImage, title = 'Transformation' }
             src={beforeImage}
             alt={`${title} Before`}
             fill
-            unoptimized
-            sizes="100vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 40vw"
             className="object-cover grayscale contrast-[1.1]"
           />
         </div>

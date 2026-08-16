@@ -146,7 +146,6 @@ const ServicePanel = memo(function ServicePanel({ service, index }) {
                     alt={`Salman Hair Studio ${service.title}`}
                     fill
                     loading="lazy"
-                    unoptimized
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover grayscale contrast-[1.05]"
                   />
@@ -265,7 +264,6 @@ const ServicePanel = memo(function ServicePanel({ service, index }) {
                     alt={`Salman Hair Studio ${service.title}`}
                     fill
                     loading="lazy"
-                    unoptimized
                     sizes="(max-width: 1024px) 100vw, 50vw"
                     className="object-cover grayscale contrast-[1.05]"
                   />

@@ -106,7 +106,6 @@ export default function CaseStudyPage({ params }) {
               alt={caseStudy.title}
               fill
               priority
-              unoptimized
               sizes="100vw"
               className="object-cover grayscale contrast-[1.05]"
             />

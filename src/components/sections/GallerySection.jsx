@@ -200,8 +200,7 @@ const GalleryCard = memo(function GalleryCard({ item, idx, onOpenLightbox }) {
           alt={`Salman Hair Studio ${item.title}`}
           fill
           loading="lazy"
-          unoptimized
-          sizes="(max-width: 1024px) 100vw, 60vw"
+          sizes="(max-width: 1024px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-contain object-center"
         />
       </div>
@@ -437,7 +436,6 @@ function GallerySection() {
               src={activeItem.imageUrl}
               alt={activeItem.title}
               fill
-              unoptimized
               sizes="100vw"
               className="object-contain object-center"
             />

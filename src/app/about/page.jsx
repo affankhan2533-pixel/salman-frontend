@@ -309,7 +309,6 @@ export default function AboutPage() {
                   alt="Salman Hair Studio Master Atelier Story"
                   fill
                   priority
-                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 55vw"
                   className="object-cover grayscale contrast-[1.05]"
                 />
@@ -378,7 +377,6 @@ export default function AboutPage() {
                   alt="Founder Salman Master Stylist"
                   fill
                   loading="lazy"
-                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 45vw"
                   className="object-cover grayscale contrast-[1.05]"
                 />
@@ -511,7 +509,6 @@ export default function AboutPage() {
                   alt={img.title}
                   fill
                   loading="lazy"
-                  unoptimized
                   sizes="(max-width: 1024px) 100vw, 300px"
                   className="object-contain object-center contrast-[1.05] group-hover:scale-105 transition-transform duration-700"
                 />
@@ -603,7 +600,7 @@ export default function AboutPage() {
           </div>
 
           <div className="relative w-full max-w-4xl mx-auto h-[65vh] rounded-[28px] overflow-hidden border border-white/20 my-auto">
-            <Image src={activeImage.url} alt={activeImage.title} fill unoptimized className="object-cover" />
+            <Image src={activeImage.url} alt={activeImage.title} fill className="object-cover" />
           </div>
 
           <div className="flex items-center justify-between max-w-4xl mx-auto w-full z-20">

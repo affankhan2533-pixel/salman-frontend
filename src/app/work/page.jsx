@@ -50,7 +50,7 @@ export default function WorkPage() {
                       src={item.heroImage}
                       alt={item.title}
                       fill
-                      unoptimized
+                      loading="lazy"
                       sizes="(max-width: 768px) 100vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                     />

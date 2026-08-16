@@ -37,7 +37,7 @@ const nextConfig = {
     ];
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', '@react-three/drei'],
+    optimizePackageImports: ['lucide-react', '@react-three/drei', 'framer-motion', 'react-icons'],
   },
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', 'gsap'],
   webpack: (config, { isServer }) => {

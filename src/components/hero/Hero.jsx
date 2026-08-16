@@ -314,7 +314,7 @@ function Hero() {
                     alt={`Salman Hair Studio Editorial Campaign ${idx + 1}`}
                     fill
                     priority={idx === 0}
-                    unoptimized
+                    loading={idx === 0 ? 'eager' : 'lazy'}
                     sizes="(max-width: 1024px) 100vw, 55vw"
                     className="object-contain object-center"
                   />

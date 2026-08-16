@@ -10,7 +10,7 @@ import React, {
   Component,
 } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Environment, ContactShadows } from '@react-three/drei';
+import { ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 
 // ─── ERROR BOUNDARY FOR 3D CANVAS SAFETY ──────────────────────────────────────
@@ -400,7 +400,8 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
           <directionalLight position={[4, -2, 3]} intensity={0.7} color="#fff8f0" />
           <spotLight position={[0, 9, -7]} intensity={4.5} color="#c8a76e" angle={0.44} penumbra={0.85} />
 
-          <Environment preset="studio" />
+          <hemisphereLight skyColor="#ffffff" groundColor="#333333" intensity={1.2} />
+          <directionalLight position={[0, 8, 8]} intensity={1.5} color="#ffffff" />
           <ContactShadows position={[0, -1.4, 0]} opacity={0.28} scale={4.2} blur={1.5} far={2.5} />
 
           <IdleFloat />

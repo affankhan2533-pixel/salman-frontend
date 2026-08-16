@@ -99,7 +99,6 @@ export default function ServicesClient() {
                 alt="Salman Hair Studio Atelier Services"
                 fill
                 priority
-                unoptimized
                 sizes="(max-width: 1024px) 100vw, 45vw"
                 className="object-cover grayscale contrast-[1.05]"
               />
@@ -152,7 +151,6 @@ export default function ServicesClient() {
                         src={service.heroImage}
                         alt={service.title}
                         fill
-                        unoptimized
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="object-cover grayscale contrast-[1.05] group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700 ease-out"
                       />

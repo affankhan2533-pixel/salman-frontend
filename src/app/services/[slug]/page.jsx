@@ -124,7 +124,6 @@ export default function ServiceDetailPage({ params }) {
               alt={service.title}
               fill
               priority
-              unoptimized
               sizes="100vw"
               className="object-cover grayscale contrast-[1.05]"
             />
@@ -271,7 +270,7 @@ export default function ServiceDetailPage({ params }) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
               {service.gallery.map((imgUrl, i) => (
                 <div key={i} className="relative aspect-[4/5] rounded-[24px] overflow-hidden border border-charcoal/10 shadow-md">
-                  <Image src={imgUrl} alt={`${service.title} ${i}`} fill unoptimized sizes="33vw" className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
+                  <Image src={imgUrl} alt={`${service.title} ${i}`} fill sizes="33vw" className="object-cover grayscale hover:grayscale-0 transition-all duration-700" />
                 </div>
               ))}
             </div>
