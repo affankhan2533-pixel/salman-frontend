@@ -83,6 +83,21 @@
   }
 }
 
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #F2EEE7 0%, #E6DFD3 50%, #F2EEE7 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
 @layer utilities {
   /* ------------------------------------------------------------------------
      TYPOGRAPHY SYSTEM

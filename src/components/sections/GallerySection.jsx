@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback, useMemo, memo } from 'react';
 import Image from 'next/image';
+import LuxuryImage from '@/components/ui/LuxuryImage';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { Container } from '@/components/ui';
 import { X, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
@@ -195,13 +196,12 @@ const GalleryCard = memo(function GalleryCard({ item, idx, onOpenLightbox }) {
     >
       {/* Image Container — no padding so full image is visible */}
       <div ref={imageInnerRef} className="w-full h-full relative transition-transform duration-700 ease-out">
-        <Image
+        <LuxuryImage
           src={item.imageUrl}
           alt={`Salman Hair Studio ${item.title}`}
           fill
-          loading="lazy"
           sizes="(max-width: 1024px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-contain object-center"
+          imageClassName="object-contain object-center"
         />
       </div>
 
@@ -432,12 +432,12 @@ function GallerySection() {
 
           {/* Center Main Image Frame — object-contain to show full image without cropping */}
           <div className="relative w-full max-w-5xl mx-auto h-[65vh] sm:h-[72vh] rounded-[28px] overflow-hidden border border-white/20 shadow-2xl my-auto bg-charcoal/50">
-            <Image
+            <LuxuryImage
               src={activeItem.imageUrl}
               alt={activeItem.title}
               fill
               sizes="100vw"
-              className="object-contain object-center"
+              imageClassName="object-contain object-center"
             />
           </div>
 

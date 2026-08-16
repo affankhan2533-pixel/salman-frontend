@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, memo } from 'react';
 import Image from 'next/image';
+import LuxuryImage from '@/components/ui/LuxuryImage';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { SALON_INFO } from '@/constants/salonInfo';
 
@@ -232,13 +233,12 @@ function AboutSection() {
               className="relative w-full aspect-[4/5] max-h-[680px] rounded-[28px] overflow-hidden shadow-[0_30px_70px_-15px_rgba(31,31,28,0.12)] bg-[#141412] border border-charcoal/10 group p-3"
             >
               <div ref={imageInnerRef} className="w-full h-full relative">
-                <Image
+                <LuxuryImage
                   src="/images/image.png"
                   alt="Salman Hair Studio Salon Experience & Heritage"
                   fill
-                  loading="lazy"
                   sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-contain object-center transition-transform duration-700 group-hover:scale-105"
+                  imageClassName="object-contain object-center transition-transform duration-700 group-hover:scale-105"
                 />
               </div>
               <div className="absolute bottom-5 left-5 right-5 p-4 bg-ivory/90 backdrop-blur-md rounded-xl border border-white/60">
@@ -307,13 +307,12 @@ function AboutSection() {
                 className="group relative rounded-2xl overflow-hidden bg-cream border border-charcoal/10 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col"
               >
                 <div className="relative w-full aspect-[4/3] bg-[#F7F4EF] overflow-hidden flex items-center justify-center">
-                  <Image
+                  <LuxuryImage
                     src={brand.src}
                     alt={brand.title}
                     fill
-                    loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-contain object-center transition-transform duration-700 group-hover:scale-105"
+                    imageClassName="object-contain object-center transition-transform duration-700 group-hover:scale-105"
                   />
                   <span className="absolute top-3 right-3 text-lbl text-[10px] tracking-[0.2em] font-num text-white bg-charcoal/80 backdrop-blur-md px-2.5 py-1 rounded-full z-10 border border-white/20">
                     {i + 1 < 10 ? `0${i + 1}` : i + 1}

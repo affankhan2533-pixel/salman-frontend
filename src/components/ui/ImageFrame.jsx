@@ -1,8 +1,7 @@
 'use client';
 
 import React from 'react';
-import Image from 'next/image';
-import clsx from 'clsx';
+import LuxuryImage from './LuxuryImage';
 
 // Global Luxury Image Primitive (Radius: 28px | Object-fit Cover | Lazy Loading)
 export default function ImageFrame({
@@ -26,15 +25,13 @@ export default function ImageFrame({
       {...props}
     >
       {src ? (
-        <Image
+        <LuxuryImage
           src={src}
           alt={alt || 'Salman Hair Studio Editorial Image'}
           fill
           priority={priority}
-          loading={priority ? 'eager' : 'lazy'}
-          unoptimized={unoptimized}
           sizes={sizes}
-          className="object-cover transition-transform duration-700 ease-luxury group-hover:scale-[1.03]"
+          imageClassName="object-cover transition-transform duration-700 ease-luxury group-hover:scale-[1.03]"
         />
       ) : (
         <div className="w-full h-full flex items-center justify-center text-[#66665F] text-xs tracking-widest uppercase">
