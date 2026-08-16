@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, memo } from 'react';
 import Image from 'next/image';
+import LuxuryImage from '@/components/ui/LuxuryImage';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
@@ -309,14 +310,14 @@ function Hero() {
                     idx === activeHeroIdx ? 'opacity-100 z-10' : 'opacity-0 z-0'
                   }`}
                 >
-                  <Image
+                  <LuxuryImage
                     src={img.src}
                     alt={`Salman Hair Studio Editorial Campaign ${idx + 1}`}
                     fill
                     priority={idx === 0}
                     loading={idx === 0 ? 'eager' : 'lazy'}
                     sizes="(max-width: 1024px) 100vw, 55vw"
-                    className="object-contain object-center"
+                    imageClassName="object-contain object-center"
                   />
                 </div>
               ))}

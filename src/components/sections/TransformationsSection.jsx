@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback, memo } from 'react';
 import Image from 'next/image';
+import LuxuryImage from '@/components/ui/LuxuryImage';
 import Link from 'next/link';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 import { Container } from '@/components/ui';
@@ -202,13 +203,12 @@ function TransformationsSection() {
             >
               {/* RIGHT IMAGE (AFTER COIFFURE) */}
               <div ref={afterImageRef} className="absolute inset-0 w-full h-full">
-                <Image
+                <LuxuryImage
                   src={current.afterImg}
                   alt={`${current.name} After Transformation`}
                   fill
-                  loading="lazy"
                   sizes="(max-width: 1440px) 100vw, 900px"
-                  className="object-cover"
+                  imageClassName="object-cover"
                 />
                 <div className="absolute top-6 right-6 z-10 bg-charcoal/90 backdrop-blur-md text-white text-[10px] sm:text-xs tracking-[0.24em] uppercase px-4 py-2 rounded-full font-medium shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
                   AFTER COIFFURE
@@ -221,13 +221,12 @@ function TransformationsSection() {
                 style={{ width: `${sliderPos}%` }}
               >
                 <div className="relative w-full h-full min-w-[100vw] lg:min-w-[900px]">
-                  <Image
+                  <LuxuryImage
                     src={current.beforeImg}
                     alt={`${current.name} Before Transformation`}
                     fill
-                    loading="lazy"
                     sizes="(max-width: 1440px) 100vw, 900px"
-                    className="object-cover grayscale contrast-[1.05]"
+                    imageClassName="object-cover grayscale contrast-[1.05]"
                   />
                 </div>
                 <div className="absolute top-6 left-6 z-10 bg-ivory/90 backdrop-blur-md text-charcoal text-[10px] sm:text-xs tracking-[0.24em] uppercase px-4 py-2 rounded-full font-medium border border-border-light shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">

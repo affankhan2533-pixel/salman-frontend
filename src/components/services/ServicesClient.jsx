@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import LuxuryImage from '@/components/ui/LuxuryImage';
 import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
 import Navbar from '@/components/layout/Navbar';
@@ -94,13 +95,13 @@ export default function ServicesClient() {
 
             {/* Editorial Hero Portrait */}
             <div className="lg:col-span-5 relative w-full aspect-[4/5] rounded-[32px] overflow-hidden border border-charcoal/10 shadow-[0_25px_60px_-15px_rgba(31,31,28,0.12)] bg-cream">
-              <Image
+              <LuxuryImage
                 src="https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200"
                 alt="Salman Hair Studio Atelier Services"
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover grayscale contrast-[1.05]"
+                imageClassName="object-cover grayscale contrast-[1.05]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-transparent pointer-events-none" />
               <div className="absolute bottom-6 left-6 right-6 p-4 rounded-2xl bg-white/85 backdrop-blur-md border border-white/60 text-charcoal">
@@ -147,12 +148,12 @@ export default function ServicesClient() {
                   <div>
                     {/* Editorial Image Header */}
                     <div className="relative w-full aspect-[16/10] overflow-hidden bg-cream border-b border-charcoal/5">
-                      <Image
+                      <LuxuryImage
                         src={service.heroImage}
                         alt={service.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover grayscale contrast-[1.05] group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700 ease-out"
+                        imageClassName="object-cover grayscale contrast-[1.05] group-hover:scale-105 group-hover:grayscale-0 transition-all duration-700 ease-out"
                       />
                       <div className="absolute top-4 left-4 px-3.5 py-1.5 rounded-full bg-white/90 backdrop-blur-md border border-white/80 shadow-xs">
                         <span className="text-lbl text-[10px] text-champagne tracking-[0.24em] font-semibold uppercase">
