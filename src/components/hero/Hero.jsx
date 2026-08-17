@@ -185,7 +185,7 @@ function Hero() {
     <section
       ref={heroRef}
       onMouseMove={handleMouseMove}
-      className="relative z-10 w-full h-screen min-h-[760px] max-h-[1100px] bg-ivory text-charcoal pt-24 pb-6 flex flex-col justify-between overflow-hidden border-b border-border-light select-none"
+      className="relative z-10 w-full min-h-screen lg:h-screen lg:min-h-[760px] lg:max-h-[1100px] h-auto bg-ivory text-charcoal pt-28 sm:pt-32 lg:pt-24 pb-8 lg:pb-6 flex flex-col justify-between overflow-x-hidden border-b border-border-light select-none"
     >
       {/* 1. Editorial Background Atmosphere: Subtle Paper Grain Overlay */}
       <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1F1F1C_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none z-0" />
@@ -213,15 +213,15 @@ function Hero() {
       />
 
       {/* Main Container */}
-      <div className="w-full max-w-[1440px] mx-auto px-6 sm:px-10 lg:px-16 my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+      <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-16 my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 py-4 lg:py-0">
         
         {/* LEFT COLUMN */}
-        <div className="lg:col-span-5 flex flex-col justify-center space-y-6 xl:space-y-7 z-20">
+        <div className="lg:col-span-5 flex flex-col justify-center space-y-5 sm:space-y-6 xl:space-y-7 z-20 text-center lg:text-left">
           
           {/* Editorial Metadata Badges */}
           <div
             ref={badgeRef}
-            className="flex items-center gap-3 text-lbl text-[11px] tracking-[0.25em] text-warm-gray uppercase font-medium"
+            className="flex items-center justify-center lg:justify-start gap-2.5 sm:gap-3 text-lbl text-[10px] sm:text-[11px] tracking-[0.22em] sm:tracking-[0.25em] text-warm-gray uppercase font-medium flex-wrap"
           >
             <span>EST. 2016</span>
             <span className="w-1 h-1 bg-champagne rounded-full" />
@@ -231,15 +231,15 @@ function Hero() {
           </div>
 
           {/* Small Top Sub-Label */}
-          <div ref={labelRef} className="inline-flex items-center gap-2.5">
+          <div ref={labelRef} className="inline-flex items-center justify-center lg:justify-start gap-2.5">
             <span className="w-1.5 h-1.5 bg-champagne rounded-full animate-pulse" />
-            <span className="text-lbl text-xs tracking-[0.28em] text-warm-gray uppercase font-medium">
+            <span className="text-lbl text-[11px] sm:text-xs tracking-[0.24em] sm:tracking-[0.28em] text-warm-gray uppercase font-medium">
               MUMBAI&apos;S PREMIER HAIR ATELIER
             </span>
           </div>
 
           {/* Large Staggered Editorial Heading */}
-          <div className="font-heading text-5xl sm:text-7xl lg:text-[76px] xl:text-[88px] leading-[0.88] tracking-[-2px] uppercase select-none space-y-0.5">
+          <div className="font-heading text-4xl sm:text-6xl lg:text-[76px] xl:text-[88px] leading-[0.9] sm:leading-[0.88] tracking-[-1.5px] sm:tracking-[-2px] uppercase select-none space-y-0.5">
             <div className="overflow-hidden">
               <span ref={titleLine1Ref} className="block font-bold text-charcoal">
                 SALMAN
@@ -259,24 +259,24 @@ function Hero() {
 
           {/* Tagline */}
           <div ref={taglineRef} className="pt-1">
-            <h2 className="font-heading text-xl sm:text-2xl lg:text-3xl text-charcoal font-normal leading-snug">
-              Hair is Personal. <br />
+            <h2 className="font-heading text-lg sm:text-2xl lg:text-3xl text-charcoal font-normal leading-snug">
+              Hair is Personal. <br className="hidden sm:inline" />
               <span className="italic text-warm-gray">Style is Identity.</span>
             </h2>
           </div>
 
-          {/* CTA Buttons (Hover: 2px lift, subtle shadow, border transition) */}
+          {/* CTA Buttons */}
           <div
             ref={buttonsRef}
-            className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-4"
+            className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4"
           >
             <Link
               href="/booking"
               onMouseEnter={() => setIsHoveredInteractive(true)}
               onMouseLeave={() => setIsHoveredInteractive(false)}
-              className="inline-block"
+              className="inline-block w-full sm:w-auto"
             >
-              <button className="w-full sm:w-auto h-[54px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer border border-transparent hover:border-champagne/40">
+              <button className="w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer border border-transparent hover:border-champagne/40">
                 Book Appointment
               </button>
             </Link>
@@ -284,9 +284,9 @@ function Hero() {
               href="/gallery"
               onMouseEnter={() => setIsHoveredInteractive(true)}
               onMouseLeave={() => setIsHoveredInteractive(false)}
-              className="inline-block"
+              className="inline-block w-full sm:w-auto"
             >
-              <button className="w-full sm:w-auto h-[54px] px-8 bg-transparent text-charcoal border border-charcoal/40 hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] hover:-translate-y-[2px] cursor-pointer">
+              <button className="w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-transparent text-charcoal border border-charcoal/40 hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] hover:-translate-y-[2px] cursor-pointer">
                 View Portfolio
               </button>
             </Link>
@@ -294,14 +294,14 @@ function Hero() {
         </div>
 
         {/* RIGHT COLUMN */}
-        <div className="lg:col-span-7 relative flex flex-col justify-center lg:justify-end items-center h-full gap-3">
+        <div className="lg:col-span-7 relative flex flex-col justify-center items-center w-full h-full gap-3">
           
-          {/* Main Editorial Image Frame — no padding, no clipping, full image shown */}
+          {/* Main Editorial Image Frame — complete portrait view, non-cropped, responsive ratio */}
           <div
             ref={imageFrameRef}
-            className="relative w-full h-[46vh] sm:h-[58vh] lg:h-[65vh] max-h-[680px] rounded-[28px] overflow-hidden shadow-[0_35px_80px_-20px_rgba(31,31,28,0.14)] border border-charcoal/10 will-change-transform z-10 [perspective:1000px] bg-[#F7F4EF]"
+            className="relative w-full max-w-[480px] lg:max-w-none aspect-[4/5] sm:aspect-[4/5] lg:aspect-none lg:h-[65vh] max-h-[540px] sm:max-h-[620px] lg:max-h-[680px] rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-[0_25px_60px_-15px_rgba(31,31,28,0.14)] border border-charcoal/10 will-change-transform z-10 [perspective:1000px] bg-[#F7F4EF]"
           >
-            {/* Inner Image Container — fills entire frame, no crop */}
+            {/* Inner Image Container */}
             <div ref={imageInnerRef} className="w-full h-full relative">
               {HERO_IMAGES.map((img, idx) => (
                 <div
@@ -330,18 +330,18 @@ function Hero() {
             </div>
           </div>
 
-          {/* Editorial Badge & Slider Controls — BELOW the image, never covering it */}
-          <div className="w-full px-1">
-            <div className="p-3.5 bg-ivory/90 backdrop-blur-md border border-charcoal/10 rounded-xl flex items-center justify-between z-30">
-              <div className="flex-1 pr-4">
-                <span className="text-lbl text-[10px] text-champagne tracking-[0.25em] block uppercase mb-0.5 font-semibold">
+          {/* Editorial Badge & Slider Controls — BELOW the image, max-w aligned */}
+          <div className="w-full max-w-[480px] lg:max-w-none px-1">
+            <div className="p-3 sm:p-3.5 bg-ivory/90 backdrop-blur-md border border-charcoal/10 rounded-xl flex items-center justify-between z-30">
+              <div className="flex-1 pr-3 sm:pr-4">
+                <span className="text-lbl text-[9px] sm:text-[10px] text-champagne tracking-[0.22em] sm:tracking-[0.25em] block uppercase mb-0.5 font-semibold">
                   HAUTE COIFFURE CAMPAIGN
                 </span>
                 <span className="font-heading text-xs text-charcoal font-normal line-clamp-1">
                   {HERO_IMAGES[activeHeroIdx].title}
                 </span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <div className="flex items-center gap-1">
                   <button
                     onClick={() => setActiveHeroIdx((prev) => (prev === 0 ? HERO_IMAGES.length - 1 : prev - 1))}
@@ -358,7 +358,7 @@ function Hero() {
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
-                <span className="text-lbl text-[11px] text-warm-gray font-num min-w-[42px] text-right font-medium">
+                <span className="text-lbl text-[10px] sm:text-[11px] text-warm-gray font-num min-w-[38px] sm:min-w-[42px] text-right font-medium">
                   0{activeHeroIdx + 1} / 0{HERO_IMAGES.length}
                 </span>
               </div>
@@ -370,7 +370,7 @@ function Hero() {
       {/* Bottom Center Scroll Indicator */}
       <div
         ref={scrollIndicatorRef}
-        className="relative z-20 flex flex-col items-center justify-center space-y-2 cursor-pointer pb-2 group"
+        className="relative z-20 flex flex-col items-center justify-center space-y-2 cursor-pointer pt-4 pb-2 group"
         onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         onMouseEnter={() => setIsHoveredInteractive(true)}
         onMouseLeave={() => setIsHoveredInteractive(false)}
@@ -378,7 +378,7 @@ function Hero() {
         <span className="text-lbl text-[10px] tracking-[0.32em] font-medium text-warm-gray group-hover:text-champagne transition-colors duration-300 uppercase">
           SCROLL TO DISCOVER
         </span>
-        <div className="w-[1.5px] h-8 bg-charcoal/15 relative overflow-hidden rounded-full">
+        <div className="w-[1.5px] h-7 sm:h-8 bg-charcoal/15 relative overflow-hidden rounded-full">
           <div className="w-full h-2.5 bg-champagne rounded-full animate-[bounce_2.2s_infinite]" />
         </div>
       </div>
