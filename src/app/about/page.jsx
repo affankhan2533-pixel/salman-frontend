@@ -302,15 +302,16 @@ export default function AboutPage() {
             <div className="lg:col-span-7">
               <div
                 ref={heroImageRef}
-                className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] max-h-[680px] rounded-[34px] overflow-hidden shadow-[0_35px_80px_-20px_rgba(31,31,28,0.14)] bg-cream border border-charcoal/10 z-10"
+                className="relative w-full aspect-[4/5] sm:aspect-[16/10] lg:aspect-[4/5] max-h-[680px] rounded-[34px] overflow-hidden shadow-[0_35px_80px_-20px_rgba(31,31,28,0.14)] bg-black border border-charcoal/10 z-10"
               >
-                <Image
-                  src="https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&q=80&w=1600"
-                  alt="Salman Hair Studio Master Atelier Story"
-                  fill
-                  priority
-                  sizes="(max-width: 1024px) 100vw, 55vw"
-                  className="object-cover grayscale contrast-[1.05]"
+                <video
+                  src="/videos/WhatsApp 2026-08-16 22-00-16.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="auto"
+                  className="w-full h-full object-cover object-center scale-100 pointer-events-none"
                 />
               </div>
             </div>

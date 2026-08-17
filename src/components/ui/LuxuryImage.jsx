@@ -39,6 +39,8 @@ export default function LuxuryImage({
     if (onError) onError(e);
   };
 
+  const sanitizedSrc = typeof src === 'string' ? encodeURI(src) : src;
+
   if (!src || hasError) {
     return (
       <div className={clsx('relative w-full h-full bg-cream flex items-center justify-center p-4', className)}>
@@ -60,7 +62,7 @@ export default function LuxuryImage({
 
       {/* 2. Next.js Image with Smooth Fade-In Transition */}
       <Image
-        src={src}
+        src={sanitizedSrc}
         alt={alt}
         fill={fill}
         width={!fill ? width : undefined}
