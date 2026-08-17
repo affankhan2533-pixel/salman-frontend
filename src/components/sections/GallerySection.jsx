@@ -9,6 +9,7 @@ import { X, ChevronLeft, ChevronRight, ArrowUpRight } from 'lucide-react';
 
 const CATEGORIES = [
   { id: 'all', label: 'All' },
+  { id: 'salon', label: 'Salon' },
   { id: 'haircuts', label: 'Haircuts' },
   { id: 'color', label: 'Color' },
   { id: 'styling', label: 'Styling' },
@@ -17,6 +18,16 @@ const CATEGORIES = [
 ];
 
 const GALLERY_ITEMS = [
+  {
+    id: 0,
+    category: 'salon',
+    rawCategory: 'Salon',
+    title: 'Salman Hair Studio',
+    collection: 'SALON SANCTUARY',
+    aspect: 'aspect-[4/5]',
+    spanClass: 'col-span-12 sm:col-span-6 lg:col-span-4',
+    imageUrl: '/images/image.png',
+  },
   {
     id: 1,
     category: 'haircuts',
@@ -269,9 +280,18 @@ function GallerySection() {
   const filteredItems = useMemo(() => {
     if (activeCategory === 'all') return dbGalleryItems;
     const catLower = activeCategory.toLowerCase();
-    return dbGalleryItems.filter(
-      (item) => item.category === catLower || item.rawCategory.toLowerCase() === catLower || item.category.includes(catLower)
-    );
+    return dbGalleryItems.filter((item) => {
+      const c1 = (item.category || '').toLowerCase();
+      const c2 = (item.rawCategory || '').toLowerCase();
+      return (
+        c1 === catLower ||
+        c2 === catLower ||
+        c1.includes(catLower) ||
+        catLower.includes(c1) ||
+        c2.includes(catLower) ||
+        catLower.includes(c2)
+      );
+    });
   }, [activeCategory, dbGalleryItems]);
 
   // Section Header GSAP Entrance

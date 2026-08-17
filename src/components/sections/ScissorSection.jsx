@@ -54,77 +54,76 @@ function ScissorSection() {
       const leftElements = [labelLeftRef.current, topLeftRef.current, bottomLeftRef.current, taglineLeftRef.current];
       const rightElements = [labelRightRef.current, topRightRef.current, bottomRightRef.current, taglineRightRef.current];
 
-      // 2. Extended Dynamic Overlay Timeline Sequence (0% - 100%) - 360vh Extended Scroll Runway
+      // 2. Optimized Timeline Sequence across minimum scroll distance (170vh)
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=360%',
+          end: '+=170%',
           pin: true,
-          scrub: 1.2,
+          scrub: 0.8,
         },
       });
 
-      // 0% - 18%: Hero Fades / Scissor Descends
-      // 38% - 58%: ALL Sentences Appear Unhurriedly
+      // 0.05 - 0.25: Typography Fades In as Scissor Descends to Center
       tl.fromTo(
         [...leftElements, ...rightElements],
-        { opacity: 0, y: 35 },
-        { opacity: 1, y: 0, stagger: 0.04, ease: 'power3.out' },
-        0.35
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, stagger: 0.02, ease: 'power3.out' },
+        0.05
       )
 
-      // 70%: THIN METALLIC CUTTING LINE FLASH AT MOMENT OF CUT ACROSS FULL FRAME
+      // 0.48: THIN METALLIC CUTTING LINE FLASH AT MOMENT OF CUT
       .fromTo(
         cutLineRef.current,
         { opacity: 0, scaleY: 0 },
         { opacity: 1, scaleY: 1, duration: 0.04, ease: 'power4.out' },
-        0.69
+        0.48
       )
       .to(
         cutLineRef.current,
         { opacity: 0, scaleY: 1.2, duration: 0.04, ease: 'power2.in' },
-        0.73
+        0.52
       )
       .fromTo(
         ambientGlowRef.current,
         { opacity: 0, scale: 0.6 },
-        { opacity: 0.65, scale: 1.2, duration: 0.10, ease: 'power2.out' },
-        0.69
+        { opacity: 0.7, scale: 1.2, duration: 0.08, ease: 'power2.out' },
+        0.48
       )
       .to(
         ambientGlowRef.current,
-        { opacity: 0, scale: 1.6, duration: 0.12, ease: 'power2.in' },
-        0.78
+        { opacity: 0, scale: 1.6, duration: 0.10, ease: 'power2.in' },
+        0.56
       )
 
-      // 70% - 76%: PRECISION FULL-SENTENCE CUT — ALL left halves move left, ALL right halves move right!
+      // 0.50: SYNCHRONIZED VISUAL TEXT CUT — Left fragments move left/up, right fragments move right/up exactly as blades close shut!
       .to(
         leftElements,
-        { x: -26, rotate: -2, opacity: 0.95, duration: 0.08, ease: 'power2.out' },
-        0.70
+        { x: -36, y: -12, rotate: -3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
+        0.50
       )
       .to(
         rightElements,
-        { x: 26, rotate: 2, opacity: 0.95, duration: 0.08, ease: 'power2.out' },
-        0.70
+        { x: 36, y: -12, rotate: 3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
+        0.50
       )
       .to(
         [bottomLeftRef.current, bottomRightRef.current],
-        { color: '#C8A76E', letterSpacing: '0.12em', duration: 0.08, ease: 'power2.inOut' },
-        0.70
+        { color: '#C8A76E', letterSpacing: '0.12em', duration: 0.06, ease: 'power2.inOut' },
+        0.50
       )
 
-      // 78% - 90%: UNHURRIED ELEGANT TEXT EXIT — Left halves drift upward-left, Right halves drift upward-right
+      // 0.55 - 0.72: ELEGANT FRAGMENT DRIFT & FADE EXIT — Fragments float outward & upward into background
       .to(
         leftElements,
-        { x: -45, y: -32, rotate: -4, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
-        0.78
+        { x: -75, y: -42, rotate: -6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
+        0.56
       )
       .to(
         rightElements,
-        { x: 45, y: -32, rotate: 4, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
-        0.78
+        { x: 75, y: -42, rotate: 6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
+        0.56
       );
     }, sectionRef);
 
@@ -138,7 +137,7 @@ function ScissorSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[360vh] bg-transparent pointer-events-none select-none z-30"
+      className="relative w-full h-[170vh] bg-transparent pointer-events-none select-none z-30"
     >
       {/* Sticky Viewport Overlay: 100vh, top: 0, transparent background */}
       <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-center pt-20 sm:pt-24 lg:pt-28 pb-10 sm:pb-12 overflow-hidden px-4 sm:px-6 pointer-events-none bg-transparent">
@@ -154,7 +153,7 @@ function ScissorSection() {
           <ScissorScene progressRef={progressRef} isVisible={isVisible} />
         </div>
 
-        {/* EDITORIAL TYPOGRAPHY OVERLAY LAYER (ALL SENTENCES SPLIT INTO LEFT & RIGHT HALVES) */}
+        {/* EDITORIAL TYPOGRAPHY OVERLAY LAYER (SINGLE CLEAN DOM HEADING STRUCTURE) */}
         <div ref={textContainerRef} className="relative z-20 flex flex-col items-center text-center max-w-4xl px-4 my-auto pointer-events-none">
 
           {/* VERTICAL FULL-FRAME CUTTING LINE FLASH OVERLAY */}
@@ -174,7 +173,7 @@ function ScissorSection() {
             </span>
           </div>
 
-          {/* Main Editorial Heading Line 1 Split: CRAFT / PRECISION */}
+          {/* Single Main Editorial Heading: CRAFT PRECISION / IDENTITY */}
           <h2 className="font-heading text-4xl sm:text-6xl lg:text-[76px] xl:text-[88px] leading-[0.92] tracking-[-0.03em] uppercase font-medium">
             <div className="inline-flex items-center justify-center gap-3">
               <span ref={topLeftRef} className="inline-block text-charcoal origin-right transition-transform duration-300">
@@ -185,7 +184,6 @@ function ScissorSection() {
               </span>
             </div>
 
-            {/* Main Editorial Heading Line 2 Split: IDEN / TITY */}
             <div className="block mt-1 sm:mt-2">
               <span className="inline-flex items-center justify-center italic text-champagne font-normal transition-all duration-300">
                 <span ref={bottomLeftRef} className="inline-block origin-right transition-transform duration-300">IDEN</span>

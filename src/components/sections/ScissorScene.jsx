@@ -217,12 +217,12 @@ function clamp01(v) { return Math.max(0, Math.min(1, v)); }
 function remap(v, a, b) { return clamp01((v - a) / (b - a)); }
 
 // ─── 3D OVERLAY DYNAMIC SCISSOR RIG CONTROLLER ──────────────────────────────
-// RICH DYNAMIC MOTION ENGINE:
-// 1. Descending Entry & Arc Roll (0% - 38%)
-// 2. 3D Profile Sweep & Specular Pitch (38% - 58%)
-// 3. Wide Blade Open & Snapping Cut (58% - 74%)
-// 4. Post-Cut Floating Orbit & Arc Tilt (74% - 88%)
-// 5. Dissolve & Settle into About Section (88% - 100%)
+// REFINED SYNCHRONIZED NARRATIVE MOTION ENGINE:
+// 1. Descending Entry & Arc Roll (0.00 - 0.22)
+// 2. Center Hover & Wide Blade Opening (0.22 - 0.45)
+// 3. Blade Snap Cut & Text Split (0.45 - 0.50)
+// 4. Post-Cut Floating Orbit & Arc Tilt (0.72 - 0.88)
+// 5. Downward Exit Behind About Section Reveal (0.88 - 1.00)
 function ScissorRig({ progressRef, mouseTiltRef, deviceMode }) {
   const groupRef = useRef();
   const leftBladeRef = useRef();
@@ -233,70 +233,68 @@ function ScissorRig({ progressRef, mouseTiltRef, deviceMode }) {
     const prog = typeof progressRef === 'object' ? progressRef.current : progressRef;
     const p = clamp01(prog);
 
-    // Responsive scaling for Desktop (0.72), Tablet (0.58), Mobile (0.44)
-    const baseScale = deviceMode === 'mobile' ? 0.44 : deviceMode === 'tablet' ? 0.58 : 0.72;
+    // Adaptive responsive scaling: Mobile (0.64), Tablet (0.70), Desktop (0.78)
+    // Ensures scissor is prominent, centered, unclipped, and visually striking on 375px, 390px, 430px
+    const baseScale = deviceMode === 'mobile' ? 0.64 : deviceMode === 'tablet' ? 0.70 : 0.78;
 
     // ── OPACITY TIMING ──
-    let op = 0;
-    if (p < 0.18) op = 0;
-    else if (p < 0.38) op = remap(p, 0.18, 0.38);
-    else if (p < 0.88) op = 1;
-    else op = lerp(1, 0, remap(p, 0.88, 1.0));
+    let op = 1;
+    if (p < 0.12) op = remap(p, 0.0, 0.12);
+    else if (p < 0.85) op = 1;
+    else op = lerp(1, 0, remap(p, 0.85, 1.0));
 
     // ── DYNAMIC POSITION Y ──
-    // 0-38%: Descends from top center (+2.8 -> 0.0)
-    // 38-74%: Centered at 0.0 over IDENTITY
-    // 74-88%: Performs a luxury floating orbit upward (0.0 -> +0.18)
-    // 88-100%: Settles back to 0.0 as it dissolves
+    // 0.00 - 0.22: Descends from top center (+2.4 / +2.0 -> 0.0)
+    // 0.22 - 0.72: Centered at 0.0 directly over text
+    // 0.72 - 0.88: Performs luxury floating post-cut orbit (0.0 -> +0.18)
+    // 0.88 - 1.00: Descends downward (-1.6) passing behind incoming About section
     let pY;
-    const topY = deviceMode === 'mobile' ? 2.0 : deviceMode === 'tablet' ? 2.4 : 2.8;
-    if (p < 0.38) {
-      pY = lerp(topY, 0, remap(p, 0.18, 0.38));
-    } else if (p < 0.74) {
+    const topY = deviceMode === 'mobile' ? 2.0 : deviceMode === 'tablet' ? 2.2 : 2.5;
+    if (p < 0.22) {
+      pY = lerp(topY, 0, remap(p, 0.0, 0.22));
+    } else if (p < 0.72) {
       pY = 0;
     } else if (p < 0.88) {
-      pY = lerp(0, 0.18, remap(p, 0.74, 0.88));
+      pY = lerp(0, 0.18, remap(p, 0.72, 0.88));
     } else {
-      pY = lerp(0.18, 0, remap(p, 0.88, 1.0));
+      pY = lerp(0.18, -1.6, remap(p, 0.88, 1.0));
     }
 
     // ── DYNAMIC ROTATION Z (ARC ROLL) ──
-    // 0-38%: Rolls from -45° (-0.78 rad) to -12° (-0.21 rad)
-    // 38-58%: Smoothly aligns to 0° (0 rad) over text center
-    // 58-74%: Aligned straight at 0° for text shear cut
-    // 74-88%: Post-cut floating tilt (0° -> +0.16 rad / +9.2°)
-    // 88-100%: Settle back to 0°
+    // 0.00 - 0.22: Rolls from entry (-0.65 rad) to 0° upright
+    // 0.22 - 0.72: Aligned straight at 0° for precision text cut
+    // 0.72 - 0.88: Post-cut floating tilt (0° -> +0.24 rad / +13.7°)
+    // 0.88 - 1.00: Smooth return to 0°
     let rZ;
-    if (p < 0.38) {
-      rZ = lerp(-0.78, -0.21, remap(p, 0.18, 0.38));
-    } else if (p < 0.58) {
-      rZ = lerp(-0.21, 0, remap(p, 0.38, 0.58));
-    } else if (p < 0.74) {
+    if (p < 0.22) {
+      rZ = lerp(-0.65, 0, remap(p, 0.0, 0.22));
+    } else if (p < 0.72) {
       rZ = 0;
     } else if (p < 0.88) {
-      rZ = lerp(0, 0.16, remap(p, 0.74, 0.88));
+      rZ = lerp(0, 0.24, remap(p, 0.72, 0.88));
     } else {
-      rZ = lerp(0.16, 0, remap(p, 0.88, 1.0));
+      rZ = lerp(0.24, 0, remap(p, 0.88, 1.0));
     }
 
     // ── DYNAMIC ROTATION Y (3D PROFILE SWEEP) ──
-    // Sweeps dynamically from 0.08 rad up to 1.85 rad (~106° silver mirror view)
     const rY = lerp(0.08, 1.85, p) + Math.sin(p * Math.PI * 1.2) * 0.18;
 
     // ── DYNAMIC ROTATION X (SPECULAR PITCH TILT) ──
     const rX = 0.05 + Math.sin(p * Math.PI) * 0.19;
 
-    // ── 58% - 74%: MULTI-STAGE BLADE SHEAR ACTION ──
-    // 58-66%: Open wide (0 -> 0.54 rad / ~31° opening)
-    // 66-70%: Tension hover
-    // 70-74%: Snap shut cleanly (0.54 -> 0.0 rad) with metallic recoil
+    // ── BLADE SHEAR ACTION (SYNCHRONIZED CUT AT p = 0.50) ──
+    // 0.22 - 0.38: Open wide (0 -> 0.52 rad / ~30° opening)
+    // 0.38 - 0.45: Hold open tension over text center
+    // 0.45 - 0.50: Snap shut cleanly (0.52 -> 0.0 rad) exactly at moment of text split flash!
     let bladeAngle = 0;
-    if (p >= 0.58 && p < 0.66) {
-      bladeAngle = lerp(0, 0.54, remap(p, 0.58, 0.66));
-    } else if (p >= 0.66 && p < 0.70) {
-      bladeAngle = 0.54 + Math.sin(p * 40) * 0.012; // subtle tension hover
-    } else if (p >= 0.70 && p < 0.74) {
-      bladeAngle = lerp(0.54, 0, remap(p, 0.70, 0.74));
+    if (p >= 0.22 && p < 0.38) {
+      bladeAngle = lerp(0, 0.52, remap(p, 0.22, 0.38));
+    } else if (p >= 0.38 && p < 0.45) {
+      bladeAngle = 0.52 + Math.sin(p * 40) * 0.01;
+    } else if (p >= 0.45 && p < 0.50) {
+      bladeAngle = lerp(0.52, 0, remap(p, 0.45, 0.50));
+    } else {
+      bladeAngle = 0;
     }
 
     // Direct Three.js Scene Object Rotation for 60-120 FPS Blade Animation!
@@ -319,11 +317,11 @@ function ScissorRig({ progressRef, mouseTiltRef, deviceMode }) {
   const progVal = typeof progressRef === 'object' ? progressRef.current : progressRef;
   const p = clamp01(progVal);
 
-  // Hair particles emit during shear cut action (70% - 82%)
-  const particlesActive = p >= 0.70 && p < 0.82;
+  // Hair particles emit during shear cut action (48% - 64%)
+  const particlesActive = p >= 0.48 && p < 0.64;
 
   return (
-    <group ref={groupRef} position={[0, -MODEL_CENTER_Y * (deviceMode === 'mobile' ? 0.44 : deviceMode === 'tablet' ? 0.58 : 0.72), 0]}>
+    <group ref={groupRef} position={[0, -MODEL_CENTER_Y * (deviceMode === 'mobile' ? 0.64 : deviceMode === 'tablet' ? 0.70 : 0.78), 0]}>
       <ProcScissor leftBladeRef={leftBladeRef} rightBladeRef={rightBladeRef} />
       <HairParticles active={particlesActive} />
     </group>
@@ -380,9 +378,9 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
 
   const shouldRender = isVisible && isTabActive;
 
-  // Responsive camera parameters: Mobile Z=9.2 FOV=44, Tablet Z=8.0 FOV=42, Desktop Z=7.5 FOV=40
-  const camZ = deviceMode === 'mobile' ? 9.2 : deviceMode === 'tablet' ? 8.0 : 7.5;
-  const camFov = deviceMode === 'mobile' ? 44 : deviceMode === 'tablet' ? 42 : 40;
+  // Adaptive camera parameters: Mobile Z=8.2 FOV=42, Tablet Z=7.8 FOV=41, Desktop Z=7.5 FOV=40
+  const camZ = deviceMode === 'mobile' ? 8.2 : deviceMode === 'tablet' ? 7.8 : 7.5;
+  const camFov = deviceMode === 'mobile' ? 42 : deviceMode === 'tablet' ? 41 : 40;
 
   return (
     <CanvasErrorBoundary>
