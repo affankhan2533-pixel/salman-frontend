@@ -251,27 +251,45 @@ function GallerySection() {
   // Fetch visible gallery images dynamically from MongoDB API
   useEffect(() => {
     async function fetchPublicGallery() {
+      if (typeof window !== 'undefined') {
+        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const rawUrl = process.env.NEXT_PUBLIC_API_URL;
+        if (!rawUrl && !isLocalhost) {
+          // Deployed online without custom API URL, use pre-defined editorial gallery items
+          return;
+        }
+      }
+
       try {
         const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
         const API_URL = rawUrl.replace(/\/api\/?$/, '');
-        const res = await fetch(`${API_URL}/api/gallery?visible=true`);
-        const json = await res.json();
-        if (res.ok && json.success && Array.isArray(json.data) && json.data.length > 0) {
-          const mapped = json.data.map((item, idx) => ({
-            id: item._id,
-            category: item.category ? item.category.toLowerCase() : 'haircuts',
-            rawCategory: item.category || 'Haircuts',
-            title: item.title || 'Atelier Coiffure Showcase',
-            collection: item.category ? item.category.toUpperCase() : 'ATELIER SHOWCASE',
-            aspect: idx % 3 === 1 ? 'aspect-[16/10]' : 'aspect-[4/5]',
-            spanClass: idx % 3 === 1 ? 'col-span-12 sm:col-span-6 lg:col-span-8' : 'col-span-12 sm:col-span-6 lg:col-span-4',
-            imageUrl: item.imageUrl || item.afterImage || item.thumbnail || '',
-            order: item.order !== undefined ? item.order : idx,
-          }));
-          setDbGalleryItems(mapped);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const res = await fetch(`${API_URL}/api/gallery?visible=true`, {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            const mapped = json.data.map((item, idx) => ({
+              id: item._id,
+              category: item.category ? item.category.toLowerCase() : 'haircuts',
+              rawCategory: item.category || 'Haircuts',
+              title: item.title || 'Atelier Coiffure Showcase',
+              collection: item.category ? item.category.toUpperCase() : 'ATELIER SHOWCASE',
+              aspect: idx % 3 === 1 ? 'aspect-[16/10]' : 'aspect-[4/5]',
+              spanClass: idx % 3 === 1 ? 'col-span-12 sm:col-span-6 lg:col-span-8' : 'col-span-12 sm:col-span-6 lg:col-span-4',
+              imageUrl: item.imageUrl || item.afterImage || item.thumbnail || '',
+              order: item.order !== undefined ? item.order : idx,
+            }));
+            setDbGalleryItems(mapped);
+          }
         }
       } catch (err) {
-        console.error('[GallerySection] Failed to fetch public gallery items:', err);
+        // Silently preserve local static editorial gallery items
       }
     }
     fetchPublicGallery();
