@@ -5,6 +5,7 @@ import ScissorSection from '@/components/sections/ScissorSection';
 
 // Dynamically import below-the-fold sections for code splitting & memory optimization
 const AboutSection = dynamic(() => import('@/components/sections/AboutSection'));
+const ServicesSection = dynamic(() => import('@/components/sections/ServicesSection'));
 const StudioVideoSection = dynamic(() => import('@/components/sections/StudioVideoSection'));
 const HomeCTA = dynamic(() => import('@/components/sections/HomeCTA'));
 const Footer = dynamic(() => import('@/components/layout/Footer'));
@@ -22,13 +23,16 @@ export default function Home() {
         {/* 3. Our Story & Studio Atelier Heritage Section */}
         <AboutSection />
 
-        {/* 4. Atelier Video Reel Showcase (Looped & Side-Cropped) */}
+        {/* 4. Services Preview — Men/Women, Hair/Face navigation */}
+        <ServicesSection />
+
+        {/* 5. Atelier Video Reel Showcase (Looped & Side-Cropped) */}
         <StudioVideoSection />
 
-        {/* 5. Final Home CTA */}
+        {/* 6. Final Home CTA */}
         <HomeCTA />
 
-        {/* 6. Atelier Footer */}
+        {/* 7. Atelier Footer */}
         <Footer />
       </main>
     </PageTransition>
