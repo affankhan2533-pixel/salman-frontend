@@ -51,10 +51,10 @@ export default function StudioVideoSection() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(197,160,89,0.08)_0%,transparent_70%)] pointer-events-none" />
 
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-8 lg:px-16 relative z-10">
-        {/* Pure Video Container Frame — Clean, No Text, No Click Needed, Automatic Looping */}
+        {/* Responsive Video Container Frame — Mobile/Tablet: 9:16 Vertical Reel · Desktop: Wide Cinema Frame */}
         <div
           ref={containerRef}
-          className="relative w-full aspect-[16/9] sm:aspect-[16/8] max-h-[720px] rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-[0_30px_90px_-20px_rgba(0,0,0,0.6)] border border-white/15 bg-black"
+          className="relative mx-auto w-full max-w-[340px] sm:max-w-[420px] lg:max-w-none aspect-[9/16] lg:aspect-[16/8] max-h-[720px] rounded-[28px] sm:rounded-[32px] overflow-hidden shadow-[0_30px_90px_-20px_rgba(0,0,0,0.6)] border border-white/15 bg-black"
         >
           <video
             ref={videoRef}
@@ -64,9 +64,10 @@ export default function StudioVideoSection() {
             muted
             playsInline
             preload="auto"
-            className="w-full h-full object-cover object-center scale-100 pointer-events-none"
+            className="w-full h-full object-cover object-center pointer-events-none"
           />
         </div>
+
       </div>
     </section>
   );

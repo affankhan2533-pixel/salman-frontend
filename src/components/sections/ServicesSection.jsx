@@ -165,7 +165,7 @@ function ServicesSection() {
             </div>
 
             {/* ── NAVIGATION ────────────────────────────────────────────── */}
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
               <GenderTabs activeGender={activeGender} onChange={handleGenderChange} />
               <ServiceCategoryTabs activeCategory={activeCategory} onChange={handleCategoryChange} />
             </div>

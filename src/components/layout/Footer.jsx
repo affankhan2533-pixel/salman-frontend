@@ -2,14 +2,20 @@
 
 import React, { memo } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import clsx from 'clsx';
 import { Container } from '@/components/ui';
 import { Instagram, MapPin, Star, ArrowUp, MessageCircle, Phone } from 'lucide-react';
 import { SALON_INFO } from '@/constants/salonInfo';
 
 function Footer() {
+  const pathname = usePathname();
+  const isBookingRoute = pathname?.startsWith('/booking');
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
 
   return (
     <footer className="relative z-30 bg-[#F7F4EE] border-t border-border-light text-charcoal pt-16 sm:pt-24 pb-12 overflow-hidden select-none">
@@ -141,15 +147,20 @@ function Footer() {
       </Container>
 
       {/* STICKY MOBILE WHATSAPP FLOATING ACTION BUTTON */}
+      {/* On mobile booking flow, hidden so it never overlaps slot cards, inputs, or Continue button */}
       <a
         href={SALON_INFO.whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 p-4 bg-[#25D366] text-white rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-110 transition-transform duration-300 flex items-center justify-center cursor-pointer"
+        className={clsx(
+          'fixed z-50 p-3.5 sm:p-4 bg-[#25D366] text-white rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:scale-110 active:scale-95 transition-all duration-300 items-center justify-center cursor-pointer',
+          isBookingRoute ? 'hidden sm:flex bottom-6 right-6' : 'flex bottom-6 right-6'
+        )}
         aria-label="WhatsApp Concierge"
       >
-        <MessageCircle className="w-6 h-6" />
+        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
       </a>
+
     </footer>
   );
 }

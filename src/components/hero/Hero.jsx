@@ -346,14 +346,14 @@ function Hero() {
                   <button
                     onClick={() => setActiveHeroIdx((prev) => (prev === 0 ? HERO_IMAGES.length - 1 : prev - 1))}
                     aria-label="Previous image"
-                    className="w-7 h-7 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 flex items-center justify-center text-charcoal transition-colors cursor-pointer"
+                    className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 active:scale-95 flex items-center justify-center text-charcoal transition-all cursor-pointer"
                   >
                     <ChevronLeft className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => setActiveHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length)}
                     aria-label="Next image"
-                    className="w-7 h-7 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 flex items-center justify-center text-charcoal transition-colors cursor-pointer"
+                    className="w-9 h-9 sm:w-8 sm:h-8 rounded-lg bg-charcoal/5 hover:bg-charcoal/10 active:scale-95 flex items-center justify-center text-charcoal transition-all cursor-pointer"
                   >
                     <ChevronRight className="w-4 h-4" />
                   </button>

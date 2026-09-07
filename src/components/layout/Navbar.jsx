@@ -138,8 +138,8 @@ function Navbar() {
             <span>Salman Hair Studio</span>
           </Link>
 
-          {/* Desktop Nav Items */}
-          <nav className="hidden md:flex items-center space-x-7 lg:space-x-8">
+          {/* Desktop Nav Items — Proportional for tablet (md) & desktop (lg+) */}
+          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
             {NAV_ITEMS.map((item) => {
               let isActive = false;
               if (item.href === '/') {
@@ -156,7 +156,7 @@ function Navbar() {
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item.href)}
                   className={clsx(
-                    'text-lbl text-xs tracking-[0.18em] transition-colors duration-300 relative py-1 uppercase font-medium',
+                    'text-lbl text-[11px] lg:text-xs tracking-[0.14em] lg:tracking-[0.18em] transition-colors duration-300 relative py-1 uppercase font-medium',
                     isActive ? 'text-champagne font-semibold' : 'text-charcoal/80 hover:text-champagne',
                     'after:content-[""] after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:bg-champagne after:transition-all after:duration-300',
                     isActive ? 'after:w-full' : 'after:w-0 hover:after:w-full'
@@ -168,10 +168,10 @@ function Navbar() {
             })}
           </nav>
 
-          {/* Mobile Menu Trigger */}
+          {/* Mobile Menu Trigger — 44px ergonomic touch target */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2 text-charcoal hover:text-champagne transition-colors focus:outline-none cursor-pointer rounded-lg bg-white/40 border border-white/60"
+            className="md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center text-charcoal hover:text-champagne transition-colors focus:outline-none cursor-pointer rounded-xl bg-white/50 border border-charcoal/10 active:scale-95"
             aria-label="Toggle Navigation Menu"
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -186,8 +186,8 @@ function Navbar() {
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
       >
-        {/* Mobile Header Bar with Close Button */}
-        <div className="flex items-center justify-between w-full pb-6 border-b border-border-light">
+        {/* Mobile Header Bar with 44px Close Button */}
+        <div className="flex items-center justify-between w-full pb-5 border-b border-border-light">
           <Link
             href="/"
             onClick={(e) => handleNavClick(e, '/')}
@@ -202,15 +202,15 @@ function Navbar() {
               setMobileMenuOpen(false);
               document.body.style.overflow = '';
             }}
-            className="p-2 text-charcoal hover:text-champagne transition-colors focus:outline-none cursor-pointer rounded-lg bg-white/50 border border-charcoal/10"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-charcoal hover:text-champagne transition-colors focus:outline-none cursor-pointer rounded-xl bg-white/60 border border-charcoal/10 active:scale-95"
             aria-label="Close Navigation Menu"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Mobile Navigation Links */}
-        <nav className="flex flex-col space-y-6 text-center my-auto py-8">
+        <nav className="flex flex-col space-y-5 text-center my-auto py-6">
           {NAV_ITEMS.map((item) => {
             let isActive = false;
             if (item.href === '/') {
@@ -227,22 +227,34 @@ function Navbar() {
                 href={item.href}
                 onClick={(e) => handleNavClick(e, item.href)}
                 className={clsx(
-                  'font-heading text-2xl sm:text-3xl transition-colors uppercase tracking-widest py-1',
+                  'font-heading text-2xl sm:text-3xl transition-colors uppercase tracking-widest py-1 flex items-center justify-center gap-2',
                   isActive ? 'text-champagne font-semibold' : 'text-charcoal hover:text-champagne'
                 )}
               >
-                {item.label}
+                {isActive && <span className="w-1.5 h-1.5 rounded-full bg-champagne" />}
+                <span>{item.label}</span>
               </Link>
             );
           })}
         </nav>
 
-        {/* Mobile Sub-Footer Indicator */}
-        <div className="pt-6 border-t border-border-light text-center">
+        {/* Mobile Sub-Footer with Primary Booking Action */}
+        <div className="pt-5 border-t border-border-light flex flex-col items-center gap-3">
+          <Link
+            href="/booking"
+            onClick={(e) => handleNavClick(e, '/booking')}
+            className="w-full"
+          >
+            <button className="w-full h-[52px] bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs tracking-[0.22em] uppercase font-medium rounded-xl flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
+              <span>Reserve Private Session</span>
+              <span className="font-num text-sm">→</span>
+            </button>
+          </Link>
           <span className="text-lbl text-[10px] tracking-[0.25em] text-warm-gray uppercase block">
             KURLA WEST • MUMBAI
           </span>
         </div>
+
       </div>
     </>
   );

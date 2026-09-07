@@ -54,21 +54,28 @@ function ScissorSection() {
       const leftElements = [labelLeftRef.current, topLeftRef.current, bottomLeftRef.current, taglineLeftRef.current];
       const rightElements = [labelRightRef.current, topRightRef.current, bottomRightRef.current, taglineRightRef.current];
 
-      // 2. Optimized Timeline Sequence across minimum scroll distance (170vh)
+      const isMobile = window.innerWidth < 640;
+      const isTablet = window.innerWidth >= 640 && window.innerWidth < 1024;
+      const splitX = isMobile ? 14 : isTablet ? 24 : 36;
+      const splitY = isMobile ? -6 : isTablet ? -9 : -12;
+      const exitX = isMobile ? 32 : isTablet ? 50 : 75;
+
+      // 2. Responsive Timeline Sequence across viewport-proportioned scroll distance
       const tl = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: '+=170%',
+          end: () => (window.innerWidth < 640 ? '+=110%' : window.innerWidth < 1024 ? '+=140%' : '+=170%'),
           pin: true,
           scrub: 0.8,
+          invalidateOnRefresh: true,
         },
       });
 
       // 0.05 - 0.25: Typography Fades In as Scissor Descends to Center
       tl.fromTo(
         [...leftElements, ...rightElements],
-        { opacity: 0, y: 30 },
+        { opacity: 0, y: isMobile ? 20 : 30 },
         { opacity: 1, y: 0, stagger: 0.02, ease: 'power3.out' },
         0.05
       )
@@ -97,32 +104,32 @@ function ScissorSection() {
         0.56
       )
 
-      // 0.50: SYNCHRONIZED VISUAL TEXT CUT — Left fragments move left/up, right fragments move right/up exactly as blades close shut!
+      // 0.50: SYNCHRONIZED VISUAL TEXT CUT — Responsively proportioned
       .to(
         leftElements,
-        { x: -36, y: -12, rotate: -3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
+        { x: -splitX, y: splitY, rotate: -3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
         0.50
       )
       .to(
         rightElements,
-        { x: 36, y: -12, rotate: 3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
+        { x: splitX, y: splitY, rotate: 3, opacity: 0.95, duration: 0.06, ease: 'power2.out' },
         0.50
       )
       .to(
         [bottomLeftRef.current, bottomRightRef.current],
-        { color: '#C8A76E', letterSpacing: '0.12em', duration: 0.06, ease: 'power2.inOut' },
+        { color: '#C8A76E', letterSpacing: isMobile ? '0.06em' : '0.12em', duration: 0.06, ease: 'power2.inOut' },
         0.50
       )
 
-      // 0.55 - 0.72: ELEGANT FRAGMENT DRIFT & FADE EXIT — Fragments float outward & upward into background
+      // 0.55 - 0.72: ELEGANT FRAGMENT DRIFT & FADE EXIT
       .to(
         leftElements,
-        { x: -75, y: -42, rotate: -6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
+        { x: -exitX, y: splitY * 3.5, rotate: -6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
         0.56
       )
       .to(
         rightElements,
-        { x: 75, y: -42, rotate: 6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
+        { x: exitX, y: splitY * 3.5, rotate: 6, opacity: 0, stagger: 0.02, ease: 'power2.inOut' },
         0.56
       );
     }, sectionRef);
@@ -137,7 +144,7 @@ function ScissorSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative w-full h-[170vh] bg-transparent pointer-events-none select-none z-30"
+      className="relative w-full h-[110vh] sm:h-[140vh] lg:h-[170vh] bg-transparent pointer-events-none select-none z-30"
     >
       {/* Sticky Viewport Overlay: 100vh, top: 0, transparent background */}
       <div className="sticky top-0 w-full h-screen flex flex-col items-center justify-center pt-20 sm:pt-24 lg:pt-28 pb-10 sm:pb-12 overflow-hidden px-4 sm:px-6 pointer-events-none bg-transparent">
@@ -162,20 +169,20 @@ function ScissorSection() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1.8px] h-[90%] bg-champagne shadow-[0_0_16px_#C8A76E] pointer-events-none opacity-0 z-30 origin-center"
           />
 
-          {/* Metadata Sub-Label Split */}
-          <div className="flex items-center justify-center gap-2 sm:gap-3 text-lbl text-[10px] sm:text-xs tracking-[0.25em] sm:tracking-[0.3em] text-warm-gray uppercase font-medium mb-3 sm:mb-4">
+          {/* Metadata Sub-Label Split (Uncut, complete luxury wording) */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-lbl text-[10px] sm:text-xs tracking-[0.22em] sm:tracking-[0.3em] text-warm-gray uppercase font-medium mb-3 sm:mb-4">
             <span ref={labelLeftRef} className="inline-flex items-center gap-2 transition-transform duration-300 origin-right">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-champagne animate-pulse" />
-              <span>PRECISION CUT</span>
+              <span>PRECISION CRAFT</span>
             </span>
             <span ref={labelRightRef} className="inline-block transition-transform duration-300 origin-left">
-              TING PHILOSOPHY
+              ATELIER PHILOSOPHY
             </span>
           </div>
 
           {/* Single Main Editorial Heading: CRAFT PRECISION / IDENTITY */}
-          <h2 className="font-heading text-4xl sm:text-6xl lg:text-[76px] xl:text-[88px] leading-[0.92] tracking-[-0.03em] uppercase font-medium">
-            <div className="inline-flex items-center justify-center gap-3">
+          <h2 className="font-heading text-3xl sm:text-5xl lg:text-[76px] xl:text-[88px] leading-[0.94] sm:leading-[0.92] tracking-[-0.02em] sm:tracking-[-0.03em] uppercase font-medium">
+            <div className="inline-flex items-center justify-center gap-2.5 sm:gap-3">
               <span ref={topLeftRef} className="inline-block text-charcoal origin-right transition-transform duration-300">
                 CRAFT
               </span>
@@ -183,6 +190,7 @@ function ScissorSection() {
                 PRECISION
               </span>
             </div>
+
 
             <div className="block mt-1 sm:mt-2">
               <span className="inline-flex items-center justify-center italic text-champagne font-normal transition-all duration-300">

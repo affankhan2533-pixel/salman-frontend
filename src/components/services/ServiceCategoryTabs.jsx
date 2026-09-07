@@ -34,7 +34,7 @@ export default function ServiceCategoryTabs({ activeCategory, onChange }) {
       ref={containerRef}
       role="tablist"
       aria-label="Select service category"
-      className="flex items-center gap-1"
+      className="flex items-center gap-2 select-none"
     >
       {tabs.map((tab, idx) => (
         <button
@@ -45,12 +45,12 @@ export default function ServiceCategoryTabs({ activeCategory, onChange }) {
           onKeyDown={(e) => handleKeyDown(e, idx)}
           tabIndex={activeCategory === tab.id ? 0 : -1}
           className={`
-            px-5 py-2 text-[10px] font-inter font-medium tracking-[0.24em] uppercase
-            border rounded-[10px] transition-all duration-200 ease-out cursor-pointer
+            h-11 px-6 text-[11px] font-heading sm:font-inter font-semibold tracking-[0.24em] uppercase
+            border rounded-full transition-all duration-200 ease-out cursor-pointer active:scale-[0.96]
             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60 focus-visible:ring-offset-1
             ${activeCategory === tab.id
-              ? 'border-charcoal/80 text-charcoal bg-white/60'
-              : 'border-charcoal/15 text-warm-gray hover:text-charcoal hover:border-charcoal/30'
+              ? 'bg-charcoal text-white border-charcoal shadow-[0_2px_8px_rgba(31,31,28,0.18)]'
+              : 'bg-white/80 border-charcoal/15 text-[#6B6861] hover:text-charcoal hover:border-charcoal/30 hover:bg-white'
             }
           `}
         >
@@ -58,5 +58,6 @@ export default function ServiceCategoryTabs({ activeCategory, onChange }) {
         </button>
       ))}
     </div>
+
   );
 }

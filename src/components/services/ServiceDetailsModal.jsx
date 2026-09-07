@@ -100,7 +100,7 @@ export default function ServiceDetailsModal({ service, onClose }) {
           ref={closeButtonRef}
           onClick={onClose}
           aria-label="Close service details"
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-cream border border-border-light flex items-center justify-center text-warm-gray hover:text-charcoal hover:border-charcoal/30 transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 w-10 h-10 rounded-full bg-cream border border-border-light flex items-center justify-center text-warm-gray hover:text-charcoal hover:border-charcoal/30 active:scale-95 transition-all duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60 z-10"
         >
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" className="w-4 h-4" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18" />
@@ -160,13 +160,13 @@ export default function ServiceDetailsModal({ service, onClose }) {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row gap-3 pt-1">
             <Link href={bookingHref} className="flex-1" onClick={onClose}>
-              <button className="w-full h-[50px] bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[12px] shadow-sm hover:shadow-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60">
+              <button className="w-full h-[52px] bg-charcoal text-white hover:bg-champagne hover:text-charcoal active:scale-[0.98] transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[12px] shadow-sm hover:shadow-md cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60">
                 Book Appointment →
               </button>
             </Link>
             <button
               onClick={onClose}
-              className="flex-1 h-[50px] bg-transparent text-warm-gray border border-charcoal/20 hover:border-charcoal/40 hover:text-charcoal transition-all duration-200 font-inter text-xs tracking-[0.2em] uppercase font-medium rounded-[12px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60"
+              className="flex-1 h-[52px] bg-transparent text-warm-gray border border-charcoal/20 hover:border-charcoal/40 hover:text-charcoal active:scale-[0.98] transition-all duration-200 font-inter text-xs tracking-[0.2em] uppercase font-medium rounded-[12px] cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-champagne/60"
             >
               Close
             </button>

@@ -1,42 +1,51 @@
 'use client';
 
-import React, { useEffect, useRef, useState, memo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, memo } from 'react';
 import Image from 'next/image';
 import { gsap } from '@/lib/gsap';
 import { Container } from '@/components/ui';
-import { CheckCircle2, Calendar as CalendarIcon, Clock, User, Scissors, Sparkles, Crown, Palette, ArrowRight, ArrowLeft, MessageCircle } from 'lucide-react';
-
-const SERVICES = [
-  { id: 'cut', slug: 'haircut', name: 'Bespoke Precision Haircut & Sculpting', duration: '60 MIN', price: '₹3,500', desc: 'Architectural precision sculpting tailored to facial bone structure.' },
-  { id: 'color', slug: 'color', name: 'Couture Balayage & Tone Formulation', duration: '150 MIN', price: '₹8,500', desc: 'Hand-painted dimensional balayage with high-shine organic gloss.' },
-  { id: 'spa', slug: 'spa', name: 'European Botanical Scalp Therapy', duration: '75 MIN', price: '₹4,000', desc: 'Deep restorative scalp therapy with botanical oil micro-steam.' },
-  { id: 'keratin', slug: 'keratin', name: 'Silk Keratin Glass-Smoothing Infusion', duration: '180 MIN', price: '₹9,000', desc: 'Formaldehyde-free silk keratin for weightless shine & frizz defense.' },
-  { id: 'bridal', slug: 'bridal', name: 'Private Atelier Bridal Coiffure', duration: '120 MIN', price: '₹15,000', desc: 'Private suite trial session, veil placement & extension architecture.' },
-  { id: 'botox', slug: 'botox', name: 'Collagen & Amino Acid Hair Restructuring', duration: '120 MIN', price: '₹10,500', desc: 'Intensive molecular hair botox treatment restoring mass & mirror shine.' },
-];
-
-const STYLISTS = [
-  { id: 'salman', name: 'Salman Khan', title: 'Master Artistic Director', avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=300' },
-  { id: 'elena', name: 'Elena Rostova', title: 'Senior Color Specialist', avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=300' },
-  { id: 'aarav', name: 'Aarav Mehta', title: 'Haute Coiffure Stylist', avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=300' },
-];
-
-const TIME_SLOTS = {
-  morning: ['10:00 AM', '11:30 AM'],
-  afternoon: ['01:30 PM', '03:00 PM', '04:30 PM'],
-  evening: ['06:00 PM', '07:30 PM'],
-};
-
+import {
+  CheckCircle2,
+  Calendar as CalendarIcon,
+  Clock,
+  User,
+  Scissors,
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  MessageCircle,
+  AlertCircle,
+  RefreshCw,
+  Phone,
+  FileText,
+} from 'lucide-react';
+import { SERVICES as ALL_SERVICES } from '@/data/servicesData';
 import bookingService from '@/services/bookingService';
-import api from '@/services/api';
 
+// Format services list with uniform display fields
+const FORMATTED_SERVICES = ALL_SERVICES.map((s) => ({
+  id: s.id,
+  slug: s.id,
+  name: s.name,
+  gender: s.gender,
+  category: s.category,
+  priceDisplay: s.hasFixedPrice ? `Starting from ${s.price}` : s.pricingNote,
+  rawPrice: s.price,
+  pricingNote: s.pricingNote,
+  hasFixedPrice: s.hasFixedPrice,
+  image: s.image,
+  duration: s.category === 'face' ? '60 MIN' : s.name.includes('Balayage') ? '180 MIN' : '60 MIN',
+  desc: `${s.gender === 'male' ? 'Men\'s' : 'Women\'s'} ${s.name} crafted with atelier precision at Kurla West.`,
+}));
+
+// Generate next 14 days for quick selection chips
 const generateUpcomingDates = () => {
   const dates = [];
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const today = new Date();
 
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 14; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
 
@@ -60,66 +69,96 @@ const generateUpcomingDates = () => {
 
 const UPCOMING_DATES = generateUpcomingDates();
 
+const buildWhatsAppUrl = (booking) => {
+  const lines = [
+    `Hello Salman Hair Studio, I have just booked an appointment!`,
+    ``,
+    `📌 *Booking Ref:* ${booking.bookingRef || 'SHS-CONFIRMED'}`,
+    `👤 *Client Name:* ${booking.customerName || booking.name || 'Client'}`,
+    `📞 *Phone Number:* ${booking.phone || ''}`,
+    booking.email ? `✉️ *Email Address:* ${booking.email}` : null,
+    `✂️ *Service:* ${booking.serviceName || booking.service || ''} ${booking.priceDisplay ? `(${booking.priceDisplay})` : ''}`,
+    `📅 *Date:* ${booking.date || booking.dateIso || ''}`,
+    `⏰ *Time:* ${booking.time || ''}`,
+    booking.notes ? `📝 *Client Notes:* ${booking.notes}` : null,
+    ``,
+    `Please confirm my reservation. Thank you!`,
+  ].filter((l) => l !== null);
+
+  const text = encodeURIComponent(lines.join('\n'));
+  return `https://wa.me/919870810734?text=${text}`;
+};
+
 function BookingSection() {
-  const [step, setStep] = useState(1);
-  const [availableServices, setAvailableServices] = useState(SERVICES);
-  const [selectedService, setSelectedService] = useState(SERVICES[0]);
-  const [selectedStylist, setSelectedStylist] = useState(STYLISTS[0]);
-  const [selectedDateObj, setSelectedDateObj] = useState(UPCOMING_DATES[0]);
-  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  // Navigation steps: 1: Service (optional if pre-selected), 2: Date & Slot, 3: Customer Form, 4: Confirmed
+  const [step, setStep] = useState(2);
+  const [selectedService, setSelectedService] = useState(FORMATTED_SERVICES[0]);
+  const [servicePreSelected, setServicePreSelected] = useState(false);
+  const [activeGenderTab, setActiveGenderTab] = useState('all'); // 'all' | 'male' | 'female'
+
+  // Date selection
+  const [selectedDateIso, setSelectedDateIso] = useState(UPCOMING_DATES[0].iso);
+  const [selectedDateLabel, setSelectedDateLabel] = useState(UPCOMING_DATES[0].label);
+
+  // Time slot selection
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phone: '', email: '', notes: '' });
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+
+  // Customer form details
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    notes: '',
+  });
+
+  // UI status
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isConflictError, setIsConflictError] = useState(false);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
 
   const sectionRef = useRef(null);
   const stepContainerRef = useRef(null);
 
-  // Fetch active services dynamically from MongoDB API
-  useEffect(() => {
-    async function fetchPublicServices() {
-      try {
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-        const API_URL = rawUrl.replace(/\/api\/?$/, '');
-        const res = await fetch(`${API_URL}/api/services?active=true`);
-        const json = await res.json();
-        if (res.ok && json.success && Array.isArray(json.data) && json.data.length > 0) {
-          const mapped = json.data.map((s) => ({
-            id: s._id,
-            slug: s.slug || s.title.toLowerCase().replace(/\s+/g, '-'),
-            name: s.title,
-            duration: `${s.duration} MIN`,
-            price: `₹${s.price.toLocaleString('en-IN')}`,
-            desc: s.description || 'Precision luxury salon service.',
-            rawPrice: s.price,
-            rawDuration: s.duration,
-          }));
-          setAvailableServices(mapped);
-          setSelectedService(mapped[0]);
-
-          // Handle URL query parameter ?service=[slug]
-          if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const sParam = params.get('service');
-            if (sParam) {
-              const found = mapped.find(
-                (s) => s.id === sParam || s.slug === sParam || (sParam === 'haircut' && s.slug.includes('haircut'))
-              );
-              if (found) setSelectedService(found);
-            }
-          }
-        }
-      } catch (err) {
-        console.error('[BookingSection] Failed to fetch public services from API:', err);
-      }
-    }
-    fetchPublicServices();
+  // Today ISO in IST
+  const todayIso = useMemo(() => {
+    return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
   }, []);
 
-  // On mount: restore confirmed booking from sessionStorage
+  // 1. URL Query Parameter Pre-selection (?service=male-haircut or ?service=haircut)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const serviceParam = params.get('service');
+      if (serviceParam) {
+        const cleanParam = serviceParam.toLowerCase().trim();
+        const matched = FORMATTED_SERVICES.find((s) => {
+          const sId = s.id.toLowerCase();
+          const sName = s.name.toLowerCase();
+          return (
+            sId === cleanParam ||
+            sName === cleanParam ||
+            sId.includes(cleanParam) ||
+            cleanParam.includes(sId) ||
+            sName.includes(cleanParam) ||
+            (cleanParam === 'haircut' && sId.includes('haircut')) ||
+            (cleanParam === 'beard' && sId.includes('beard')) ||
+            (cleanParam === 'facial' && sId.includes('facial'))
+          );
+        });
+
+        if (matched) {
+          setSelectedService(matched);
+          setServicePreSelected(true);
+          setStep(2); // Jump directly to Date & Slot selection
+        }
+      }
+    }
+  }, []);
+
+  // 2. Restore confirmed booking from sessionStorage if present
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('shs_confirmed_booking');
@@ -127,234 +166,378 @@ function BookingSection() {
         try {
           const parsed = JSON.parse(saved);
           setConfirmedBooking(parsed);
-          setIsSubmitted(true);
-        } catch { /* ignore */ }
+          setStep(4);
+        } catch {
+          /* ignore */
+        }
       }
     }
   }, []);
 
-  // Live availability fetch from backend API
-  const fetchLiveAvailability = async (dateIso, serviceItem, stylistItem) => {
+  // 3. Live availability fetch from backend API
+  const fetchAvailability = async (dateIso, serviceItem) => {
+    if (!dateIso) return;
     setLoadingSlots(true);
+    setErrorMessage('');
+    setIsConflictError(false);
+
     try {
-      const sInput = serviceItem?.name || serviceItem?.slug || serviceItem?.id || '';
-      const stInput = stylistItem?.name || stylistItem?.id || '';
-      const res = await api.get(`/appointments/availability?date=${dateIso}&service=${encodeURIComponent(sInput)}&stylist=${encodeURIComponent(stInput)}`);
-      if (res.data && res.data.data) {
-        setAvailabilitySlots(res.data.data);
-        // Select first available slot if none selected yet
-        const firstAvail = res.data.data.find(s => s.isAvailable);
-        if (firstAvail && !selectedTimeSlot) {
-          setSelectedTimeSlot(firstAvail);
-        }
+      const sInput = serviceItem?.name || serviceItem?.id || '';
+      const response = await bookingService.getAvailability(dateIso, sInput);
+
+      let slotList = [];
+      if (response && response.data) {
+        slotList = Array.isArray(response.data) ? response.data : response.data.slots || [];
       }
+
+      setAvailabilitySlots(slotList);
+
+      // If previously selected time is still available, keep it; otherwise reset
+      setSelectedTimeSlot((prev) => {
+        if (!prev) return null;
+        const matching = slotList.find(
+          (s) => s.time === prev.time || s.startTime === prev.startTime
+        );
+        return matching && matching.available ? matching : null;
+      });
     } catch (err) {
-      console.error('[Availability Error]', err);
+      console.error('[Availability Fetch Error]', err);
+      setErrorMessage('Unable to load real-time availability. Please check your connection.');
     } finally {
       setLoadingSlots(false);
     }
   };
 
+  // Fetch availability when date or service changes
   useEffect(() => {
-    fetchLiveAvailability(selectedDateObj.iso, selectedService, selectedStylist);
-  }, [selectedDateObj, selectedService, selectedStylist]);
+    fetchAvailability(selectedDateIso, selectedService);
+  }, [selectedDateIso, selectedService]);
 
+  // Handle custom date picker input change
+  const handleDateChange = (newIso) => {
+    if (newIso < todayIso) return;
+    setSelectedDateIso(newIso);
+
+    // Format human-friendly label
+    const parts = newIso.split('-');
+    if (parts.length === 3) {
+      const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      setSelectedDateLabel(`${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`);
+    } else {
+      setSelectedDateLabel(newIso);
+    }
+    setSelectedTimeSlot(null);
+  };
+
+  // Step transition animation
   useEffect(() => {
     if (stepContainerRef.current) {
       gsap.fromTo(
         stepContainerRef.current,
-        { opacity: 0, x: 20 },
-        { opacity: 1, x: 0, duration: 0.5, ease: 'power3.out' }
+        { opacity: 0, y: 15 },
+        { opacity: 1, y: 0, duration: 0.4, ease: 'power2.out' }
       );
     }
-  }, [step, isSubmitted]);
+  }, [step]);
 
-  const handleNext = async () => {
+  // Handle Slot Click
+  const handleSlotSelect = (slot) => {
+    if (!slot.available) return;
+    setSelectedTimeSlot(slot);
     setErrorMessage('');
-    if (step < 5) {
-      if (step === 3 || step === 4) {
-        // Refresh availability on step progression
-        await fetchLiveAvailability(selectedDateObj.iso, selectedService, selectedStylist);
-      }
-      setStep(step + 1);
+    setIsConflictError(false);
+  };
+
+  // Proceed from Slot Selection to Customer Details
+  const handleProceedToDetails = () => {
+    if (!selectedTimeSlot) {
+      setErrorMessage('Please select an available appointment time slot.');
       return;
     }
+    setErrorMessage('');
+    setStep(3);
+  };
 
-    // Step 5 Validation
+  // Final Submission with Race Condition / Double Booking Protection
+  const handleConfirmBooking = async (e) => {
+    if (e) e.preventDefault();
+    setErrorMessage('');
+    setIsConflictError(false);
+
+    // Form validation
     if (!formData.name || formData.name.trim().length < 2) {
       setErrorMessage('Please enter your full name (minimum 2 characters).');
       return;
     }
-    if (!formData.phone || formData.phone.trim().length < 8) {
+    if (!formData.phone || formData.phone.trim().replace(/\D/g, '').length < 8) {
       setErrorMessage('Please enter a valid phone number (minimum 8 digits).');
       return;
     }
-    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
-      setErrorMessage('Please enter a valid email address.');
+    if (!selectedTimeSlot) {
+      setErrorMessage('Please select an available time slot.');
+      setStep(2);
       return;
     }
 
-    // Real API Submission with Atomic Overlap Protection
     setIsSubmitting(true);
-    try {
-      const result = await bookingService.createBooking({
-        clientName: formData.name.trim(),
-        clientPhone: formData.phone.trim(),
-        clientEmail: formData.email.trim(),
-        service: selectedService?.name || 'Haircut & Styling',
-        stylist: selectedStylist?.name || 'Salman Malik',
-        date: selectedDateObj.iso,
-        startTime: selectedTimeSlot?.time || selectedTimeSlot?.startTime || '11:00 AM',
-        notes: formData.notes,
-      });
 
-      // Build confirmed booking details for display + sessionStorage persistence
-      const booking = {
-        bookingRef: result?.data?.bookingRef || null,
-        service: selectedService?.name,
-        stylist: selectedStylist?.name,
-        date: selectedDateObj.label,
-        dateIso: selectedDateObj.iso,
-        time: selectedTimeSlot?.time || selectedTimeSlot?.startTime || '',
-        duration: selectedService?.duration,
-        price: selectedService?.price,
+    try {
+      const payload = {
+        customerName: formData.name.trim(),
         clientName: formData.name.trim(),
-        pendingExpiresAt: result?.data?.pendingExpiresAt || null,
+        phone: formData.phone.trim(),
+        clientPhone: formData.phone.trim(),
+        clientEmail: formData.email ? formData.email.trim() : '',
+        service: selectedService.name,
+        serviceId: selectedService.id,
+        serviceName: selectedService.name,
+        date: selectedDateIso,
+        time: selectedTimeSlot.time || selectedTimeSlot.startTime,
+        startTime: selectedTimeSlot.startTime || selectedTimeSlot.time,
+        notes: formData.notes.trim(),
+      };
+
+      const result = await bookingService.createBooking(payload);
+
+      const bookingRef = result?.data?.bookingRef || 'SHS-' + Date.now().toString(36).slice(-5).toUpperCase();
+
+      const confirmedData = {
+        bookingRef,
+        serviceName: selectedService.name,
+        date: selectedDateLabel,
+        dateIso: selectedDateIso,
+        time: selectedTimeSlot.time,
+        priceDisplay: selectedService.priceDisplay,
+        customerName: formData.name.trim(),
+        name: formData.name.trim(),
+        phone: formData.phone.trim(),
+        email: formData.email ? formData.email.trim() : '',
+        notes: formData.notes ? formData.notes.trim() : '',
       };
 
       if (typeof window !== 'undefined') {
-        sessionStorage.setItem('shs_confirmed_booking', JSON.stringify(booking));
+        sessionStorage.setItem('shs_confirmed_booking', JSON.stringify(confirmedData));
       }
-      setConfirmedBooking(booking);
-      setIsSubmitted(true);
+
+      setConfirmedBooking(confirmedData);
+      setStep(4);
+
+      // Connect directly on WhatsApp with all client details
+      const waUrl = buildWhatsAppUrl(confirmedData);
+      if (typeof window !== 'undefined') {
+        setTimeout(() => {
+          try {
+            const win = window.open(waUrl, '_blank');
+            if (!win || win.closed || typeof win.closed === 'undefined') {
+              window.location.href = waUrl;
+            }
+          } catch (e) {
+            window.location.href = waUrl;
+          }
+        }, 600);
+      }
     } catch (err) {
-      console.error('[Booking Submission Error]', err);
-      const is409 = err?.response?.status === 409 || err?.response?.data?.code === 'SLOT_UNAVAILABLE';
+      console.error('[Booking Error]', err);
+      const is409 = err?.response?.status === 409 || err?.response?.data?.code === 'SLOT_ALREADY_BOOKED';
       const apiMsg = err?.response?.data?.message || err?.message;
 
       if (is409) {
-        setErrorMessage(`${selectedTimeSlot?.time || 'Selected slot'} is no longer available. Please select another time slot.`);
-        await fetchLiveAvailability(selectedDateObj.iso, selectedService, selectedStylist);
-        setStep(4);
+        setIsConflictError(true);
+        setErrorMessage('Sorry, this time slot has just been booked. Please choose another time.');
+        // Automatically refresh availability so newly booked slot appears as BOOKED
+        await fetchAvailability(selectedDateIso, selectedService);
+        // Direct customer back to step 2 to pick another slot immediately
+        setSelectedTimeSlot(null);
+        setStep(2);
       } else {
-        setErrorMessage(apiMsg || 'We could not confirm your reservation. Please check your details and try again.');
+        setErrorMessage(apiMsg || 'We could not reserve your appointment. Please check your details and try again.');
       }
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleBack = () => {
-    setErrorMessage('');
-    if (step > 1) setStep(step - 1);
-  };
+  // Filter services by gender tab
+  const filteredServices = useMemo(() => {
+    if (activeGenderTab === 'all') return FORMATTED_SERVICES;
+    return FORMATTED_SERVICES.filter((s) => s.gender === activeGenderTab);
+  }, [activeGenderTab]);
 
   return (
     <section
       ref={sectionRef}
       id="booking"
-      className="relative z-30 py-24 sm:py-32 bg-[#F7F4EE] border-t border-border-light select-none overflow-hidden"
+      className="relative z-30 py-16 sm:py-24 bg-[#F7F4EE] border-t border-border-light select-none overflow-hidden min-h-[85vh]"
     >
-      {/* Background Atmosphere */}
+      {/* Subtle luxury dot atmosphere */}
       <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1F1F1C_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none z-0" />
 
       <Container size="editorial">
-        {/* SECTION INTRO */}
-        <div className="max-w-3xl mb-12 sm:mb-16 space-y-4">
+        {/* HEADER */}
+        <div className="max-w-3xl mb-10 space-y-3">
           <div className="flex items-center gap-3 text-lbl text-[11px] tracking-[0.32em] text-warm-gray uppercase font-medium">
             <span className="w-1.5 h-1.5 bg-champagne rounded-full" />
-            <span>PRIVATE CONSULTATION JOURNEY</span>
+            <span>REAL-TIME APPOINTMENT RESERVATIONS</span>
           </div>
 
-          <h2 className="font-heading text-4xl sm:text-6xl lg:text-[76px] leading-[0.92] text-charcoal font-normal uppercase tracking-tight">
-            Your Signature Look Starts Here.
-          </h2>
+          <h1 className="font-heading text-4xl sm:text-6xl leading-[0.95] text-charcoal font-normal uppercase tracking-tight">
+            Reserve Your Private Session.
+          </h1>
 
-          <p className="font-body text-warm-gray font-light text-base sm:text-lg leading-relaxed max-w-xl">
-            Select your bespoke service, preferred artistic director, and private appointment slot for our Kurla West studio.
+          <p className="font-body text-warm-gray font-light text-sm sm:text-base leading-relaxed max-w-xl">
+            Live slot booking for Salman Hair Studio, Kurla West. Confirmed appointments lock the time slot immediately for all clients.
           </p>
         </div>
 
-        {/* PROGRESS INDICATOR */}
-        {!isSubmitted && (
-          <div className="mb-12 border-b border-border-light pb-6">
-            <div className="flex items-center justify-between max-w-3xl overflow-x-auto gap-4 scrollbar-none">
-              {['Service', 'Stylist', 'Date', 'Time', 'Details'].map((label, idx) => {
-                const stepNum = idx + 1;
-                const isActive = step === stepNum;
-                const isPassed = step > stepNum;
-                return (
-                  <div key={label} className="flex items-center gap-3 shrink-0">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold font-num transition-all duration-300 ${
-                          isActive
-                            ? 'bg-champagne text-charcoal shadow-md scale-110'
-                            : isPassed
-                            ? 'bg-charcoal text-white'
-                            : 'bg-cream text-warm-gray border border-charcoal/10'
-                        }`}
-                      >
-                        {isPassed ? '✓' : stepNum}
-                      </span>
-                      <span
-                        className={`text-lbl text-xs tracking-wider uppercase font-medium ${
-                          isActive ? 'text-charcoal font-semibold' : 'text-warm-gray'
-                        }`}
-                      >
-                        {label}
-                      </span>
-                    </div>
-                    {idx < 4 && <span className="w-8 sm:w-12 h-[1px] bg-charcoal/15 hidden sm:block" />}
-                  </div>
-                );
-              })}
+        {/* PROGRESS STEPPER (Steps 1 to 3) */}
+        {step < 4 && (
+          <div className="mb-8 border-b border-border-light pb-4">
+            {/* Mobile Compact Progress Bar (Eliminates horizontal scrolling/clipping on phones) */}
+            <div className="flex sm:hidden items-center justify-between text-xs pb-1">
+              <span className="text-lbl text-[11px] font-semibold text-champagne uppercase tracking-widest">
+                Step {step} of 3
+              </span>
+              <span className="text-lbl text-[11px] font-medium text-charcoal uppercase tracking-wider">
+                {step === 1 ? '1. Select Service' : step === 2 ? '2. Date & Time' : '3. Client Details'}
+              </span>
+            </div>
+            <div className="w-full bg-charcoal/10 h-1.5 rounded-full overflow-hidden sm:hidden mt-2">
+              <div
+                className="bg-champagne h-full transition-all duration-300 rounded-full"
+                style={{ width: `${(step / 3) * 100}%` }}
+              />
+            </div>
+
+            {/* Tablet & Desktop Horizontal Stepper */}
+            <div className="hidden sm:flex items-center gap-6 overflow-x-auto scrollbar-none text-xs">
+              {[
+                { num: 1, label: '1. Service', active: step === 1, done: step > 1 },
+                { num: 2, label: '2. Date & Time', active: step === 2, done: step > 2 },
+                { num: 3, label: '3. Details', active: step === 3, done: step > 3 },
+              ].map((sItem) => (
+                <div key={sItem.num} className="flex items-center gap-2 shrink-0">
+                  <span
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-num font-semibold transition-all ${
+                      sItem.active
+                        ? 'bg-champagne text-charcoal shadow-sm scale-105'
+                        : sItem.done
+                        ? 'bg-charcoal text-white'
+                        : 'bg-white border border-charcoal/15 text-warm-gray'
+                    }`}
+                  >
+                    {sItem.done ? '✓' : sItem.num}
+                  </span>
+                  <span
+                    onClick={() => {
+                      if (sItem.done) setStep(sItem.num);
+                    }}
+                    className={`uppercase tracking-wider font-medium text-lbl ${
+                      sItem.active
+                        ? 'text-charcoal font-semibold'
+                        : sItem.done
+                        ? 'text-charcoal/70 cursor-pointer hover:text-champagne'
+                        : 'text-warm-gray'
+                    }`}
+                  >
+                    {sItem.label}
+                  </span>
+                  {sItem.num < 3 && <span className="w-10 h-[1px] bg-charcoal/15 mx-1" />}
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* MAIN BOOKING CONTENT & STICKY SUMMARY GRID */}
-        {!isSubmitted ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start">
-            
-            {/* LEFT 7 COLUMNS: MULTI-STEP FORM */}
-            <div ref={stepContainerRef} className="lg:col-span-7 space-y-8">
-              
-              {/* STEP 1: CHOOSE SERVICE */}
+
+        {/* ERROR / CONFLICT BANNER */}
+        {errorMessage && (
+          <div
+            className={`mb-8 p-4 rounded-2xl border text-xs sm:text-sm font-medium flex items-center gap-3 animate-fadeIn ${
+              isConflictError
+                ? 'bg-amber-500/10 border-amber-500/30 text-amber-900'
+                : 'bg-red-500/10 border-red-500/30 text-red-700'
+            }`}
+          >
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <div className="flex-1">
+              <span>{errorMessage}</span>
+            </div>
+          </div>
+        )}
+
+        {/* MAIN BODY GRID */}
+        {step < 4 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            {/* LEFT 7 COLUMNS: ACTIVE STEP VIEW */}
+            <div ref={stepContainerRef} className="lg:col-span-7">
+              {/* STEP 1: SERVICE SELECTION */}
               {step === 1 && (
-                <div className="space-y-4">
-                  <h3 className="font-heading text-2xl text-charcoal font-normal uppercase">
-                    1. Select Atelier Service
-                  </h3>
-                  <div className="space-y-3.5">
-                    {availableServices.map((srv) => {
+                <div className="space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <h2 className="font-heading text-2xl text-charcoal font-normal uppercase">
+                      Select Atelier Service
+                    </h2>
+
+                    {/* Gender Tabs */}
+                    <div className="inline-flex p-1 rounded-xl bg-white border border-charcoal/10 text-xs">
+                      {[
+                        { id: 'all', label: 'All 20' },
+                        { id: 'male', label: 'Men' },
+                        { id: 'female', label: 'Women' },
+                      ].map((tab) => (
+                        <button
+                          key={tab.id}
+                          onClick={() => setActiveGenderTab(tab.id)}
+                          className={`px-3 py-1.5 rounded-lg font-lbl tracking-wider uppercase transition-all ${
+                            activeGenderTab === tab.id
+                              ? 'bg-charcoal text-white font-medium shadow-sm'
+                              : 'text-warm-gray hover:text-charcoal'
+                          }`}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
+                    {filteredServices.map((srv) => {
                       const isSelected = selectedService.id === srv.id;
                       return (
                         <div
                           key={srv.id}
-                          onClick={() => setSelectedService(srv)}
-                          className={`p-6 rounded-[20px] border transition-all duration-300 cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+                          onClick={() => {
+                            setSelectedService(srv);
+                            setServicePreSelected(false);
+                            setStep(2);
+                          }}
+                          className={`p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-4 ${
                             isSelected
-                              ? 'bg-white border-champagne shadow-[0_12px_30px_-5px_rgba(197,160,89,0.2)] translate-x-1'
-                              : 'bg-white/60 border-charcoal/10 hover:border-champagne/40 hover:bg-white'
+                              ? 'bg-white border-champagne shadow-[0_8px_25px_-5px_rgba(197,160,89,0.25)] ring-1 ring-champagne'
+                              : 'bg-white/70 border-charcoal/10 hover:border-champagne/50 hover:bg-white'
                           }`}
                         >
                           <div className="space-y-1">
-                            <h4 className="font-heading text-xl text-charcoal font-medium">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-lbl tracking-widest uppercase px-2 py-0.5 rounded-md bg-cream text-warm-gray">
+                                {srv.gender === 'male' ? 'Men' : 'Women'} · {srv.category}
+                              </span>
+                            </div>
+                            <h3 className="font-heading text-lg text-charcoal font-medium">
                               {srv.name}
-                            </h4>
-                            <p className="text-body text-xs text-warm-gray leading-relaxed max-w-md">
-                              {srv.desc}
-                            </p>
+                            </h3>
+                            <p className="text-body text-xs text-warm-gray line-clamp-1">{srv.desc}</p>
                           </div>
 
-                          <div className="text-left sm:text-right shrink-0">
-                            <span className="font-num text-xs font-semibold text-champagne block uppercase tracking-widest mb-0.5">
+                          <div className="text-right shrink-0">
+                            <span className="font-num text-sm font-bold text-charcoal block">
+                              {srv.priceDisplay}
+                            </span>
+                            <span className="text-[10px] font-lbl tracking-widest uppercase text-champagne block mt-0.5">
                               {srv.duration}
                             </span>
-                            <span className="font-num text-base font-bold text-charcoal block">
-                              {srv.price}
-                            </span>
                           </div>
                         </div>
                       );
@@ -363,300 +546,421 @@ function BookingSection() {
                 </div>
               )}
 
-              {/* STEP 2: CHOOSE STYLIST */}
+              {/* STEP 2: DATE & TIME SLOT SELECTION */}
               {step === 2 && (
-                <div className="space-y-4">
-                  <h3 className="font-heading text-2xl text-charcoal font-normal uppercase">
-                    2. Select Artistic Director
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {STYLISTS.map((st) => {
-                      const isSelected = selectedStylist.id === st.id;
-                      return (
-                        <div
-                          key={st.id}
-                          onClick={() => setSelectedStylist(st)}
-                          className={`p-6 rounded-[20px] border text-center transition-all duration-300 cursor-pointer space-y-4 ${
-                            isSelected
-                              ? 'bg-white border-champagne shadow-[0_12px_30px_-5px_rgba(197,160,89,0.2)] scale-[1.02]'
-                              : 'bg-white/60 border-charcoal/10 hover:border-champagne/40 hover:bg-white'
-                          }`}
-                        >
-                          <div className="relative w-20 h-20 rounded-full overflow-hidden border border-champagne/40 mx-auto">
-                            <Image src={st.avatarUrl} alt={st.name} fill sizes="80px" className="object-cover" />
-                          </div>
-                          <div>
-                            <h4 className="font-heading text-lg text-charcoal font-medium">{st.name}</h4>
-                            <span className="text-lbl text-[10px] text-warm-gray tracking-wider uppercase block mt-1">{st.title}</span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 3: CHOOSE DATE */}
-              {step === 3 && (
-                <div className="space-y-4">
-                  <h3 className="font-heading text-2xl text-charcoal font-normal uppercase">
-                    3. Select Preferred Date
-                  </h3>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-                    {UPCOMING_DATES.map((dObj) => {
-                      const isSelected = selectedDateObj.iso === dObj.iso;
-                      return (
-                        <button
-                          key={dObj.iso}
-                          onClick={() => setSelectedDateObj(dObj)}
-                          className={`p-4 rounded-2xl border text-center transition-all duration-300 font-num text-xs uppercase font-medium cursor-pointer ${
-                            isSelected
-                              ? 'bg-champagne text-charcoal border-champagne shadow-md font-bold'
-                              : 'bg-white/60 border-charcoal/10 text-charcoal hover:border-champagne/40'
-                          }`}
-                        >
-                          {dObj.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {/* STEP 4: CHOOSE TIME SLOT */}
-              {step === 4 && (
-                <div className="space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-heading text-2xl text-charcoal font-normal uppercase">
-                      4. Select Appointment Slot
-                    </h3>
-                    {loadingSlots && (
-                      <span className="text-lbl text-[11px] text-champagne animate-pulse font-medium">
-                        Checking live database availability...
+                <div className="space-y-8">
+                  {/* PRE-SELECTED SERVICE SUMMARY BANNER */}
+                  <div className="p-4 rounded-2xl bg-white border border-champagne/40 flex items-center justify-between gap-4 shadow-sm">
+                    <div>
+                      <span className="text-lbl text-[10px] text-champagne tracking-widest uppercase block font-semibold">
+                        SELECTED SERVICE
                       </span>
+                      <h2 className="font-heading text-lg text-charcoal font-medium mt-0.5">
+                        {selectedService.name}
+                      </h2>
+                      <span className="font-num text-xs font-semibold text-charcoal/80 block mt-0.5">
+                        {selectedService.priceDisplay}
+                      </span>
+                    </div>
+
+                    <button
+                      onClick={() => setStep(1)}
+                      className="text-lbl text-xs tracking-wider uppercase text-champagne hover:text-charcoal underline underline-offset-4 cursor-pointer font-medium"
+                    >
+                      Change Service
+                    </button>
+                  </div>
+
+                  {/* DATE SELECTOR */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <label className="text-lbl text-xs text-charcoal uppercase tracking-widest font-semibold flex items-center gap-2">
+                        <CalendarIcon className="w-4 h-4 text-champagne" />
+                        <span>Select Date</span>
+                      </label>
+
+                      {/* Native HTML5 date picker fallback for picking any future date */}
+                      <input
+                        type="date"
+                        min={todayIso}
+                        value={selectedDateIso}
+                        onChange={(e) => handleDateChange(e.target.value)}
+                        className="px-3 py-1.5 rounded-xl border border-charcoal/15 bg-white text-xs font-num text-charcoal focus:outline-none focus:border-champagne cursor-pointer"
+                      />
+                    </div>
+
+                    {/* Quick Date Chips (Next 14 days with horizontal scroll fade hint) */}
+                    <div className="relative">
+                      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none pr-6">
+                        {UPCOMING_DATES.map((dObj) => {
+                          const isSelected = selectedDateIso === dObj.iso;
+                          return (
+                            <button
+                              key={dObj.iso}
+                              onClick={() => handleDateChange(dObj.iso)}
+                              className={`px-4 py-3 rounded-2xl border text-center transition-all shrink-0 font-num text-xs uppercase font-medium cursor-pointer active:scale-95 ${
+                                isSelected
+                                  ? 'bg-charcoal text-white border-charcoal shadow-md font-bold'
+                                  : 'bg-white/70 border-charcoal/10 text-charcoal hover:border-champagne/50 hover:bg-white'
+                              }`}
+                            >
+                              <span className="block">{dObj.label}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                      {/* Subtle right gradient fade to hint scrollability on mobile */}
+                      <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-[#F7F4EE] to-transparent pointer-events-none sm:hidden" />
+                    </div>
+                  </div>
+
+                  {/* REAL-TIME SLOTS GRID */}
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="text-lbl text-xs text-charcoal uppercase tracking-widest font-semibold flex items-center gap-2">
+                        <Clock className="w-4 h-4 text-champagne" />
+                        <span>Select Available Time</span>
+                      </label>
+
+                      {loadingSlots && (
+                        <span className="text-lbl text-[11px] text-champagne font-medium flex items-center gap-1.5 animate-pulse">
+                          <RefreshCw className="w-3 h-3 animate-spin" />
+                          <span>Checking available times...</span>
+                        </span>
+                      )}
+                    </div>
+
+                    {loadingSlots && availabilitySlots.length === 0 ? (
+                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs animate-pulse">
+                        Checking available times for {selectedDateLabel}...
+                      </div>
+                    ) : availabilitySlots.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                        {availabilitySlots.map((slot) => {
+                          const isSelected = selectedTimeSlot?.time === slot.time;
+                          const isAvailable = slot.available;
+                          const isBooked = slot.isBooked || slot.status === 'booked';
+                          const isPast = slot.isPast || slot.status === 'past';
+
+                          return (
+                            <button
+                              key={slot.time}
+                              disabled={!isAvailable}
+                              onClick={() => handleSlotSelect(slot)}
+                              className={`p-4 rounded-2xl border text-center transition-all duration-200 flex flex-col items-center justify-center gap-1 min-h-[64px] active:scale-95 ${
+                                isSelected
+                                  ? 'bg-charcoal text-white border-charcoal shadow-lg scale-[1.02] cursor-pointer'
+                                  : isAvailable
+                                  ? 'bg-white border-charcoal/15 text-charcoal hover:border-champagne hover:bg-white/90 cursor-pointer shadow-sm'
+                                  : isBooked
+                                  ? 'bg-zinc-200/50 border-zinc-200 text-zinc-400 cursor-not-allowed opacity-60'
+                                  : 'bg-zinc-100 border-zinc-200/60 text-zinc-400 cursor-not-allowed opacity-40'
+                              }`}
+                            >
+                              <span className="font-num text-xs font-bold tracking-wide">
+                                {slot.time}
+                              </span>
+                              <span
+                                className={`text-[9px] font-lbl tracking-widest uppercase font-semibold ${
+                                  isSelected
+                                    ? 'text-champagne'
+                                    : isBooked
+                                    ? 'text-zinc-500'
+                                    : isPast
+                                    ? 'text-zinc-400'
+                                    : 'text-champagne'
+                                }`}
+                              >
+                                {isSelected ? 'SELECTED' : isBooked ? 'BOOKED' : isPast ? 'PAST' : 'AVAILABLE'}
+                              </span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs">
+                        No appointment slots available for {selectedDateLabel}.
+                      </div>
                     )}
                   </div>
 
-                  {availabilitySlots.length > 0 ? (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                      {availabilitySlots.map((slotItem) => {
-                        const isSelected = selectedTimeSlot?.time === slotItem.time || selectedTimeSlot?.startTime === slotItem.startTime;
-                        const isAvailable = slotItem.isAvailable;
-                        const isBooked = slotItem.isBooked;
-                        const isPast = slotItem.isPast;
+                  {/* NAVIGATION TO STEP 3 */}
+                  <div className="pt-4 flex items-center justify-between border-t border-border-light">
+                    <button
+                      onClick={() => setStep(1)}
+                      className="h-12 px-5 rounded-xl border border-charcoal/20 text-charcoal hover:border-charcoal text-xs uppercase tracking-widest font-medium flex items-center gap-2 cursor-pointer active:scale-95"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>Back</span>
+                    </button>
 
-                        return (
-                          <button
-                            key={slotItem.time || slotItem.startTime}
-                            disabled={!isAvailable}
-                            onClick={() => setSelectedTimeSlot(slotItem)}
-                            className={`p-3.5 rounded-xl border text-xs font-num tracking-wider font-semibold transition-all duration-300 flex flex-col items-center justify-center gap-1 ${
-                              isSelected
-                                ? 'bg-charcoal text-white border-charcoal shadow-md scale-105 cursor-pointer'
-                                : isAvailable
-                                ? 'bg-white/70 border-charcoal/15 text-charcoal hover:border-champagne/60 hover:bg-white cursor-pointer'
-                                : isBooked
-                                ? 'bg-red-500/10 border-red-500/20 text-red-700/60 cursor-not-allowed line-through opacity-75'
-                                : 'bg-zinc-200/40 border-zinc-200 text-zinc-400 cursor-not-allowed opacity-50'
-                            }`}
-                          >
-                            <span className="font-bold">{slotItem.time}</span>
-                            <span className={`text-[9px] font-lbl tracking-widest uppercase ${isSelected ? 'text-champagne' : isBooked ? 'text-red-600 font-bold' : 'text-warm-gray'}`}>
-                              {isBooked ? 'BOOKED' : isPast ? 'PAST' : 'AVAILABLE'}
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="p-6 text-center bg-white/60 rounded-2xl border border-charcoal/10 text-warm-gray text-xs">
-                      Loading salon availability for {selectedDateObj.label}...
+                    <button
+                      onClick={handleProceedToDetails}
+                      disabled={!selectedTimeSlot}
+                      className="h-12 px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs uppercase tracking-widest font-medium rounded-xl shadow-md flex items-center gap-2.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed active:scale-95"
+                    >
+                      <span>Continue</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {/* MOBILE STICKY PROCEED BAR (instant thumb access as soon as a slot is selected) */}
+                  {selectedTimeSlot && (
+                    <div className="sm:hidden fixed bottom-0 left-0 right-0 z-40 p-4 bg-white/95 backdrop-blur-xl border-t border-champagne/40 shadow-[0_-10px_35px_rgba(31,31,28,0.12)] flex items-center justify-between gap-3 animate-fadeIn">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] font-lbl tracking-wider uppercase text-champagne font-bold block">
+                          {selectedTimeSlot.time} SELECTED
+                        </span>
+                        <span className="text-xs font-heading text-charcoal font-medium line-clamp-1">
+                          {selectedDateLabel}
+                        </span>
+                      </div>
+                      <button
+                        onClick={handleProceedToDetails}
+                        className="h-12 px-6 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs uppercase tracking-widest font-medium rounded-xl shadow-md flex items-center gap-2 cursor-pointer active:scale-95 shrink-0"
+                      >
+                        <span>Continue</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* STEP 5: YOUR DETAILS */}
-              {step === 5 && (
-                <div className="space-y-4">
-                  <h3 className="font-heading text-2xl text-charcoal font-normal uppercase">
-                    5. Personal Details &amp; Atelier Requests
-                  </h3>
+
+              {/* STEP 3: CUSTOMER DETAILS FORM */}
+              {step === 3 && (
+                <form onSubmit={handleConfirmBooking} className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="font-heading text-2xl text-charcoal font-normal uppercase">
+                      Confirm Appointment Details
+                    </h2>
+                  </div>
+
                   <div className="space-y-4">
+                    {/* Full Name */}
                     <div>
-                      <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">Full Name</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Ananya Roy"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="w-full h-13 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
-                      />
+                      <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">
+                        Full Name <span className="text-champagne">*</span>
+                      </label>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          required
+                          placeholder="e.g. Farhan Khan"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="w-full h-12 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
+                        />
+                      </div>
                     </div>
+
+                    {/* Phone & Email */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">Phone Number</label>
+                        <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">
+                          Phone Number <span className="text-champagne">*</span>
+                        </label>
                         <input
                           type="tel"
+                          required
                           placeholder="+91 98708 10734"
                           value={formData.phone}
                           onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          className="w-full h-13 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
+                          className="w-full h-12 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
                         />
                       </div>
+
                       <div>
-                        <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">Email Address</label>
+                        <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">
+                          Email Address <span className="text-warm-gray/60 font-light text-[10px]">(Optional)</span>
+                        </label>
                         <input
                           type="email"
-                          placeholder="ananya@example.com"
+                          placeholder="client@example.com"
                           value={formData.email}
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          className="w-full h-13 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
+                          className="w-full h-12 px-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors"
                         />
                       </div>
                     </div>
+
+                    {/* Pre-filled Service, Date, Time (Read-only summary inputs) */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                      <div className="p-3 bg-white rounded-xl border border-charcoal/10">
+                        <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block">SERVICE</span>
+                        <span className="text-xs font-semibold text-charcoal block truncate mt-0.5">{selectedService.name}</span>
+                      </div>
+                      <div className="p-3 bg-white rounded-xl border border-charcoal/10">
+                        <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block">DATE</span>
+                        <span className="text-xs font-semibold text-charcoal block truncate mt-0.5">{selectedDateLabel}</span>
+                      </div>
+                      <div className="p-3 bg-white rounded-xl border border-charcoal/10">
+                        <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block">TIME</span>
+                        <span className="text-xs font-semibold text-charcoal block truncate mt-0.5">{selectedTimeSlot?.time}</span>
+                      </div>
+                    </div>
+
+                    {/* Additional Notes */}
                     <div>
-                      <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">Special Atelier Requests</label>
+                      <label className="text-lbl text-[11px] text-warm-gray uppercase tracking-widest block mb-1.5 font-medium">
+                        Additional Note <span className="text-warm-gray/60 font-light text-[10px]">(Optional)</span>
+                      </label>
                       <textarea
                         rows={3}
-                        placeholder="Any hair history, preferred beverages, or specific styling requests..."
+                        placeholder="Any hair condition details, styling preferences or requests..."
                         value={formData.notes}
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                        className="w-full p-4 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors resize-none"
+                        className="w-full p-3.5 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors resize-none"
                       />
                     </div>
                   </div>
-                </div>
+
+                  {/* FORM ACTIONS */}
+                  <div className="pt-4 flex items-center justify-between border-t border-border-light">
+                    <button
+                      type="button"
+                      disabled={isSubmitting}
+                      onClick={() => setStep(2)}
+                      className="h-12 px-5 rounded-xl border border-charcoal/20 text-charcoal hover:border-charcoal text-xs uppercase tracking-widest font-medium flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      <span>Change Time</span>
+                    </button>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="h-12 px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs uppercase tracking-[0.2em] font-medium rounded-xl shadow-md flex items-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <span>{isSubmitting ? 'BOOKING...' : 'BOOK NOW →'}</span>
+                    </button>
+                  </div>
+                </form>
               )}
-
-              {/* ERROR MESSAGE ALERT STATE */}
-              {errorMessage && (
-                <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-700 text-xs font-medium font-body flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
-                  <span>{errorMessage}</span>
-                </div>
-              )}
-
-              {/* NAVIGATION BUTTONS */}
-              <div className="flex items-center justify-between pt-6 border-t border-border-light">
-                {step > 1 ? (
-                  <button
-                    onClick={handleBack}
-                    disabled={isSubmitting}
-                    className="h-12 px-6 bg-transparent text-charcoal border border-charcoal/30 hover:border-charcoal transition-all duration-300 font-inter text-xs tracking-widest uppercase font-medium rounded-xl flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>Back</span>
-                  </button>
-                ) : <div />}
-
-                <button
-                  onClick={handleNext}
-                  disabled={isSubmitting}
-                  className="h-13 px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-xl shadow-md hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2.5 cursor-pointer ml-auto disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <span>{isSubmitting ? 'Reserving...' : step === 5 ? 'Confirm Consultation' : 'Continue'}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-
             </div>
 
             {/* RIGHT 5 COLUMNS: STICKY LIVE SUMMARY PANEL */}
-            <div className="lg:col-span-5 sticky top-28">
-              <div className="bg-white/80 backdrop-blur-md p-8 rounded-[28px] border border-champagne/40 shadow-[0_20px_50px_-15px_rgba(197,160,89,0.15)] space-y-6">
-                <div className="pb-4 border-b border-border-light flex items-center justify-between">
+            <div className="lg:col-span-5 sticky top-24">
+              <div className="bg-white/90 backdrop-blur-md p-6 sm:p-8 rounded-[28px] border border-champagne/40 shadow-[0_20px_50px_-15px_rgba(197,160,89,0.15)] space-y-5">
+                <div className="pb-3 border-b border-border-light flex items-center justify-between">
                   <span className="text-lbl text-[10px] text-champagne tracking-[0.28em] font-semibold uppercase block">
-                    APPOINTMENT SUMMARY
+                    RESERVATION SUMMARY
                   </span>
                   <span className="w-2 h-2 rounded-full bg-champagne animate-pulse" />
                 </div>
 
                 <div className="space-y-4 text-sm">
                   <div>
-                    <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">SELECTED SERVICE</span>
-                    <h4 className="font-heading text-lg text-charcoal font-medium">{selectedService.name}</h4>
+                    <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">
+                      SERVICE
+                    </span>
+                    <h3 className="font-heading text-lg text-charcoal font-medium">
+                      {selectedService.name}
+                    </h3>
+                    <span className="text-lbl text-[11px] text-champagne font-semibold block mt-0.5">
+                      {selectedService.priceDisplay}
+                    </span>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-border-light/60">
                     <div>
-                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">ARTISTIC DIRECTOR</span>
-                      <span className="font-body text-charcoal font-medium block">{selectedStylist.name}</span>
+                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">
+                        DATE
+                      </span>
+                      <span className="font-num text-xs font-semibold text-charcoal block">
+                        {selectedDateLabel}
+                      </span>
                     </div>
+
                     <div>
-                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">ESTIMATED DURATION</span>
-                      <span className="font-num text-charcoal font-semibold block">{selectedService.duration}</span>
+                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">
+                        TIME SLOT
+                      </span>
+                      <span className="font-num text-xs font-semibold text-charcoal block">
+                        {selectedTimeSlot?.time || 'Not selected yet'}
+                      </span>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">DATE</span>
-                      <span className="font-num text-charcoal font-medium block">{selectedDateObj.label}</span>
-                    </div>
-                    <div>
-                      <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">TIME</span>
-                      <span className="font-num text-charcoal font-medium block">{selectedTimeSlot?.time || 'Select Slot'}</span>
-                    </div>
+                  <div className="pt-2 border-t border-border-light/60">
+                    <span className="text-lbl text-[10px] text-warm-gray uppercase tracking-widest block mb-0.5">
+                      LOCATION
+                    </span>
+                    <span className="font-body text-xs text-charcoal/80 block leading-relaxed">
+                      Shop No. 5, Manav Drishti Apartments, LBS Marg, Kurla West, Mumbai
+                    </span>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t border-border-light flex items-center justify-between">
-                  <span className="text-lbl text-xs text-warm-gray uppercase tracking-widest font-medium">ESTIMATED INVESTMENT</span>
-                  <span className="font-num text-xl font-bold text-champagne">{selectedService.price}</span>
+                  <span className="text-lbl text-xs text-warm-gray uppercase tracking-widest font-medium">
+                    STATUS
+                  </span>
+                  <span className="text-xs font-lbl tracking-wider uppercase text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                    AWAITING RESERVATION
+                  </span>
                 </div>
               </div>
             </div>
-
           </div>
         ) : (
-          /* STEP 6: SUCCESS CONFIRMATION CARD */
-          <div ref={stepContainerRef} className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-[32px] border border-champagne/40 shadow-[0_30px_70px_-15px_rgba(197,160,89,0.2)] text-center space-y-8">
-            <div className="w-20 h-20 rounded-full bg-champagne/15 text-champagne flex items-center justify-center mx-auto shadow-inner">
-              <CheckCircle2 className="w-10 h-10" />
+          /* STEP 4: CONFIRMATION SCREEN */
+          <div
+            ref={stepContainerRef}
+            className="max-w-2xl mx-auto bg-white p-8 sm:p-12 rounded-[32px] border border-champagne/40 shadow-[0_30px_70px_-15px_rgba(197,160,89,0.2)] text-center space-y-6"
+          >
+            <div className="w-16 h-16 rounded-full bg-champagne/15 text-champagne flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
               <span className="text-lbl text-xs text-champagne tracking-[0.3em] uppercase block font-semibold">
-                RESERVATION RECEIVED
+                APPOINTMENT RECEIVED
               </span>
-              <h3 className="font-heading text-3xl sm:text-4xl text-charcoal font-normal uppercase">
-                We Look Forward To Welcoming You.
-              </h3>
-              <p className="text-body text-warm-gray font-light text-sm sm:text-base leading-relaxed max-w-md mx-auto">
-                Your reservation is pending confirmation. Our team will confirm it shortly via WhatsApp.
+              <h2 className="font-heading text-3xl sm:text-4xl text-charcoal font-normal uppercase">
+                {confirmedBooking?.serviceName || selectedService.name}
+              </h2>
+              <p className="font-num text-sm text-charcoal/80 font-medium">
+                {confirmedBooking?.date || selectedDateLabel} at {confirmedBooking?.time || selectedTimeSlot?.time}
               </p>
             </div>
 
-            {/* Booking Reference — prominent display */}
-            {(confirmedBooking?.bookingRef) && (
-              <div className="bg-champagne/10 border border-champagne/30 rounded-2xl p-5 text-center">
-                <span className="text-lbl text-[10px] text-champagne tracking-[0.3em] uppercase block mb-1 font-semibold">BOOKING REFERENCE</span>
-                <span className="font-num text-2xl font-bold text-charcoal tracking-widest">{confirmedBooking.bookingRef}</span>
-                <p className="text-warm-gray text-xs mt-1.5 font-light">Save this reference to look up your appointment.</p>
+            <div className="bg-[#F7F4EE] p-5 rounded-2xl border border-charcoal/10 text-xs sm:text-sm text-charcoal/90 leading-relaxed max-w-md mx-auto">
+              <p>
+                We have received your appointment request. Your selected time has been reserved and is awaiting confirmation. Salman Hair Studio will contact you if confirmation is required.
+              </p>
+            </div>
+
+            {/* Booking Reference Display */}
+            {confirmedBooking?.bookingRef && (
+              <div className="bg-champagne/10 border border-champagne/30 rounded-2xl p-4 max-w-xs mx-auto">
+                <span className="text-lbl text-[10px] text-champagne tracking-[0.25em] uppercase block mb-0.5 font-semibold">
+                  BOOKING REFERENCE
+                </span>
+                <span className="font-num text-xl font-bold text-charcoal tracking-widest">
+                  {confirmedBooking.bookingRef}
+                </span>
               </div>
             )}
 
-            <div className="bg-[#F7F4EE] p-6 rounded-2xl border border-charcoal/10 text-left space-y-3 font-body text-xs sm:text-sm">
-              <div className="flex justify-between"><span className="text-warm-gray">Service:</span><strong className="text-charcoal font-medium">{confirmedBooking?.service || selectedService?.name}</strong></div>
-              <div className="flex justify-between"><span className="text-warm-gray">Stylist:</span><strong className="text-charcoal font-medium">{confirmedBooking?.stylist || selectedStylist?.name}</strong></div>
-              <div className="flex justify-between"><span className="text-warm-gray">Date &amp; Time:</span><strong className="text-charcoal font-medium">{confirmedBooking?.date || selectedDateObj.label} at {confirmedBooking?.time || selectedTimeSlot?.time || ''}</strong></div>
-              <div className="flex justify-between"><span className="text-warm-gray">Duration:</span><strong className="text-charcoal font-medium">{confirmedBooking?.duration || selectedService?.duration}</strong></div>
-              <div className="flex justify-between"><span className="text-warm-gray">Location:</span><strong className="text-charcoal font-medium">Shop No. 5, Manav Drishti Apts, LBS Marg, Kurla West, Mumbai</strong></div>
+            <div className="flex flex-col items-center justify-center gap-1">
+              <span className="text-[11px] font-lbl tracking-wider uppercase text-champagne font-medium animate-pulse">
+                Redirecting directly to WhatsApp with your appointment details...
+              </span>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
+            {/* ACTION BUTTONS */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
               <a
-                href={`https://wa.me/919870810734?text=${encodeURIComponent(
-                  `Hello Salman Hair Studio, I have a pending reservation.\nBooking Ref: ${confirmedBooking?.bookingRef || ''}\nService: ${confirmedBooking?.service || selectedService?.name || ''}\nDate & Time: ${confirmedBooking?.date || selectedDateObj.label} at ${confirmedBooking?.time || selectedTimeSlot?.time || ''}\nDuration: ${confirmedBooking?.duration || selectedService?.duration || ''}`
-                )}`}
+                href={buildWhatsAppUrl(confirmedBooking || {})}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full sm:w-auto"
               >
-                <button className="w-full h-12 px-6 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs tracking-widest uppercase font-medium rounded-xl flex items-center justify-center gap-2">
+                <button className="w-full sm:w-auto h-12 px-6 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs tracking-widest uppercase font-medium rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-md">
                   <MessageCircle className="w-4 h-4 text-champagne" />
-                  <span>Send via WhatsApp</span>
+                  <span>Connect on WhatsApp</span>
                 </button>
               </a>
 
@@ -664,11 +968,11 @@ function BookingSection() {
                 onClick={() => {
                   if (typeof window !== 'undefined') sessionStorage.removeItem('shs_confirmed_booking');
                   setConfirmedBooking(null);
-                  setIsSubmitted(false);
-                  setStep(1);
+                  setSelectedTimeSlot(null);
+                  setStep(2);
                   setFormData({ name: '', phone: '', email: '', notes: '' });
                 }}
-                className="w-full sm:w-auto h-12 px-6 bg-transparent text-charcoal border border-charcoal/30 hover:border-charcoal transition-all text-xs tracking-widest uppercase font-medium rounded-xl"
+                className="w-full sm:w-auto h-12 px-6 bg-transparent text-charcoal border border-charcoal/30 hover:border-charcoal transition-all text-xs tracking-widest uppercase font-medium rounded-xl cursor-pointer"
               >
                 Book Another
               </button>

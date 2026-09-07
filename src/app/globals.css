@@ -58,6 +58,19 @@
     color: var(--color-primary);
     overflow-x: hidden;
     min-height: 100vh;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Prevent 300ms double-tap delay on mobile buttons & interactive elements */
+  button, a, input, select, textarea, [role="button"], [role="tab"] {
+    touch-action: manipulation;
+  }
+
+  /* Prevent iOS Safari auto-zoom on mobile form focus */
+  @media screen and (max-width: 767px) {
+    input, select, textarea {
+      font-size: 16px !important;
+    }
   }
 
   /* Luxury Selection */
