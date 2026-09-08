@@ -260,8 +260,11 @@ function GallerySection() {
         }
       }
 
-      try {
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+        const rawUrl = process.env.NEXT_PUBLIC_API_URL || (
+          process.env.NODE_ENV === 'production'
+            ? 'https://salman-backend.onrender.com'
+            : 'http://localhost:5000'
+        );
         const API_URL = rawUrl.replace(/\/api\/?$/, '');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);

@@ -35,7 +35,11 @@ import {
 } from 'lucide-react';
 
 const getApiBaseUrl = () => {
-  const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  const raw = process.env.NEXT_PUBLIC_API_URL || (
+    process.env.NODE_ENV === 'production'
+      ? 'https://salman-backend.onrender.com'
+      : 'http://localhost:5000'
+  );
   return raw.replace(/\/api\/?$/, '');
 };
 
