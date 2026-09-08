@@ -317,7 +317,7 @@ function Hero() {
                     priority={idx === 0}
                     loading={idx === 0 ? 'eager' : 'lazy'}
                     sizes="(max-width: 1024px) 100vw, 55vw"
-                    imageClassName="object-contain object-center"
+                    imageClassName="object-cover object-top"
                   />
                 </div>
               ))}

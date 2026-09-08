@@ -139,34 +139,45 @@ function Navbar() {
           </Link>
 
           {/* Desktop Nav Items — Proportional for tablet (md) & desktop (lg+) */}
-          <nav className="hidden md:flex items-center space-x-4 lg:space-x-8">
-            {NAV_ITEMS.map((item) => {
-              let isActive = false;
-              if (item.href === '/') {
-                isActive = pathname === '/' && activeSection !== 'about';
-              } else if (item.href === '/#about') {
-                isActive = pathname === '/' && activeSection === 'about';
-              } else {
-                isActive = pathname === item.href;
-              }
+          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            <nav className="flex items-center space-x-4 lg:space-x-8">
+              {NAV_ITEMS.map((item) => {
+                let isActive = false;
+                if (item.href === '/') {
+                  isActive = pathname === '/' && activeSection !== 'about';
+                } else if (item.href === '/#about') {
+                  isActive = pathname === '/' && activeSection === 'about';
+                } else {
+                  isActive = pathname === item.href;
+                }
 
-              return (
-                <Link
-                  key={item.label}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={clsx(
-                    'text-lbl text-[11px] lg:text-xs tracking-[0.14em] lg:tracking-[0.18em] transition-colors duration-300 relative py-1 uppercase font-medium',
-                    isActive ? 'text-champagne font-semibold' : 'text-charcoal/80 hover:text-champagne',
-                    'after:content-[""] after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:bg-champagne after:transition-all after:duration-300',
-                    isActive ? 'after:w-full' : 'after:w-0 hover:after:w-full'
-                  )}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item.href)}
+                    className={clsx(
+                      'text-lbl text-[11px] lg:text-xs tracking-[0.14em] lg:tracking-[0.18em] transition-colors duration-300 relative py-1 uppercase font-medium',
+                      isActive ? 'text-champagne font-semibold' : 'text-charcoal/80 hover:text-champagne',
+                      'after:content-[""] after:absolute after:bottom-0 after:left-0 after:h-[1.5px] after:bg-champagne after:transition-all after:duration-300',
+                      isActive ? 'after:w-full' : 'after:w-0 hover:after:w-full'
+                    )}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
+            </nav>
+
+            {/* Desktop Quick Booking CTA Button */}
+            <Link
+              href="/booking"
+              className="hidden lg:flex items-center gap-2 h-10 px-5 bg-charcoal text-white hover:bg-champagne hover:text-charcoal active:scale-95 transition-all duration-300 font-inter text-[10px] tracking-[0.2em] uppercase font-medium rounded-xl shadow-sm hover:shadow-md border border-transparent hover:border-champagne/40 cursor-pointer"
+            >
+              <span>Book Appointment</span>
+              <span className="text-champagne group-hover:text-charcoal">→</span>
+            </Link>
+          </div>
 
           {/* Mobile Menu Trigger — 44px ergonomic touch target */}
           <button

@@ -32,7 +32,7 @@ export default function GenderTabs({ activeGender, onChange }) {
       ref={containerRef}
       role="tablist"
       aria-label="Select gender category"
-      className="relative w-[280px] max-w-full grid grid-cols-2 p-1 bg-[#ECE7DE] border border-charcoal/10 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] select-none"
+      className="relative w-[280px] sm:w-[320px] max-w-full grid grid-cols-2 p-1 bg-[#ECE7DE] border border-charcoal/10 rounded-full shadow-[inset_0_1px_3px_rgba(0,0,0,0.06)] select-none"
     >
       {/* Sliding active indicator pill */}
       <span

@@ -212,7 +212,7 @@ const GalleryCard = memo(function GalleryCard({ item, idx, onOpenLightbox }) {
           alt={`Salman Hair Studio ${item.title}`}
           fill
           sizes="(max-width: 1024px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          imageClassName="object-contain object-center"
+          imageClassName="object-cover object-center"
         />
       </div>
 
