@@ -251,14 +251,15 @@ function GallerySection() {
   // Fetch visible gallery images dynamically from MongoDB API
   useEffect(() => {
     async function fetchPublicGallery() {
-      if (typeof window !== 'undefined') {
-        const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL;
-        if (!rawUrl && !isLocalhost) {
-          // Deployed online without custom API URL, use pre-defined editorial gallery items
-          return;
+      try {
+        if (typeof window !== 'undefined') {
+          const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+          const rawUrl = process.env.NEXT_PUBLIC_API_URL;
+          if (!rawUrl && !isLocalhost) {
+            // Deployed online without custom API URL, use pre-defined editorial gallery items
+            return;
+          }
         }
-      }
 
         const rawUrl = process.env.NEXT_PUBLIC_API_URL || (
           process.env.NODE_ENV === 'production'
