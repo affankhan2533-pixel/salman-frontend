@@ -1444,11 +1444,15 @@ export default function AdminPage() {
 
       {/* APPOINTMENT DETAILS DRAWER */}
       {selectedAppt && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-end" data-lenis-prevent>
           <div className="absolute inset-0" onClick={() => setSelectedAppt(null)} />
 
-          <div className="relative w-full sm:max-w-md bg-white h-full shadow-2xl flex flex-col justify-between overflow-y-auto p-6 sm:p-8 space-y-6 z-10">
-            <div className="space-y-6">
+          <div
+            className="relative w-full sm:max-w-md bg-white h-full max-h-screen shadow-2xl flex flex-col justify-between z-10 overscroll-contain"
+            data-lenis-prevent
+          >
+            {/* Scrollable Body Content */}
+            <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 overscroll-contain custom-scrollbar" data-lenis-prevent>
               <div className="flex items-start justify-between gap-4 border-b border-charcoal/10 pb-4">
                 <div>
                   <span className="text-[10px] text-champagne font-bold tracking-widest uppercase block mb-1">
@@ -1488,7 +1492,7 @@ export default function AdminPage() {
                 <div className="flex justify-between py-1.5 border-b border-charcoal/5">
                   <span className="text-warm-gray">Service:</span>
                   <strong className="text-charcoal font-medium">
-                    {selectedAppt.service?.title || 'Hair Styling'}
+                    {selectedAppt.service?.title || selectedAppt.serviceName || 'Hair Styling'}
                   </strong>
                 </div>
 
@@ -1577,7 +1581,8 @@ export default function AdminPage() {
               )}
             </div>
 
-            <div className="pt-4 border-t border-charcoal/10">
+            {/* Fixed Bottom Action Bar */}
+            <div className="shrink-0 p-6 sm:p-8 pt-4 border-t border-charcoal/10 bg-white">
               {(() => {
                 const currentStatus = selectedAppt.effectiveStatus || selectedAppt.appointmentStatus;
                 const isUpdating = actionLoadingId === selectedAppt._id;
@@ -1682,8 +1687,8 @@ export default function AdminPage() {
 
       {/* ADD / EDIT SERVICE MODAL */}
       {serviceModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-champagne/30 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" data-lenis-prevent>
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-champagne/30 max-h-[90vh] overflow-y-auto overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-charcoal/10 pb-4">
               <div>
                 <span className="text-[10px] text-champagne font-bold tracking-widest uppercase block mb-1">
@@ -1873,8 +1878,8 @@ export default function AdminPage() {
 
       {/* ADD / EDIT GALLERY IMAGE MODAL (Phase 19B.2) */}
       {galleryModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-champagne/30 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" data-lenis-prevent>
+          <div className="bg-white max-w-md w-full rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl border border-champagne/30 max-h-[90vh] overflow-y-auto overscroll-contain" data-lenis-prevent>
             <div className="flex items-center justify-between border-b border-charcoal/10 pb-4">
               <div>
                 <span className="text-[10px] text-champagne font-bold tracking-widest uppercase block mb-1">
