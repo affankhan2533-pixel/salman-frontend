@@ -75,7 +75,7 @@ const buildWhatsAppUrl = (booking) => {
     ``,
     `📌 *Booking Ref:* ${booking.bookingRef || 'SHS-CONFIRMED'}`,
     `👤 *Client Name:* ${booking.customerName || booking.name || 'Client'}`,
-    `📞 *Phone Number:* ${booking.phone || ''}`,
+    `📞 *Phone Number:* ${booking.phone || booking.clientPhone || ''}`,
     booking.email ? `✉️ *Email Address:* ${booking.email}` : null,
     `✂️ *Service:* ${booking.serviceName || booking.service || ''} ${booking.priceDisplay ? `(${booking.priceDisplay})` : ''}`,
     `📅 *Date:* ${booking.date || booking.dateIso || ''}`,
@@ -103,6 +103,7 @@ function BookingSection() {
   // Time slot selection
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [fetchFailed, setFetchFailed] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
   // Customer form details
@@ -174,16 +175,26 @@ function BookingSection() {
     }
   }, []);
 
-  // 3. Live availability fetch from backend API
-  const fetchAvailability = async (dateIso, serviceItem) => {
+  // 3. Live availability fetch from backend API (MongoDB as single source of truth)
+  const fetchAvailability = async (dateIso, serviceItem, isSilent = false) => {
     if (!dateIso) return;
-    setLoadingSlots(true);
+    if (!isSilent) setLoadingSlots(true);
     setErrorMessage('');
     setIsConflictError(false);
+    setFetchFailed(false);
+
+    const sInput = serviceItem?.name || serviceItem?.id || '';
+    if (typeof window !== 'undefined') {
+      console.log('[BOOKING DEBUG] AVAILABILITY URL:', `/appointments/availability?date=${dateIso}&service=${encodeURIComponent(sInput)}`);
+      console.log('[BOOKING DEBUG] DATE:', dateIso);
+    }
 
     try {
-      const sInput = serviceItem?.name || serviceItem?.id || '';
       const response = await bookingService.getAvailability(dateIso, sInput);
+      if (typeof window !== 'undefined') {
+        console.log('[BOOKING DEBUG] RESPONSE STATUS: 200');
+        console.log('[BOOKING DEBUG] RESPONSE DATA:', response);
+      }
 
       let slotList = [];
       if (response && response.data) {
@@ -191,8 +202,9 @@ function BookingSection() {
       }
 
       setAvailabilitySlots(slotList);
+      setFetchFailed(false);
 
-      // If previously selected time is still available, keep it; otherwise reset
+      // Keep previously selected time slot if still available
       setSelectedTimeSlot((prev) => {
         if (!prev) return null;
         const matching = slotList.find(
@@ -201,16 +213,46 @@ function BookingSection() {
         return matching && matching.available ? matching : null;
       });
     } catch (err) {
-      console.error('[Availability Fetch Error]', err);
-      setErrorMessage('Unable to load real-time availability. Please check your connection.');
+      if (typeof window !== 'undefined') {
+        console.error('[BOOKING DEBUG] ERROR:', err.message, err.response ? err.response.status : 'No Response / Connection Refused');
+      }
+      setAvailabilitySlots([]);
+      setFetchFailed(true);
+      setErrorMessage('Unable to connect to live availability. Please check connection or try again.');
     } finally {
-      setLoadingSlots(false);
+      if (!isSilent) setLoadingSlots(false);
     }
   };
 
-  // Fetch availability when date or service changes
+  // 4. Fetch availability, setup Socket.io real-time listener, & 15-second background polling
   useEffect(() => {
     fetchAvailability(selectedDateIso, selectedService);
+
+    // Socket.io Real-Time Synchronization
+    try {
+      socketService.subscribeToDate(selectedDateIso);
+
+      const handleLiveSlotUpdate = (data) => {
+        if (!data || !data.date || data.date === selectedDateIso) {
+          fetchAvailability(selectedDateIso, selectedService, true);
+        }
+      };
+
+      socketService.onSlotBooked(handleLiveSlotUpdate);
+      socketService.onSlotReleased(handleLiveSlotUpdate);
+      socketService.onBookingUpdated(handleLiveSlotUpdate);
+    } catch (err) {
+      console.error('[Socket Subscription Error]', err);
+    }
+
+    // 15-Second Resilient Polling Fallback
+    const pollInterval = setInterval(() => {
+      fetchAvailability(selectedDateIso, selectedService, true);
+    }, 15000);
+
+    return () => {
+      clearInterval(pollInterval);
+    };
   }, [selectedDateIso, selectedService]);
 
   // Handle custom date picker input change
@@ -260,7 +302,7 @@ function BookingSection() {
     setStep(3);
   };
 
-  // Final Submission with Race Condition / Double Booking Protection
+  // Final Submission: POST to Backend database FIRST before WhatsApp confirmation
   const handleConfirmBooking = async (e) => {
     if (e) e.preventDefault();
     setErrorMessage('');
@@ -301,20 +343,23 @@ function BookingSection() {
 
       const result = await bookingService.createBooking(payload);
 
-      const bookingRef = result?.data?.bookingRef || 'SHS-' + Date.now().toString(36).slice(-5).toUpperCase();
+      // Extract verified database response record
+      const dbData = result?.data || {};
+      const bookingRef = dbData.bookingRef || 'SHS-' + Date.now().toString(36).slice(-5).toUpperCase();
 
       const confirmedData = {
         bookingRef,
-        serviceName: selectedService.name,
+        serviceName: dbData.serviceName || selectedService.name,
         date: selectedDateLabel,
         dateIso: selectedDateIso,
-        time: selectedTimeSlot.time,
-        priceDisplay: selectedService.priceDisplay,
-        customerName: formData.name.trim(),
-        name: formData.name.trim(),
-        phone: formData.phone.trim(),
+        time: dbData.time || selectedTimeSlot.time,
+        priceDisplay: dbData.price ? `₹${dbData.price}` : selectedService.priceDisplay,
+        customerName: dbData.customerName || dbData.clientName || formData.name.trim(),
+        name: dbData.customerName || formData.name.trim(),
+        phone: dbData.phone || dbData.clientPhone || formData.phone.trim(),
         email: formData.email ? formData.email.trim() : '',
         notes: formData.notes ? formData.notes.trim() : '',
+        status: dbData.status || dbData.appointmentStatus || 'Pending',
       };
 
       if (typeof window !== 'undefined') {
@@ -324,7 +369,7 @@ function BookingSection() {
       setConfirmedBooking(confirmedData);
       setStep(4);
 
-      // Connect directly on WhatsApp with all client details
+      // ONLY OPEN WHATSAPP AFTER SUCCESSFUL BACKEND DATABASE BOOKING
       const waUrl = buildWhatsAppUrl(confirmedData);
       if (typeof window !== 'undefined') {
         setTimeout(() => {
@@ -343,12 +388,11 @@ function BookingSection() {
       const is409 = err?.response?.status === 409 || err?.response?.data?.code === 'SLOT_ALREADY_BOOKED';
       const apiMsg = err?.response?.data?.message || err?.message;
 
+      // DO NOT SHOW CONFIRMATION AND DO NOT OPEN WHATSAPP IF SERVER POST FAILS
       if (is409) {
         setIsConflictError(true);
         setErrorMessage('Sorry, this time slot has just been booked. Please choose another time.');
-        // Automatically refresh availability so newly booked slot appears as BOOKED
         await fetchAvailability(selectedDateIso, selectedService);
-        // Direct customer back to step 2 to pick another slot immediately
         setSelectedTimeSlot(null);
         setStep(2);
       } else {
@@ -631,8 +675,21 @@ function BookingSection() {
                     </div>
 
                     {loadingSlots && availabilitySlots.length === 0 ? (
-                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs animate-pulse">
-                        Checking available times for {selectedDateLabel}...
+                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs flex items-center justify-center gap-2 animate-pulse">
+                        <RefreshCw className="w-4 h-4 text-champagne animate-spin" />
+                        <span>Connecting to live availability for {selectedDateLabel}...</span>
+                      </div>
+                    ) : fetchFailed ? (
+                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-red-500/20 text-red-700 text-xs space-y-3">
+                        <p className="font-medium">Unable to connect to live availability. Please check your connection.</p>
+                        <button
+                          type="button"
+                          onClick={() => fetchAvailability(selectedDateIso, selectedService)}
+                          className="px-4 py-2 bg-charcoal text-white rounded-xl font-lbl text-[11px] uppercase tracking-wider hover:bg-champagne hover:text-charcoal transition-all cursor-pointer inline-flex items-center gap-1.5"
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                          <span>Retry Connection</span>
+                        </button>
                       </div>
                     ) : availabilitySlots.length > 0 ? (
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">

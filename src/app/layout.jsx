@@ -8,6 +8,7 @@ import LoadingScreen from '@/components/loader/LoadingScreen';
 import CustomCursor from '@/components/common/CustomCursor';
 import ScrollProgress from '@/components/common/ScrollProgress';
 import Navbar from '@/components/layout/Navbar';
+import BackendWarmup from '@/components/layout/BackendWarmup';
 
 export const metadata = defaultMetadata;
 
@@ -26,6 +27,7 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className="bg-ivory text-charcoal font-body antialiased selection:bg-champagne selection:text-white">
+        <BackendWarmup />
         <SmoothScrollProvider>
           <LoadingScreen />
           <CustomCursor />
