@@ -72,12 +72,13 @@ export default function LuxuryImage({
         sizes={sizes}
         onLoad={handleLoad}
         onError={handleError}
+        quality={85}
         className={clsx(
           imageClassName,
-          'transition-all duration-700 ease-out will-change-[opacity,transform,filter]',
+          'transition-all duration-500 ease-out will-change-[opacity,transform]',
           isLoaded
-            ? 'opacity-100 scale-100 blur-0'
-            : 'opacity-0 scale-[1.03] blur-[2px]'
+            ? 'opacity-100 scale-100'
+            : 'opacity-0 scale-[1.02]'
         )}
         {...props}
       />

@@ -94,7 +94,8 @@ export default function ServiceCard({ service, onClick }) {
             alt={service.name}
             fill
             loading="lazy"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            quality={85}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 600px"
             className={`
               object-cover object-top sm:object-[center_20%]
               scale-100 group-hover:scale-[1.04]
