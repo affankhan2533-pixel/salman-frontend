@@ -33,6 +33,7 @@ import {
   EyeOff,
   Upload,
 } from 'lucide-react';
+import { safeLocalStorage } from '@/utils/storage';
 
 const getApiBaseUrl = () => {
   const raw = process.env.NEXT_PUBLIC_API_URL || (
@@ -151,9 +152,9 @@ export default function AdminPage() {
   // 1. Auth verification
   useEffect(() => {
     const verifyAuth = async () => {
-      const token = localStorage.getItem('atelier_access_token');
+      const token = safeLocalStorage.getItem('atelier_access_token');
       if (!token || token === 'undefined' || token === 'null') {
-        localStorage.removeItem('atelier_access_token');
+        safeLocalStorage.removeItem('atelier_access_token');
         router.push('/admin/login');
         return;
       }
@@ -169,11 +170,11 @@ export default function AdminPage() {
           setIsAuthenticated(true);
           setUser(data.data);
         } else {
-          localStorage.removeItem('atelier_access_token');
+          safeLocalStorage.removeItem('atelier_access_token');
           router.push('/admin/login');
         }
       } catch (err) {
-        localStorage.removeItem('atelier_access_token');
+        safeLocalStorage.removeItem('atelier_access_token');
         router.push('/admin/login');
       } finally {
         setAuthChecking(false);
@@ -208,7 +209,7 @@ export default function AdminPage() {
       else setLoading(true);
       setErrorMsg('');
 
-      const token = localStorage.getItem('atelier_access_token');
+      const token = safeLocalStorage.getItem('atelier_access_token');
       const API_URL = getApiBaseUrl();
       const headers = { Authorization: `Bearer ${token}` };
 
@@ -283,7 +284,7 @@ export default function AdminPage() {
     if (!isAuthenticated) return;
     setServicesLoading(true);
 
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
     const headers = { Authorization: `Bearer ${token}` };
 
@@ -367,7 +368,7 @@ export default function AdminPage() {
     setSavingService(true);
     setServiceFormErrors({});
 
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
     const headers = {
       'Content-Type': 'application/json',
@@ -412,7 +413,7 @@ export default function AdminPage() {
   };
 
   const handleToggleServiceActive = async (service) => {
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {
@@ -442,7 +443,7 @@ export default function AdminPage() {
     if (!confirmDeleteService) return;
 
     setDeletingServiceId(confirmDeleteService._id);
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {
@@ -474,7 +475,7 @@ export default function AdminPage() {
     if (!isAuthenticated) return;
     setGalleryLoading(true);
 
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
     const headers = { Authorization: `Bearer ${token}` };
 
@@ -571,7 +572,7 @@ export default function AdminPage() {
     setSavingGallery(true);
     setGalleryFormErrors({});
 
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {
@@ -626,7 +627,7 @@ export default function AdminPage() {
 
   // Toggle Gallery Visibility (Visible / Hidden)
   const handleToggleGalleryVisibility = async (item) => {
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {
@@ -654,7 +655,7 @@ export default function AdminPage() {
 
   // Reorder Gallery Image (Move Up / Move Down)
   const handleMoveGalleryOrder = async (item, direction) => {
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     const currentOrder = item.order !== undefined ? item.order : 0;
@@ -688,7 +689,7 @@ export default function AdminPage() {
     if (!confirmDeleteGalleryItem) return;
 
     setDeletingGalleryId(confirmDeleteGalleryItem._id);
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {
@@ -726,14 +727,14 @@ export default function AdminPage() {
 
   // Logout handler
   const handleLogout = () => {
-    localStorage.removeItem('atelier_access_token');
+    safeLocalStorage.removeItem('atelier_access_token');
     router.push('/admin/login');
   };
 
   // Appointment Status Change Handler
   const handleStatusChange = async (appointmentId, newStatus) => {
     setActionLoadingId(appointmentId);
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     const API_URL = getApiBaseUrl();
 
     try {

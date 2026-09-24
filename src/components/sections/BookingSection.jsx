@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { SERVICES as ALL_SERVICES } from '@/data/servicesData';
 import bookingService from '@/services/bookingService';
+import { safeSessionStorage } from '@/utils/storage';
 
 // Format services list with uniform display fields
 const FORMATTED_SERVICES = ALL_SERVICES.map((s) => ({
@@ -161,16 +162,14 @@ function BookingSection() {
 
   // 2. Restore confirmed booking from sessionStorage if present
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('shs_confirmed_booking');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          setConfirmedBooking(parsed);
-          setStep(4);
-        } catch {
-          /* ignore */
-        }
+    const saved = safeSessionStorage.getItem('shs_confirmed_booking');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        setConfirmedBooking(parsed);
+        setStep(4);
+      } catch {
+        /* ignore */
       }
     }
   }, []);
@@ -362,9 +361,7 @@ function BookingSection() {
         status: dbData.status || dbData.appointmentStatus || 'Pending',
       };
 
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('shs_confirmed_booking', JSON.stringify(confirmedData));
-      }
+      safeSessionStorage.setItem('shs_confirmed_booking', JSON.stringify(confirmedData));
 
       setConfirmedBooking(confirmedData);
       setStep(4);
@@ -1023,7 +1020,7 @@ function BookingSection() {
 
               <button
                 onClick={() => {
-                  if (typeof window !== 'undefined') sessionStorage.removeItem('shs_confirmed_booking');
+                  safeSessionStorage.removeItem('shs_confirmed_booking');
                   setConfirmedBooking(null);
                   setSelectedTimeSlot(null);
                   setStep(2);

@@ -173,12 +173,12 @@ export default function StudioVideoSection() {
               >
                 <video
                   ref={videoRef}
-                  src="/videos/WhatsApp 2026-08-16 22-00-16.mp4"
+                  src="/videos/WhatsApp%202026-08-16%2022-00-16.mp4"
                   autoPlay
                   loop
                   muted={isMuted}
                   playsInline
-                  preload="auto"
+                  preload="metadata"
                   className="w-full h-full object-cover object-center"
                 />
 

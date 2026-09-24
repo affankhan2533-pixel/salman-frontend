@@ -12,35 +12,59 @@ export function SmoothScrollProvider({ children }) {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Initialize Lenis Smooth Scroll with butter-smooth 120 FPS easing
-    const lenis = new Lenis({
-      duration: 1.15,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      direction: 'vertical',
-      gestureDirection: 'vertical',
-      smoothWheel: true,
-      smoothTouch: false,
-      touchMultiplier: 1.5,
-      wheelMultiplier: 1.0,
-    });
+    // Detect touch / mobile devices (iPhone, Android, iPads)
+    // Mobile browsers have native 120Hz ProMotion touch scrolling. Lenis hijacking causes jank or exceptions on iOS.
+    const isTouch =
+      'ontouchstart' in window ||
+      (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+      window.innerWidth < 1024;
 
-    lenisRef.current = lenis;
+    if (isTouch) {
+      return;
+    }
 
-    // Synchronize Lenis scroll position with GSAP ScrollTrigger
-    lenis.on('scroll', () => {
-      ScrollTrigger.update();
-    });
+    let lenis = null;
+    let updateTicker = null;
 
-    const updateTicker = (time) => {
-      lenis.raf(time * 1000);
-    };
+    try {
+      // Initialize Lenis Smooth Scroll on desktop only
+      lenis = new Lenis({
+        duration: 1.15,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        direction: 'vertical',
+        gestureDirection: 'vertical',
+        smoothWheel: true,
+        smoothTouch: false,
+        touchMultiplier: 1.5,
+        wheelMultiplier: 1.0,
+      });
 
-    gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(500, 33);
+      lenisRef.current = lenis;
+
+      // Synchronize Lenis scroll position with GSAP ScrollTrigger
+      lenis.on('scroll', () => {
+        ScrollTrigger.update();
+      });
+
+      updateTicker = (time) => {
+        lenis.raf(time * 1000);
+      };
+
+      gsap.ticker.add(updateTicker);
+      gsap.ticker.lagSmoothing(500, 33);
+    } catch (err) {
+      console.warn('Lenis smooth scroll skipped:', err);
+    }
 
     return () => {
-      gsap.ticker.remove(updateTicker);
-      lenis.destroy();
+      if (updateTicker) {
+        gsap.ticker.remove(updateTicker);
+      }
+      if (lenis) {
+        try {
+          lenis.destroy();
+        } catch (e) {}
+      }
       lenisRef.current = null;
     };
   }, []);

@@ -16,6 +16,7 @@ const HERO_IMAGES = [
 
 function Hero() {
   const heroRef = useRef(null);
+  const leftColRef = useRef(null);
   const cursorRef = useRef(null);
   const cursorDotRef = useRef(null);
   const badgeRef = useRef(null);
@@ -141,9 +142,9 @@ function Hero() {
           if (imageFrameRef.current) {
             gsap.set(imageFrameRef.current, { scale: 1.0 + p * 0.03 });
           }
-          if (heroRef.current) {
+          if (leftColRef.current) {
             const opacityVal = 1 - p * 0.55;
-            gsap.set(heroRef.current.querySelector('.lg\\:col-span-5'), { opacity: Math.max(0.4, opacityVal) });
+            gsap.set(leftColRef.current, { opacity: Math.max(0.4, opacityVal) });
           }
         },
       });
@@ -216,7 +217,7 @@ function Hero() {
       <div className="w-full max-w-[1440px] mx-auto px-5 sm:px-10 lg:px-16 my-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10 py-4 lg:py-0">
         
         {/* LEFT COLUMN */}
-        <div className="lg:col-span-5 flex flex-col justify-center space-y-5 sm:space-y-6 xl:space-y-7 z-20 text-center lg:text-left">
+        <div ref={leftColRef} className="lg:col-span-5 flex flex-col justify-center space-y-5 sm:space-y-6 xl:space-y-7 z-20 text-center lg:text-left">
           
           {/* Editorial Metadata Badges */}
           <div

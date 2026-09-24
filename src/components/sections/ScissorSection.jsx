@@ -5,7 +5,27 @@ import dynamic from 'next/dynamic';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 // Dynamically import 3D R3F Scissor Scene (SSR Disabled for Three.js Canvas)
-const ScissorScene = dynamic(() => import('./ScissorScene'), { ssr: false });
+const ScissorScene = dynamic(() => import('./ScissorScene'), {
+  ssr: false,
+  loading: () => null,
+});
+
+class ScissorSectionErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  componentDidCatch(err) {
+    console.warn('ScissorSection 3D component notice:', err);
+  }
+  render() {
+    if (this.state.hasError) return null;
+    return this.props.children;
+  }
+}
 
 function ScissorSection() {
   const sectionRef = useRef(null);
@@ -157,7 +177,9 @@ function ScissorSection() {
 
         {/* 3D CANVAS OVERLAY LAYER (z-30): Passes behind About Section (z-40) */}
         <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-transparent">
-          <ScissorScene progressRef={progressRef} isVisible={isVisible} />
+          <ScissorSectionErrorBoundary>
+            <ScissorScene progressRef={progressRef} isVisible={isVisible} />
+          </ScissorSectionErrorBoundary>
         </div>
 
         {/* EDITORIAL TYPOGRAPHY OVERLAY LAYER (SINGLE CLEAN DOM HEADING STRUCTURE) */}

@@ -328,13 +328,28 @@ function ScissorRig({ progressRef, mouseTiltRef, deviceMode }) {
   );
 }
 
+function isWebGLAvailable() {
+  if (typeof window === 'undefined') return false;
+  try {
+    const canvas = document.createElement('canvas');
+    return !!(
+      window.WebGLRenderingContext &&
+      (canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
+    );
+  } catch {
+    return false;
+  }
+}
+
 // ─── SCENE ROOT ─────────────────────────────────────────────────────────────
 function ScissorScene({ progressRef = 0, isVisible = true }) {
   const mouseTiltRef = useRef({ x: 0, y: 0 });
   const [deviceMode, setDeviceMode] = useState('desktop');
   const [isTabActive, setIsTabActive] = useState(true);
+  const [hasWebGL, setHasWebGL] = useState(true);
 
   useEffect(() => {
+    setHasWebGL(isWebGLAvailable());
     const onResize = () => {
       const w = window.innerWidth;
       if (w < 640) setDeviceMode('mobile');
@@ -373,6 +388,10 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
     };
   }, [deviceMode]);
 
+  if (!hasWebGL) {
+    return null;
+  }
+
   const progVal = typeof progressRef === 'object' ? progressRef.current : progressRef;
   const pL = progVal < 0.18 ? 2 : progVal < 0.74 ? lerp(2, 9.8, remap(progVal, 0.18, 0.74)) : 9.8;
 
@@ -388,7 +407,7 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
         <Canvas
           frameloop={shouldRender ? 'always' : 'never'}
           camera={{ position: [0, 0, camZ], fov: camFov }}
-          gl={{ alpha: true, antialias: true, powerPreference: 'high-performance' }}
+          gl={{ alpha: true, antialias: true, powerPreference: 'default' }}
           dpr={[1, deviceMode === 'mobile' ? 1.0 : 1.5]}
           style={{ background: 'transparent' }}
         >
@@ -400,7 +419,9 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
 
           <hemisphereLight skyColor="#ffffff" groundColor="#333333" intensity={1.2} />
           <directionalLight position={[0, 8, 8]} intensity={1.5} color="#ffffff" />
-          <ContactShadows position={[0, -1.4, 0]} opacity={0.28} scale={4.2} blur={1.5} far={2.5} />
+          {deviceMode === 'desktop' && (
+            <ContactShadows position={[0, -1.4, 0]} opacity={0.28} scale={4.2} blur={1.5} far={2.5} />
+          )}
 
           <IdleFloat />
 

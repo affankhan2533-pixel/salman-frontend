@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Lock, Mail, AlertCircle, Loader2 } from 'lucide-react';
+import { safeLocalStorage } from '@/utils/storage';
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export default function AdminLoginPage() {
 
   // Check if valid token already exists
   useEffect(() => {
-    const token = localStorage.getItem('atelier_access_token');
+    const token = safeLocalStorage.getItem('atelier_access_token');
     if (token && token !== 'undefined' && token !== 'null') {
       router.push('/admin');
     }
@@ -51,12 +52,12 @@ export default function AdminLoginPage() {
       }
 
       // Store JWT Tokens
-      localStorage.setItem('atelier_access_token', authToken);
+      safeLocalStorage.setItem('atelier_access_token', authToken);
       if (data.data?.refreshToken) {
-        localStorage.setItem('atelier_refresh_token', data.data.refreshToken);
+        safeLocalStorage.setItem('atelier_refresh_token', data.data.refreshToken);
       }
       if (data.data?.user) {
-        localStorage.setItem('atelier_user', JSON.stringify(data.data.user));
+        safeLocalStorage.setItem('atelier_user', JSON.stringify(data.data.user));
       }
 
       router.push('/admin');

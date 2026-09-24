@@ -3,6 +3,8 @@
 import React, { useEffect, useRef, useState, memo } from 'react';
 import { gsap } from '@/lib/gsap';
 
+import { safeSessionStorage } from '@/utils/storage';
+
 function LoadingScreen() {
   const containerRef = useRef(null);
   const word1Ref = useRef(null);
@@ -15,8 +17,8 @@ function LoadingScreen() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
-    // Play ONLY ONCE per browser session using sessionStorage
-    if (sessionStorage.getItem('salman_loaded') === 'true') {
+    // Play ONLY ONCE per browser session using safe storage
+    if (safeSessionStorage.getItem('salman_loaded') === 'true') {
       setIsLoaded(true);
       return;
     }
@@ -33,9 +35,7 @@ function LoadingScreen() {
       // 2. Apple Keynote Opening GSAP Timeline
       const tl = gsap.timeline({
         onComplete: () => {
-          try {
-            sessionStorage.setItem('salman_loaded', 'true');
-          } catch (e) {}
+          safeSessionStorage.setItem('salman_loaded', 'true');
           setIsLoaded(true);
         },
       });

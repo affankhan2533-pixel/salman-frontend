@@ -25,11 +25,13 @@ const api = axios.create({
   },
 });
 
+import { safeLocalStorage } from '@/utils/storage';
+
 // Interceptor: Attach JWT Token if available & Log Request
 api.interceptors.request.use(
   (config) => {
     if (typeof window !== 'undefined') {
-      const token = localStorage.getItem('atelier_access_token');
+      const token = safeLocalStorage.getItem('atelier_access_token');
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
