@@ -83,32 +83,23 @@ export default function ServiceCard({ service, onClick }) {
       </div>
 
       {/* ── IMAGE AREA (right on sm+, top on mobile) ────────────────────── */}
-      {/*
-        Mobile: image appears BEFORE text (order-first) with generous aspect ratio for full hairstyle visibility
-        Desktop: image fills right side of card at full height with top-focused framing
-      */}
-      <div className="relative w-full sm:w-[52%] order-first sm:order-last aspect-[16/11] sm:aspect-auto sm:min-h-[260px] sm:h-auto overflow-hidden bg-cream">
+      <div className="relative w-full sm:w-[54%] order-first sm:order-last aspect-[16/11] sm:aspect-auto sm:min-h-[260px] sm:h-auto overflow-hidden bg-cream">
         {service.image && (
           <Image
             src={service.image}
             alt={service.name}
             fill
             loading="lazy"
-            quality={85}
+            quality={95}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 60vw, 600px"
             className={`
-              object-cover object-top sm:object-[center_20%]
+              object-cover object-center
               scale-100 group-hover:scale-[1.04]
               transition-transform duration-500 ease-out
               motion-reduce:transition-none motion-reduce:group-hover:scale-100
             `}
           />
         )}
-        {/* Subtle left-side gradient to blend image into the text area on desktop */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent sm:block hidden pointer-events-none"
-        />
       </div>
     </button>
 
