@@ -5,12 +5,13 @@ export const bookingService = {
    * Fetch live slot availability for a date & service
    * @param {string} date - YYYY-MM-DD
    * @param {string} [service] - Service ID, slug, or title
+   * @param {Object} [config] - Axios request options (e.g. signal)
    */
-  getAvailability: async (date, service = '') => {
+  getAvailability: async (date, service = '', config = {}) => {
     const params = new URLSearchParams();
     if (date) params.append('date', date);
     if (service) params.append('service', service);
-    const response = await api.get(`/appointments/availability?${params.toString()}`);
+    const response = await api.get('/appointments/availability?' + params.toString(), config);
     return response.data;
   },
 
@@ -37,7 +38,7 @@ export const bookingService = {
    * @param {string} status
    */
   updateStatus: async (id, status) => {
-    const response = await api.patch(`/appointments/${id}/status`, { appointmentStatus: status });
+    const response = await api.patch('/appointments/' + id + '/status', { appointmentStatus: status });
     return response.data;
   },
 
@@ -46,7 +47,7 @@ export const bookingService = {
    * @param {string} id
    */
   deleteBooking: async (id) => {
-    const response = await api.delete(`/appointments/${id}`);
+    const response = await api.delete('/appointments/' + id);
     return response.data;
   },
 };

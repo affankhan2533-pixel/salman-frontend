@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useMemo, memo } from 'react';
+import React, { useEffect, useRef, useState, useMemo, useCallback, memo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
@@ -109,6 +109,38 @@ function BookingSection() {
   const [fetchFailed, setFetchFailed] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
+  // Availability Loading Message & Request Cancellation / Tracking Refs
+  const [loadingMessage, setLoadingMessage] = useState('Connecting to live availability. This may take a moment.');
+  const activeAbortControllerRef = useRef(null);
+  const activeRetryTimerRef = useRef(null);
+  const resolveRetryDelayRef = useRef(null);
+  const isFetchingRef = useRef(false);
+  const fetchSeqRef = useRef(0);
+
+  const cancelPendingAvailability = useCallback(() => {
+    if (activeAbortControllerRef.current) {
+      try {
+        activeAbortControllerRef.current.abort();
+      } catch {
+        /* ignore */
+      }
+      activeAbortControllerRef.current = null;
+    }
+    if (activeRetryTimerRef.current) {
+      clearTimeout(activeRetryTimerRef.current);
+      activeRetryTimerRef.current = null;
+    }
+    if (resolveRetryDelayRef.current) {
+      try {
+        resolveRetryDelayRef.current();
+      } catch {
+        /* ignore */
+      }
+      resolveRetryDelayRef.current = null;
+    }
+    isFetchingRef.current = false;
+  }, []);
+
   // Customer form details
   const [formData, setFormData] = useState({
     name: '',
@@ -180,49 +212,132 @@ function BookingSection() {
   // 3. Live availability fetch from backend API (MongoDB as single source of truth)
   const fetchAvailability = async (dateIso, serviceItem, isSilent = false) => {
     if (!dateIso) return;
-    if (!isSilent) setLoadingSlots(true);
-    setErrorMessage('');
-    setIsConflictError(false);
-    setFetchFailed(false);
 
-    const sInput = serviceItem?.name || serviceItem?.id || '';
-    if (typeof window !== 'undefined') {
-      console.log('[BOOKING DEBUG] AVAILABILITY URL:', `/appointments/availability?date=${dateIso}&service=${encodeURIComponent(sInput)}`);
-      console.log('[BOOKING DEBUG] DATE:', dateIso);
+    // If a background silent poll / socket tick fires while a primary fetch sequence is active, defer it
+    if (isSilent && isFetchingRef.current) {
+      return;
     }
 
+    // Cancel any previous in-flight request or pending retry timer
+    cancelPendingAvailability();
+
+    const currentSeq = ++fetchSeqRef.current;
+    const controller = new AbortController();
+    activeAbortControllerRef.current = controller;
+    isFetchingRef.current = true;
+
+    if (!isSilent) {
+      setLoadingSlots(true);
+      setLoadingMessage('Connecting to live availability. This may take a moment.');
+    }
+    setErrorMessage('');
+    setIsConflictError(false);
+
+    const sInput = serviceItem?.name || serviceItem?.id || '';
+
+    // Retry configuration with bounded exponential backoff
+    // Delays: 3s, 6s, 12s -> Total retry window ~ 50-60s to accommodate Render cold start
+    const maxRetries = 3;
+    const retryDelays = [3000, 6000, 12000];
+
+    let attempt = 0;
+    let success = false;
+    let finalError = null;
+
     try {
-      const response = await bookingService.getAvailability(dateIso, sInput);
-      if (typeof window !== 'undefined') {
-        console.log('[BOOKING DEBUG] RESPONSE STATUS: 200');
-        console.log('[BOOKING DEBUG] RESPONSE DATA:', response);
+      while (attempt <= maxRetries && !success) {
+        if (fetchSeqRef.current !== currentSeq || controller.signal.aborted) {
+          return;
+        }
+
+        if (attempt > 0 && !isSilent) {
+          setLoadingMessage(
+            `Waking server and checking available times... This may take a moment on first load (Attempt ${attempt + 1}/${maxRetries + 1}).`
+          );
+        }
+
+        try {
+          const response = await bookingService.getAvailability(dateIso, sInput, {
+            signal: controller.signal,
+          });
+
+          if (fetchSeqRef.current !== currentSeq || controller.signal.aborted) {
+            return;
+          }
+
+          let slotList = [];
+          if (response && response.data) {
+            slotList = Array.isArray(response.data) ? response.data : response.data.slots || [];
+          } else if (Array.isArray(response)) {
+            slotList = response;
+          }
+
+          setAvailabilitySlots(slotList);
+          setFetchFailed(false);
+          setErrorMessage('');
+          success = true;
+
+          // Keep previously selected time slot if still available
+          setSelectedTimeSlot((prev) => {
+            if (!prev) return null;
+            const matching = slotList.find(
+              (s) => s.time === prev.time || s.startTime === prev.startTime
+            );
+            return matching && matching.available ? matching : null;
+          });
+        } catch (err) {
+          // Ignore aborted / cancelled requests
+          if (
+            err.name === 'CanceledError' ||
+            err.name === 'AbortError' ||
+            err.code === 'ERR_CANCELED' ||
+            controller.signal.aborted
+          ) {
+            return;
+          }
+
+          finalError = err;
+          const status = err.response?.status;
+
+          // Do NOT retry permanent client errors (HTTP 400 - 499)
+          const isPermanentClientError = status >= 400 && status < 500;
+          if (isPermanentClientError) {
+            break;
+          }
+
+          attempt++;
+          if (attempt <= maxRetries) {
+            const delay = retryDelays[attempt - 1] || 8000;
+            await new Promise((resolve) => {
+              resolveRetryDelayRef.current = resolve;
+              activeRetryTimerRef.current = setTimeout(() => {
+                resolveRetryDelayRef.current = null;
+                resolve();
+              }, delay);
+            });
+          }
+        }
       }
 
-      let slotList = [];
-      if (response && response.data) {
-        slotList = Array.isArray(response.data) ? response.data : response.data.slots || [];
+      if (!success && fetchSeqRef.current === currentSeq && !controller.signal.aborted) {
+        if (!isSilent || availabilitySlots.length === 0) {
+          setAvailabilitySlots([]);
+          setFetchFailed(true);
+          const status = finalError?.response?.status;
+          if (status >= 400 && status < 500) {
+            setErrorMessage('Selected date or service selection is invalid. Please select another date.');
+          } else {
+            setErrorMessage('Unable to connect to live availability. Please check your connection or retry.');
+          }
+        }
       }
-
-      setAvailabilitySlots(slotList);
-      setFetchFailed(false);
-
-      // Keep previously selected time slot if still available
-      setSelectedTimeSlot((prev) => {
-        if (!prev) return null;
-        const matching = slotList.find(
-          (s) => s.time === prev.time || s.startTime === prev.startTime
-        );
-        return matching && matching.available ? matching : null;
-      });
-    } catch (err) {
-      if (typeof window !== 'undefined') {
-        console.error('[BOOKING DEBUG] ERROR:', err.message, err.response ? err.response.status : 'No Response / Connection Refused');
-      }
-      setAvailabilitySlots([]);
-      setFetchFailed(true);
-      setErrorMessage('Unable to connect to live availability. Please check connection or try again.');
     } finally {
-      if (!isSilent) setLoadingSlots(false);
+      if (fetchSeqRef.current === currentSeq) {
+        isFetchingRef.current = false;
+        if (!isSilent) {
+          setLoadingSlots(false);
+        }
+      }
     }
   };
 
@@ -254,8 +369,9 @@ function BookingSection() {
 
     return () => {
       clearInterval(pollInterval);
+      cancelPendingAvailability();
     };
-  }, [selectedDateIso, selectedService]);
+  }, [selectedDateIso, selectedService, cancelPendingAvailability]);
 
   // Handle custom date picker input change
   const handleDateChange = (newIso) => {
@@ -677,20 +793,23 @@ function BookingSection() {
                     </div>
 
                     {loadingSlots && availabilitySlots.length === 0 ? (
-                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs flex items-center justify-center gap-2 animate-pulse">
-                        <RefreshCw className="w-4 h-4 text-champagne animate-spin" />
-                        <span>Connecting to live availability for {selectedDateLabel}...</span>
+                      <div className="p-8 text-center bg-white/70 rounded-2xl border border-charcoal/10 text-warm-gray text-xs flex flex-col items-center justify-center gap-2 animate-pulse">
+                        <div className="flex items-center gap-2 text-charcoal font-medium">
+                          <RefreshCw className="w-4 h-4 text-champagne animate-spin" />
+                          <span>{loadingMessage}</span>
+                        </div>
+                        <span className="text-[11px] text-warm-gray/70">Date: {selectedDateLabel}</span>
                       </div>
                     ) : fetchFailed ? (
                       <div className="p-8 text-center bg-white/70 rounded-2xl border border-red-500/20 text-red-700 text-xs space-y-3">
-                        <p className="font-medium">Unable to connect to live availability. Please check your connection.</p>
+                        <p className="font-medium">{errorMessage || 'Unable to connect to live availability. Please check your connection or retry.'}</p>
                         <button
                           type="button"
                           onClick={() => fetchAvailability(selectedDateIso, selectedService)}
                           className="px-4 py-2 bg-charcoal text-white rounded-xl font-lbl text-[11px] uppercase tracking-wider hover:bg-champagne hover:text-charcoal transition-all cursor-pointer inline-flex items-center gap-1.5"
                         >
                           <RefreshCw className="w-3 h-3" />
-                          <span>Retry Connection</span>
+                          <span>Retry Availability</span>
                         </button>
                       </div>
                     ) : availabilitySlots.length > 0 ? (
