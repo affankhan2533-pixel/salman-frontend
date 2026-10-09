@@ -16,25 +16,37 @@ const nextConfig = {
       },
     ],
   },
-  // Prevent stale /_next/static chunk 404s by sending no-cache headers in dev.
-  // In production, Next.js handles long-lived caching correctly via content hashes.
+  // Security headers & caching configuration
   async headers() {
     const isDev = process.env.NODE_ENV !== 'production';
-    if (!isDev) return [];
-    return [
+    const securityHeaders = [
+      { key: 'X-Content-Type-Options', value: 'nosniff' },
+      { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+      { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+      { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+    ];
+
+    const routes = [
       {
-        source: '/_next/static/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-        ],
-      },
-      {
-        source: '/_next/:path*',
-        headers: [
-          { key: 'Cache-Control', value: 'no-store, max-age=0' },
-        ],
+        source: '/:path*',
+        headers: securityHeaders,
       },
     ];
+
+    if (isDev) {
+      routes.push(
+        {
+          source: '/_next/static/:path*',
+          headers: [{ key: 'Cache-Control', value: 'no-store, max-age=0' }],
+        },
+        {
+          source: '/_next/:path*',
+          headers: [{ key: 'Cache-Control', value: 'no-store, max-age=0' }],
+        }
+      );
+    }
+
+    return routes;
   },
   experimental: {
     optimizePackageImports: ['lucide-react', '@react-three/drei', 'framer-motion', 'react-icons'],

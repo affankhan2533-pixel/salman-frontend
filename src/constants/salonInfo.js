@@ -45,8 +45,8 @@ export const SALON_INFO = {
       relativeTime: 'a year ago',
       quote: 'From the moment I walked into Salman Hair Studio, I knew I was in good hands. The haircuts and hair treatment services are top notch.',
       title: 'Google Reviewer (4 reviews · 2 photos)',
-      verified: 'Google Verified Review',
-      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400',
+      verified: 'Google Review',
+      initials: 'SV',
     },
     {
       id: 2,
@@ -55,7 +55,7 @@ export const SALON_INFO = {
       relativeTime: 'a year ago',
       quote: 'I had an amazing experience getting my hair coloured at Salman Malik! The staff, especially Aasha, were incredibly welcoming and took the time to really understand the look I was going for.',
       title: 'Google Reviewer (2 reviews)',
-      avatarUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=400',
+      initials: 'SM',
     },
     {
       id: 3,
@@ -64,7 +64,7 @@ export const SALON_INFO = {
       relativeTime: '2 months ago',
       quote: 'Salman and Farmaan the owners are professionals and experts in the work they do. Nice place for best haircuts and face treatments!',
       title: 'Google Reviewer (8 reviews)',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400',
+      initials: 'RS',
     },
   ],
 };

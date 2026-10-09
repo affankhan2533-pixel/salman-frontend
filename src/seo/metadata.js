@@ -37,7 +37,7 @@ export const defaultMetadata = {
     type: 'website',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
+        url: '/images/branding/image.png',
         width: 1200,
         height: 630,
         alt: 'Salman Hair Studio Mumbai',
@@ -48,7 +48,7 @@ export const defaultMetadata = {
     card: 'summary_large_image',
     title: 'Salman Hair Studio Kurla West Mumbai',
     description: `Premier Hair Salon in Kurla West, Mumbai. ${SALON_INFO.rating}★ Google Rated.`,
-    images: ['https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200'],
+    images: ['/images/branding/image.png'],
   },
   robots: {
     index: true,

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useMemo, memo } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
 import { Container } from '@/components/ui';
 import {
@@ -871,24 +872,39 @@ function BookingSection() {
                   </div>
 
                   {/* FORM ACTIONS */}
-                  <div className="pt-4 flex items-center justify-between border-t border-border-light">
-                    <button
-                      type="button"
-                      disabled={isSubmitting}
-                      onClick={() => setStep(2)}
-                      className="h-12 px-5 rounded-xl border border-charcoal/20 text-charcoal hover:border-charcoal text-xs uppercase tracking-widest font-medium flex items-center gap-2 cursor-pointer disabled:opacity-50"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      <span>Change Time</span>
-                    </button>
+                  <div className="pt-4 space-y-3 border-t border-border-light">
+                    <div className="flex items-center justify-between">
+                      <button
+                        type="button"
+                        disabled={isSubmitting}
+                        onClick={() => setStep(2)}
+                        className="h-12 px-5 rounded-xl border border-charcoal/20 text-charcoal hover:border-charcoal text-xs uppercase tracking-widest font-medium flex items-center gap-2 cursor-pointer disabled:opacity-50"
+                      >
+                        <ArrowLeft className="w-4 h-4" />
+                        <span>Change Time</span>
+                      </button>
 
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="h-12 px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs uppercase tracking-[0.2em] font-medium rounded-xl shadow-md flex items-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <span>{isSubmitting ? 'BOOKING...' : 'BOOK NOW →'}</span>
-                    </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="h-12 px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all text-xs uppercase tracking-[0.2em] font-medium rounded-xl shadow-md flex items-center gap-2.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <span>{isSubmitting ? 'BOOKING...' : 'BOOK NOW →'}</span>
+                      </button>
+                    </div>
+
+                    {/* Privacy & Terms Notice under DPDPA 2023 */}
+                    <p className="text-[11px] text-warm-gray leading-relaxed text-center sm:text-left pt-1">
+                      By confirming your reservation, you agree to our{' '}
+                      <Link href="/terms-and-conditions" className="text-charcoal underline underline-offset-2 hover:text-champagne transition-colors">
+                        Terms of Service
+                      </Link>{' '}
+                      and acknowledge our{' '}
+                      <Link href="/privacy-policy" className="text-charcoal underline underline-offset-2 hover:text-champagne transition-colors">
+                        Privacy Policy
+                      </Link>
+                      . Your information is used strictly to reserve and manage your appointment.
+                    </p>
                   </div>
                 </form>
               )}

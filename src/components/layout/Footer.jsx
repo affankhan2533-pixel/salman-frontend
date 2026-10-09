@@ -27,7 +27,7 @@ function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b border-border-light relative z-10">
           
           {/* Brand Column */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="md:col-span-4 space-y-4">
             <Link
               href="/"
               className="font-heading text-3xl sm:text-4xl lg:text-5xl uppercase tracking-widest text-charcoal font-normal hover:text-champagne transition-colors duration-300 block"
@@ -45,9 +45,9 @@ function Footer() {
           </div>
 
           {/* Navigation Column */}
-          <div className="md:col-span-3 space-y-4">
+          <div className="md:col-span-2 space-y-4">
             <span className="text-lbl text-xs text-champagne tracking-[0.28em] uppercase block font-semibold">
-              QUICK NAVIGATION
+              NAVIGATION
             </span>
             <ul className="space-y-2.5 text-xs sm:text-sm text-warm-gray font-light">
               {['Home', 'About', 'Services', 'Gallery', 'Reviews', 'Booking', 'Contact'].map((nav) => {
@@ -58,11 +58,52 @@ function Footer() {
                       href={href}
                       className="hover:text-charcoal transition-colors duration-300 relative inline-block py-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne hover:after:w-full after:transition-all after:duration-300"
                     >
-                      {nav} {nav !== 'Home' ? 'Experience' : ''}
+                      {nav}
                     </Link>
                   </li>
                 );
               })}
+            </ul>
+          </div>
+
+          {/* Legal & Policies Column */}
+          <div className="md:col-span-2 space-y-4">
+            <span className="text-lbl text-xs text-champagne tracking-[0.28em] uppercase block font-semibold">
+              POLICIES
+            </span>
+            <ul className="space-y-2.5 text-xs sm:text-sm text-warm-gray font-light">
+              <li>
+                <Link
+                  href="/privacy-policy"
+                  className="hover:text-charcoal transition-colors duration-300 relative inline-block py-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne hover:after:w-full after:transition-all after:duration-300"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms-and-conditions"
+                  className="hover:text-charcoal transition-colors duration-300 relative inline-block py-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne hover:after:w-full after:transition-all after:duration-300"
+                >
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cookie-policy"
+                  className="hover:text-charcoal transition-colors duration-300 relative inline-block py-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne hover:after:w-full after:transition-all after:duration-300"
+                >
+                  Cookie Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/refund-policy"
+                  className="hover:text-charcoal transition-colors duration-300 relative inline-block py-0.5 after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-0 after:h-[1.5px] after:bg-champagne hover:after:w-full after:transition-all after:duration-300"
+                >
+                  Refund Policy
+                </Link>
+              </li>
             </ul>
           </div>
 

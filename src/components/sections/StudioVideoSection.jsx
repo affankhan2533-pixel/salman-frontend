@@ -18,22 +18,28 @@ export default function StudioVideoSection() {
     video.playsInline = true;
 
     const playVideo = () => {
-      const promise = video.play();
-      if (promise !== undefined) {
-        promise.then(() => setIsPlaying(true)).catch((err) => {
-          console.warn('Autoplay error:', err);
-        });
+      // Only try to play if video has loaded enough data
+      if (video.readyState >= 2) {
+        const promise = video.play();
+        if (promise !== undefined) {
+          promise.then(() => setIsPlaying(true)).catch(() => {
+            // Autoplay blocked (common on iOS) — video will play when user interacts
+          });
+        }
       }
     };
 
-    playVideo();
-
-    // IntersectionObserver to pause when off-screen & play when in-screen
+    // IntersectionObserver: load src and play when visible, pause when off-screen
     if (!containerRef.current) return;
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
+            // Load the video src only when entering viewport
+            if (!video.src && video.dataset.src) {
+              video.src = video.dataset.src;
+              video.load();
+            }
             playVideo();
           } else {
             if (!video.paused) {
@@ -173,13 +179,13 @@ export default function StudioVideoSection() {
               >
                 <video
                   ref={videoRef}
-                  src="/videos/WhatsApp%202026-08-16%2022-00-16.mp4"
-                  autoPlay
+                  data-src="/videos/WhatsApp%202026-08-16%2022-00-16.mp4"
                   loop
                   muted={isMuted}
                   playsInline
-                  preload="metadata"
-                  className="w-full h-full object-cover object-center"
+                  preload="none"
+                  className="w-full h-full object-cover object-center bg-[#0a0a09]"
+                  aria-label="Salman Hair Studio behind the scenes video"
                 />
 
                 {/* Subtle Luxury Gradient Overlay (top and bottom) */}

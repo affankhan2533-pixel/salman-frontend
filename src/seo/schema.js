@@ -5,7 +5,7 @@ export const hairStudioSchema = {
   '@type': 'HairSalon',
   name: SALON_INFO.name,
   alternateName: SALON_INFO.hindiName,
-  image: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&q=80&w=1200',
+  image: 'https://salmanhairstudio.com/images/branding/image.png',
   '@id': 'https://salmanhairstudio.com',
   url: 'https://salmanhairstudio.com',
   telephone: SALON_INFO.rawPhone,
