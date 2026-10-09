@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { SERVICES as ALL_SERVICES } from '@/data/servicesData';
 import bookingService from '@/services/bookingService';
+import socketService from '@/services/socketService';
 import { safeSessionStorage } from '@/utils/storage';
 
 // Format services list with uniform display fields
