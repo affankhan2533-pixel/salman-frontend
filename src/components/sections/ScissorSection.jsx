@@ -70,6 +70,19 @@ function ScissorSection() {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
     setPrefersReducedMotion(mediaQuery.matches);
 
+    const handleMotionChange = (e) => {
+      setPrefersReducedMotion(e.matches);
+    };
+
+    mediaQuery.addEventListener('change', handleMotionChange);
+
+    // If user prefers reduced motion, skip GSAP & ScrollTrigger setup completely
+    if (mediaQuery.matches) {
+      return () => {
+        mediaQuery.removeEventListener('change', handleMotionChange);
+      };
+    }
+
     const ctx = gsap.context(() => {
       if (!sectionRef.current) return;
 
@@ -167,13 +180,57 @@ function ScissorSection() {
       );
     }, sectionRef);
 
-    return () => ctx.revert();
-  }, []);
+    return () => {
+      mediaQuery.removeEventListener('change', handleMotionChange);
+      ctx?.revert();
+    };
+  }, [prefersReducedMotion]);
 
   if (prefersReducedMotion) {
     return (
-      <section className="relative w-full h-[50vh] bg-transparent flex items-center justify-center select-none">
-        <ScissorsSVGPoster className="w-24 h-40 opacity-50" />
+      <section
+        className="relative w-full h-[110vh] sm:h-[140vh] lg:h-[170vh] bg-transparent flex flex-col items-center justify-center px-4 sm:px-6 select-none z-30 overflow-hidden"
+        aria-label="Atelier Craft Precision & Identity"
+      >
+        {/* Luxury ambient gold glow backdrop (static) */}
+        <div className="absolute w-80 sm:w-[500px] h-80 sm:h-[500px] rounded-full bg-champagne/15 blur-[120px] pointer-events-none opacity-60 z-10" />
+
+        {/* Static Shears SVG Poster Layer */}
+        <div className="relative z-10 flex flex-col items-center justify-center mb-6 sm:mb-8 pointer-events-none">
+          <ScissorsSVGPoster className="w-24 sm:w-28 h-40 sm:h-44 opacity-60" />
+        </div>
+
+        {/* Editorial Typography (Complete Visual Hierarchy & Branding) */}
+        <div className="relative z-20 flex flex-col items-center text-center max-w-4xl px-4 pointer-events-none">
+          {/* Metadata Sub-Label */}
+          <div className="flex items-center justify-center gap-2 sm:gap-3 text-lbl text-[10px] sm:text-xs tracking-[0.22em] sm:tracking-[0.3em] text-warm-gray uppercase font-medium mb-3 sm:mb-4">
+            <span className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-champagne" />
+              <span>PRECISION CRAFT</span>
+            </span>
+            <span className="inline-block">ATELIER PHILOSOPHY</span>
+          </div>
+
+          {/* Heading */}
+          <h2 className="font-heading text-3xl sm:text-5xl lg:text-[76px] xl:text-[88px] leading-[0.94] sm:leading-[0.92] tracking-[-0.02em] sm:tracking-[-0.03em] uppercase font-medium">
+            <div className="inline-flex items-center justify-center gap-2.5 sm:gap-3">
+              <span className="inline-block text-charcoal">CRAFT</span>
+              <span className="inline-block text-charcoal">PRECISION</span>
+            </div>
+            <div className="block mt-1 sm:mt-2">
+              <span className="inline-flex items-center justify-center italic text-champagne font-normal">
+                IDENTITY
+              </span>
+            </div>
+          </h2>
+
+          {/* Tagline */}
+          <div className="mt-4 sm:mt-6 max-w-xl">
+            <p className="text-body-editorial text-xs sm:text-sm text-warm-gray tracking-wide leading-relaxed text-center">
+              Every shear movement is calculated with diagnostic accuracy, sculpting silhouettes tailored to your personal aesthetic.
+            </p>
+          </div>
+        </div>
       </section>
     );
   }

@@ -424,6 +424,9 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
   const pL = progVal < 0.18 ? 2 : progVal < 0.74 ? lerp(2, 9.8, remap(progVal, 0.18, 0.74)) : 9.8;
 
   const shouldRender = isVisible && isTabActive;
+  // Ensure the render loop runs at least until the first visible frame is confirmed by FirstFrameReporter,
+  // then return to visibility-aware rendering (isVisible && isTabActive)
+  const activeFrameloop = (!firstFrameRendered || (isVisible && isTabActive)) ? 'always' : 'never';
 
   // Adaptive camera parameters: Mobile Z=8.2 FOV=42, Tablet Z=7.8 FOV=41, Desktop Z=7.5 FOV=40
   const camZ = deviceMode === 'mobile' ? 8.2 : deviceMode === 'tablet' ? 7.8 : 7.5;
@@ -439,14 +442,9 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
         )}
         <Canvas
           onCreated={(state) => {
-            try {
-              state.gl.render(state.scene, state.camera);
-              requestAnimationFrame(() => setFirstFrameRendered(true));
-            } catch {
-              // Best-effort initial buffer paint; FirstFrameReporter verifies via useFrame
-            }
+            state.gl.toneMapping = THREE.ACESFilmicToneMapping;
           }}
-          frameloop={shouldRender ? 'always' : 'never'}
+          frameloop={activeFrameloop}
           camera={{ position: [0, 0, camZ], fov: camFov }}
           gl={{ alpha: true, antialias: true, powerPreference: 'default' }}
           dpr={[1, deviceMode === 'mobile' ? 1.0 : 1.5]}
