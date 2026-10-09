@@ -8,8 +8,8 @@ import { ArrowRight } from 'lucide-react';
 
 const STATS_DATA = [
   { target: 10, suffix: '+', label: 'Years of Craft' },
-  { target: 15, suffix: 'K+', label: 'Happy Clients' },
-  { target: 4.7, suffix: '★', isDecimal: true, label: 'Google Rating (360+)' },
+  { target: 360, suffix: '+', label: 'Verified Google Reviews' },
+  { target: 4.7, suffix: '★', isDecimal: true, label: 'Google Rating' },
   { target: 100, suffix: '%', label: 'Personal Consultation' },
 ];
 

@@ -215,8 +215,8 @@ function ScissorSection() {
           className="absolute w-80 sm:w-[500px] h-80 sm:h-[500px] rounded-full bg-champagne/15 blur-[120px] pointer-events-none opacity-0 z-10"
         />
 
-        {/* 3D CANVAS OVERLAY LAYER (z-30): Passes behind About Section (z-40) */}
-        <div className="absolute inset-0 z-30 pointer-events-none flex items-center justify-center bg-transparent">
+        {/* 3D CANVAS OVERLAY LAYER (z-10): Ambient 3D depth layer */}
+        <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center bg-transparent">
           <ScissorSectionErrorBoundary>
             <ScissorScene progressRef={progressRef} isVisible={isVisible} />
           </ScissorSectionErrorBoundary>

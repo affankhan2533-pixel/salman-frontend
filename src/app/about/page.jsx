@@ -10,9 +10,9 @@ import { Calendar, MessageCircle, CheckCircle2, X, ChevronLeft, ChevronRight, Ar
 
 
 const TIMELINE_DATA = [
-  { year: '2016', title: 'Studio Started', description: 'Founded with a single chair and a commitment to unhurried, diagnostic hair sculpting in Bandra.' },
+  { year: '2016', title: 'Studio Started', description: 'Founded with a single chair and a commitment to unhurried, diagnostic hair sculpting in Mumbai.' },
   { year: '2018', title: '500 Clients', description: 'Established a loyal following among Mumbai’s fashion editors, artists, and discerning clientele.' },
-  { year: '2020', title: 'Premium Expansion', description: 'Expanded into our flagship Bandra West sanctuary featuring private 1-on-1 consultation suites.' },
+  { year: '2020', title: 'Premium Expansion', description: 'Expanded into our flagship Kurla West sanctuary featuring private 1-on-1 consultation suites.' },
   { year: '2023', title: '1000+ Transformations', description: 'Pioneered bespoke organic balayage & formaldehyde-free silk keratin restructuring in India.' },
   { year: '2026', title: 'Luxury Studio', description: 'Celebrated a decade as Mumbai’s benchmark haute coiffure atelier and bespoke hair sanctuary.' },
 ];
@@ -534,11 +534,11 @@ export default function AboutPage() {
               <span className="text-lbl text-xs text-warm-gray tracking-widest uppercase block font-medium">Years of Excellence</span>
             </div>
             <div className="p-8 bg-cream/40 border border-border-light rounded-[24px] space-y-2">
-              <span className="font-num text-4xl sm:text-5xl font-bold text-champagne block">1000+</span>
-              <span className="text-lbl text-xs text-warm-gray tracking-widest uppercase block font-medium">Happy Clients</span>
+              <span className="font-num text-4xl sm:text-5xl font-bold text-champagne block">360+</span>
+              <span className="text-lbl text-xs text-warm-gray tracking-widest uppercase block font-medium">Verified Google Reviews</span>
             </div>
             <div className="p-8 bg-cream/40 border border-border-light rounded-[24px] space-y-2">
-              <span className="font-num text-4xl sm:text-5xl font-bold text-champagne block">4.9★</span>
+              <span className="font-num text-4xl sm:text-5xl font-bold text-champagne block">4.7★</span>
               <span className="text-lbl text-xs text-warm-gray tracking-widest uppercase block font-medium">Google Rating</span>
             </div>
             <div className="p-8 bg-cream/40 border border-border-light rounded-[24px] space-y-2">

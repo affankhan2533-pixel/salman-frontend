@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
 import { X, Calendar, Clock, User, Phone, Mail, CheckCircle2, MessageCircle, AlertCircle, Loader2, RefreshCw } from 'lucide-react';
 import { SERVICES as ALL_SERVICES } from '@/data/servicesData';
 import bookingService from '@/services/bookingService';
@@ -20,6 +21,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = 'Hair C
     date: todayIso,
     time: '',
     notes: '',
+    marketingConsent: false,
   });
 
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
@@ -125,6 +127,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = 'Hair C
         time: formData.time,
         startTime: formData.time,
         notes: formData.notes.trim(),
+        marketingConsent: Boolean(formData.marketingConsent),
       });
 
       const bookingRef = response?.data?.bookingRef || 'SHS-' + Date.now().toString(36).slice(-5).toUpperCase();
@@ -139,6 +142,7 @@ export default function BookingModal({ isOpen, onClose, defaultService = 'Hair C
         date: formData.date,
         time: formData.time,
         notes: formData.notes ? formData.notes.trim() : '',
+        marketingConsent: Boolean(formData.marketingConsent),
       };
 
       setCreatedBooking(bookingData);
@@ -348,8 +352,24 @@ export default function BookingModal({ isOpen, onClose, defaultService = 'Hair C
                 />
               </div>
 
+              {/* Optional Marketing Consent */}
+              <div className="p-3 bg-cream/40 rounded-xl border border-charcoal/10">
+                <label htmlFor="modal-marketing-consent" className="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    id="modal-marketing-consent"
+                    checked={formData.marketingConsent || false}
+                    onChange={(e) => handleChange('marketingConsent', e.target.checked)}
+                    className="mt-0.5 w-3.5 h-3.5 rounded border-charcoal/30 text-champagne focus:ring-champagne cursor-pointer accent-champagne shrink-0"
+                  />
+                  <span className="text-[11px] text-warm-gray leading-snug">
+                    Receive atelier updates and style recommendations via WhatsApp/SMS <span className="text-warm-gray/60">(Optional)</span>
+                  </span>
+                </label>
+              </div>
+
               {/* Submit Button */}
-              <div className="pt-3">
+              <div className="pt-2 space-y-2">
                 <button
                   type="submit"
                   disabled={isSubmitting || !formData.time}
@@ -367,6 +387,17 @@ export default function BookingModal({ isOpen, onClose, defaultService = 'Hair C
                     </>
                   )}
                 </button>
+
+                <p className="text-[10px] text-warm-gray text-center leading-normal">
+                  By booking, you agree to our{' '}
+                  <Link href="/terms-and-conditions" className="text-charcoal underline hover:text-champagne" onClick={handleModalClose}>
+                    Terms
+                  </Link>{' '}
+                  and{' '}
+                  <Link href="/privacy-policy" className="text-charcoal underline hover:text-champagne" onClick={handleModalClose}>
+                    Privacy Policy
+                  </Link>.
+                </p>
               </div>
             </form>
           </div>

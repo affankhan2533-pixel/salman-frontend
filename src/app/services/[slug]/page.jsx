@@ -22,7 +22,7 @@ export async function generateMetadata({ params }) {
 
   return {
     title: `${service.title} | Salman Hair Studio Mumbai`,
-    description: `${service.tagline} Book a private consultation at Salman Hair Studio Bandra West.`,
+    description: `${service.tagline} Book a private consultation at Salman Hair Studio Kurla West.`,
     openGraph: {
       title: `${service.title} | Salman Hair Studio`,
       description: service.tagline,
@@ -50,10 +50,10 @@ export default function ServiceDetailPage({ params }) {
       'name': 'Salman Hair Studio',
       'address': {
         '@type': 'PostalAddress',
-        'streetAddress': 'Waterfield Road',
-        'addressLocality': 'Bandra West',
+        'streetAddress': 'Shop No. 5, Manav Drishti Apartments, LBS Marg, Opposite Kurla Court',
+        'addressLocality': 'Kurla West',
         'addressRegion': 'Mumbai',
-        'postalCode': '400050',
+        'postalCode': '400070',
         'addressCountry': 'IN',
       },
     },
@@ -315,7 +315,7 @@ export default function ServiceDetailPage({ params }) {
               Ready for {service.title}?
             </h2>
             <p className="text-body text-warm-gray-light font-light text-sm sm:text-base max-w-md mx-auto">
-              Book your private consultation at our Bandra West atelier.
+              Book your private consultation at our Kurla West atelier.
             </p>
             <div className="pt-4">
               <Link href={`/booking?service=${service.slug}`}>

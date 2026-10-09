@@ -247,7 +247,7 @@ export default function CaseStudyPage({ params }) {
               Ready for a Similar Transformation?
             </h2>
             <p className="text-body text-warm-gray-light font-light text-sm sm:text-base max-w-md mx-auto">
-              Book your private consultation at our Bandra West atelier.
+              Book your private consultation at our Kurla West atelier.
             </p>
             <div className="pt-4">
               <Link href="/#booking">

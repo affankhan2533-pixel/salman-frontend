@@ -9,7 +9,7 @@ import { Shield, Lock, FileText, CheckCircle, ArrowLeft } from 'lucide-react';
 export const metadata = {
   title: 'Privacy Policy | Salman Hair Studio Mumbai',
   description:
-    'Privacy Policy and data protection disclosures for Salman Hair Studio, Kurla West, Mumbai. Compliant with the Digital Personal Data Protection Act, 2023 (DPDPA).',
+    'Privacy Policy and customer personal data handling practices for Salman Hair Studio, Kurla West, Mumbai.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -43,15 +43,6 @@ export default function PrivacyPolicyPage() {
             </p>
           </header>
 
-          {/* Legal Notice Callout */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-charcoal/80 mb-10 space-y-1">
-            <p className="font-semibold text-charcoal uppercase tracking-wider text-[11px]">
-              Regulatory Notice &amp; Owner Verification
-            </p>
-            <p className="font-light leading-relaxed">
-              This policy outlines how Salman Hair Studio handles client information under India&apos;s Digital Personal Data Protection Act, 2023 (DPDPA 2023). [OWNER APPROVAL REQUIRED: Final legal verification by salon management recommended before statutory reliance].
-            </p>
-          </div>
 
           {/* Content sections */}
           <article className="prose prose-neutral max-w-none space-y-10 font-body text-charcoal/90 text-sm sm:text-base leading-relaxed">
@@ -147,7 +138,7 @@ export default function PrivacyPolicyPage() {
                 In accordance with Section 10 of the Digital Personal Data Protection Act, 2023, inquiries or complaints regarding personal data may be directed to our designated officer:
               </p>
               <div className="p-4 sm:p-5 rounded-2xl bg-white border border-charcoal/10 space-y-2 text-xs sm:text-sm">
-                <p><strong>Designated Grievance Contact:</strong> Salman Malik / Farmaan Malik [OWNER APPROVAL REQUIRED]</p>
+                <p><strong>Designated Grievance Contact:</strong> Grievance Officer, Salman Hair Studio</p>
                 <p><strong>Studio:</strong> Salman Hair Studio, Kurla West, Mumbai 400070</p>
                 <p><strong>Direct Telephone / WhatsApp:</strong> {SALON_INFO.phone}</p>
                 <p><strong>Email:</strong> {SALON_INFO.email}</p>

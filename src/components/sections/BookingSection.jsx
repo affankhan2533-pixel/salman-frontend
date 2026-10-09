@@ -114,6 +114,7 @@ function BookingSection() {
     phone: '',
     email: '',
     notes: '',
+    marketingConsent: false,
   });
 
   // UI status
@@ -339,6 +340,7 @@ function BookingSection() {
         time: selectedTimeSlot.time || selectedTimeSlot.startTime,
         startTime: selectedTimeSlot.startTime || selectedTimeSlot.time,
         notes: formData.notes.trim(),
+        marketingConsent: Boolean(formData.marketingConsent),
       };
 
       const result = await bookingService.createBooking(payload);
@@ -359,6 +361,7 @@ function BookingSection() {
         phone: dbData.phone || dbData.clientPhone || formData.phone.trim(),
         email: formData.email ? formData.email.trim() : '',
         notes: formData.notes ? formData.notes.trim() : '',
+        marketingConsent: Boolean(formData.marketingConsent),
         status: dbData.status || dbData.appointmentStatus || 'Pending',
       };
 
@@ -868,6 +871,22 @@ function BookingSection() {
                         onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                         className="w-full p-3.5 rounded-xl bg-white border border-charcoal/15 text-charcoal text-sm focus:outline-none focus:border-champagne transition-colors resize-none"
                       />
+                    </div>
+
+                    {/* Separate Optional Marketing Consent */}
+                    <div className="p-3.5 bg-cream/40 rounded-xl border border-charcoal/10">
+                      <label htmlFor="booking-marketing-consent" className="flex items-start gap-3 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          id="booking-marketing-consent"
+                          checked={formData.marketingConsent || false}
+                          onChange={(e) => setFormData({ ...formData, marketingConsent: e.target.checked })}
+                          className="mt-0.5 w-4 h-4 rounded border-charcoal/30 text-champagne focus:ring-champagne cursor-pointer accent-champagne shrink-0"
+                        />
+                        <span className="text-xs text-warm-gray leading-relaxed">
+                          Receive occasional atelier announcements, seasonal hair trend notes, and promotional perks via WhatsApp or SMS <span className="text-warm-gray/60">(Optional)</span>
+                        </span>
+                      </label>
                     </div>
                   </div>
 

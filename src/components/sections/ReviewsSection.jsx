@@ -1,296 +1,61 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useMemo, memo } from 'react';
+import React, { useRef, memo, useEffect } from 'react';
 import Link from 'next/link';
-import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { gsap } from '@/lib/gsap';
 import { Container } from '@/components/ui';
 import {
   Star,
-  CheckCircle2,
   ExternalLink,
-  Sparkles,
-  Scissors,
-  Calendar,
-  MessageCircle,
   MapPin,
-  Search,
-  Filter,
-  ArrowUpRight
+  Calendar,
+  ArrowUpRight,
+  ShieldCheck,
+  MessageCircle,
+  Scissors,
+  CheckCircle2,
 } from 'lucide-react';
 import { SALON_INFO } from '@/constants/salonInfo';
 
-// ── TESTIMONIALS FROM SALMAN HAIR STUDIO CLIENTS ─────────────────────────────
-// These testimonials represent client feedback about their experiences.
-// Read our verified reviews on Google Maps: https://maps.app.goo.gl/WWVvviNqthgHYNjw7
-const ALL_REVIEWS = [
-  {
-    id: 1,
-    author: 'Sarah Merchant',
-    role: 'Client',
-    initials: 'SM',
-    rating: 5,
-    date: '2 weeks ago',
-    category: 'color',
-    categoryLabel: 'Balayage & Olaplex',
-    stylist: 'Aasha & Salman',
-    quote:
-      'I had an amazing experience getting my hair coloured at Salman Hair Studio! The staff, especially Aasha, were incredibly welcoming and took the time to really understand the ash blonde tone I was aiming for. Salman personally checked the toner lift halfway through to ensure zero damage. The Olaplex treatment left my hair softer than before coloring. Definitely my go-to salon in Kurla!',
-  },
-  {
-    id: 2,
-    author: 'Sai Venkat Raman',
-    role: 'Client',
-    initials: 'SV',
-    rating: 5,
-    date: '3 weeks ago',
-    category: 'haircut',
-    categoryLabel: 'Skin Fade & Beard Sculpt',
-    stylist: 'Salman Malik',
-    quote:
-      'From the moment I sat in Salman bhai\'s chair, I knew I was in expert hands. The scissor work and taper fade were razor sharp without any irritation. Worth every single rupee. Make sure you book an appointment in advance because he gets packed on weekends.',
-  },
-  {
-    id: 3,
-    author: 'Alfiya Sayed',
-    role: 'Client',
-    initials: 'AS',
-    rating: 5,
-    date: '1 month ago',
-    category: 'bridal',
-    categoryLabel: 'Royal Bridal Coiffure',
-    stylist: 'Farmaan & Team',
-    quote:
-      'Farmaan did my bridal hair for my reception and I couldn\'t stop looking in the mirror. With the heavy dupatta and jewelry, I was worried it would shift, but the pins stayed comfortable and locked for the entire event. All my guests were complimenting the volume and crown styling. Thank you Salman Hair Studio for making my big day stress-free!',
-  },
-  {
-    id: 4,
-    author: 'Rahul Sharma',
-    role: 'Client',
-    initials: 'RS',
-    rating: 5,
-    date: '1 month ago',
-    category: 'haircut',
-    categoryLabel: 'Haircut & Scalp Restorative',
-    stylist: 'Salman & Farmaan',
-    quote:
-      'Salman and Farmaan are true masters of their trade. No rushing, no cookie-cutter cuts. Salman studied my hair crown whorl and suggested a textured fringe that completely changed my profile. The scalp massage during shampooing was unreal. Easily the best salon in Kurla West.',
-  },
-  {
-    id: 5,
-    author: 'Simran Oberoi',
-    role: 'Client',
-    initials: 'SO',
-    rating: 5,
-    date: '2 months ago',
-    category: 'botox',
-    categoryLabel: 'Nanoplastia Smoothing',
-    stylist: 'Farmaan Malik',
-    quote:
-      'Did Nanoplastia with Farmaan after years of frizzy monsoon hair in Mumbai. It has been two months now, and after every wash my hair dries naturally straight with zero frizz and mirror shine! The care instructions they provided were super detailed.',
-  },
-  {
-    id: 6,
-    author: 'Zeeshan Khan',
-    role: 'Client',
-    initials: 'ZK',
-    rating: 5,
-    date: '3 weeks ago',
-    category: 'haircut',
-    categoryLabel: 'Beard Architecture & D-Tan',
-    stylist: 'Farmaan',
-    quote:
-      'Opposite Kurla Court on LBS Marg, this is hands-down the most hygienic and premium grooming studio in the area. Farmaan did precision beard shaping aligning with my jawline. Clean sanitized blades, fresh disposable capes, and very respectful staff. 10/10 service.',
-  },
-  {
-    id: 7,
-    author: 'Pooja Desai',
-    role: 'Client',
-    initials: 'PD',
-    rating: 5,
-    date: '1 month ago',
-    category: 'color',
-    categoryLabel: 'Couture Highlights & Gloss',
-    stylist: 'Aasha',
-    quote:
-      'Aasha is a magician with hair color! I wanted subtle honey babylights that blend into dark Indian roots naturally. She blended the foil sections with so much patience and the gloss toner gave it a high-end editorial finish.',
-  },
-  {
-    id: 8,
-    author: 'Farhan Shaikh',
-    role: 'Client',
-    initials: 'FS',
-    rating: 5,
-    date: '2 weeks ago',
-    category: 'haircut',
-    categoryLabel: 'Precision Crop & Texture',
-    stylist: 'Salman Malik',
-    quote:
-      'Salman has been cutting my hair for years now. Even after moving to Powai, I still drive down to Kurla West for my haircut. The level of precision, clean drop fades, and scissor balance is unmatched by any franchised commercial chain. Always consistent.',
-  },
-  {
-    id: 9,
-    author: 'Priyanka Kapadia',
-    role: 'Client',
-    initials: 'PK',
-    rating: 5,
-    date: '3 months ago',
-    category: 'botox',
-    categoryLabel: 'Hair Botox & Split End Sealing',
-    stylist: 'Aasha & Farmaan',
-    quote:
-      'Saved my heat-damaged hair! I had brittle split ends from frequent straightening. The Hair Botox infused deep moisture back into the cuticles without taking away my natural wave. The studio has a cozy, private atmosphere where you don\'t feel hurried. Highly recommend!',
-  },
-  {
-    id: 10,
-    author: 'Tariq Mansoori',
-    role: 'Client',
-    initials: 'TM',
-    rating: 5,
-    date: '1 month ago',
-    category: 'haircut',
-    categoryLabel: 'Classic Scissor Cut & Spa',
-    stylist: 'Farmaan',
-    quote:
-      'Clean, air-conditioned atelier with very welcoming hospitality. Farmaan pays attention to every minor detail—even the perimeter taper and ear trim were immaculate. Great pricing for the luxury standard they offer.',
-  },
-  {
-    id: 11,
-    author: 'Sneha Kulkarni',
-    role: 'Client',
-    initials: 'SK',
-    rating: 5,
-    date: '2 months ago',
-    category: 'color',
-    categoryLabel: 'Balayage Touch-up & Blowdry',
-    stylist: 'Aasha',
-    quote:
-      'Got my blowout and balayage touchup done before a family function. The bounce and shine lasted a full 3 days! Aasha is very gentle, explains every product she uses, and gave me great advice on sulfate-free shampoos.',
-  },
-  {
-    id: 12,
-    author: 'Danish Qureshi',
-    role: 'Client',
-    initials: 'DQ',
-    rating: 5,
-    date: '3 weeks ago',
-    category: 'haircut',
-    categoryLabel: 'Beard Spa & Scalp Detox',
-    stylist: 'Salman Malik',
-    quote:
-      'Best salon in Mumbai for men who care about their hair health. Salman diagnosed my scalp dryness and used an organic tea tree infusion. Hair felt instantly revitalized. Very polite and humble brothers.',
-  },
-  {
-    id: 13,
-    author: 'Neha Sharma',
-    role: 'Client',
-    initials: 'NS',
-    rating: 5,
-    date: '1 month ago',
-    category: 'bridal',
-    categoryLabel: 'Couture Bridal Styling',
-    stylist: 'Salman & Team',
-    quote:
-      'Booked Salman Studio for my sister\'s engagement and my own hair styling. Both looks turned out royal. They coordinated the hairstyle with our lehenga necklines perfectly. Everyone at the venue asked where we got our hair done!',
-  },
-  {
-    id: 14,
-    author: 'Aman Verma',
-    role: 'Client',
-    initials: 'AV',
-    rating: 5,
-    date: '4 weeks ago',
-    category: 'botox',
-    categoryLabel: 'Keratin & Frizz Control',
-    stylist: 'Farmaan',
-    quote:
-      'First visit today after seeing their work on Instagram. The fade transition is flawless, completely seamless blend with zero line marks. Booking online was effortless and they took me in right at my slot time with no delay.',
-  },
-];
-
-const FILTER_CATEGORIES = [
-  { id: 'all', label: 'All Reviews', count: 14 },
-  { id: 'haircut', label: '✂ Haircut & Beard', count: 5 },
-  { id: 'color', label: '🎨 Balayage & Color', count: 3 },
-  { id: 'botox', label: '✨ Nanoplastia & Botox', count: 3 },
-  { id: 'bridal', label: '👰 Bridal & Styling', count: 3 },
-];
-
-const MARQUEE_QUOTES = [
-  '“Best fade in Mumbai — Salman has hands of gold”',
-  '“Aasha transformed my hair into mirror shine”',
-  '“Bridal hair stayed pinned and locked for 9 hours straight”',
-  '“Worth every rupee opposite Kurla Court”',
-  '“Cleanest, most professional studio in Kurla West”',
-  '“Real master craftsmanship with Japanese shears”',
-  '“Zero wait time with the online appointment system”',
-];
-
 function ReviewsSection() {
-  const [activeFilter, setActiveFilter] = useState('all');
   const sectionRef = useRef(null);
+  const cardRef = useRef(null);
   const headerRef = useRef(null);
-  const ratingBoxRef = useRef(null);
-  const filterRef = useRef(null);
-  const gridRef = useRef(null);
 
-  // Filter reviews dynamically
-  const filteredReviews = useMemo(() => {
-    if (activeFilter === 'all') return ALL_REVIEWS;
-    return ALL_REVIEWS.filter((rev) => rev.category === activeFilter);
-  }, [activeFilter]);
-
-  // GSAP Animations
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Header & Rating Card Entrance
-      gsap.fromTo(
-        headerRef.current?.children || [],
-        { opacity: 0, y: 30 },
-        {
-          opacity: 1,
-          y: 0,
-          stagger: 0.1,
-          duration: 0.8,
-          ease: 'power4.out',
-          scrollTrigger: {
-            trigger: headerRef.current,
-            start: 'top 85%',
-            once: true,
-          },
-        }
-      );
-
-      gsap.fromTo(
-        ratingBoxRef.current,
-        { opacity: 0, scale: 0.95, y: 20 },
-        {
-          opacity: 1,
-          scale: 1,
-          y: 0,
-          duration: 0.9,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: ratingBoxRef.current,
-            start: 'top 85%',
-            once: true,
-          },
-        }
-      );
-
-      // 2. Animate rating progress bars
-      const bars = ratingBoxRef.current?.querySelectorAll('.rating-bar-fill');
-      if (bars) {
+      if (headerRef.current) {
         gsap.fromTo(
-          bars,
-          { width: '0%' },
+          headerRef.current.children,
+          { opacity: 0, y: 30 },
           {
-            width: (i, target) => target.dataset.width || '100%',
-            duration: 1.2,
-            stagger: 0.15,
-            ease: 'power2.out',
+            opacity: 1,
+            y: 0,
+            stagger: 0.1,
+            duration: 0.8,
+            ease: 'power3.out',
             scrollTrigger: {
-              trigger: ratingBoxRef.current,
-              start: 'top 80%',
+              trigger: headerRef.current,
+              start: 'top 85%',
+              once: true,
+            },
+          }
+        );
+      }
+
+      if (cardRef.current) {
+        gsap.fromTo(
+          cardRef.current,
+          { opacity: 0, y: 30, scale: 0.98 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.9,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: 'top 85%',
               once: true,
             },
           }
@@ -300,23 +65,6 @@ function ReviewsSection() {
 
     return () => ctx.revert();
   }, []);
-
-  // Animate grid cards when filter changes
-  useEffect(() => {
-    if (!gridRef.current) return;
-    gsap.fromTo(
-      gridRef.current.children,
-      { opacity: 0, y: 20, scale: 0.98 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        stagger: 0.05,
-        duration: 0.45,
-        ease: 'power3.out',
-      }
-    );
-  }, [activeFilter]);
 
   return (
     <section
@@ -328,327 +76,145 @@ function ReviewsSection() {
       <div className="absolute inset-0 opacity-[0.035] bg-[radial-gradient(#1F1F1C_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none z-0" />
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-champagne/40 to-transparent" />
 
-      {/* ── 1. LUXURY TICKER / MARQUEE OF REAL SOUNDBITES ──────────────── */}
-      <div className="w-full bg-[#1F1F1C] text-white py-3.5 mb-16 sm:mb-20 overflow-hidden relative shadow-md">
-        <div className="flex w-max animate-marquee gap-8 items-center">
-          {[...MARQUEE_QUOTES, ...MARQUEE_QUOTES].map((q, idx) => (
-            <div key={idx} className="flex items-center gap-3 shrink-0">
-              <span className="w-1.5 h-1.5 rounded-full bg-champagne animate-pulse" />
-              <span className="font-heading italic text-xs sm:text-sm tracking-wide text-white/90">
-                {q}
-              </span>
-              <span className="text-[10px] tracking-widest text-champagne font-num font-semibold">
-                5.0 ★
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
       <Container size="editorial">
         <div className="relative z-10 space-y-12 lg:space-y-16">
 
-          {/* ── 2. HERO HEADER & GOOGLE RATING PROOF CARD ────────────────── */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-            
-            {/* Left Header Content */}
-            <div ref={headerRef} className="lg:col-span-7 space-y-5 text-left">
-              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-charcoal/10 shadow-sm">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-lbl text-[10px] sm:text-[11px] tracking-[0.24em] uppercase font-semibold text-charcoal">
-                  CLIENT TESTIMONIALS • 4.7★ ON GOOGLE (360+)
-                </span>
+          {/* Section Header */}
+          <div ref={headerRef} className="max-w-3xl space-y-5 text-left">
+            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white border border-charcoal/10 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-lbl text-[10px] sm:text-[11px] tracking-[0.24em] uppercase font-semibold text-charcoal">
+                VERIFIED GOOGLE BUSINESS PROFILE
+              </span>
+            </div>
+
+            <h2 className="font-heading text-4xl sm:text-6xl lg:text-[72px] leading-[0.94] text-charcoal font-normal uppercase tracking-tight">
+              Client Voices <br />
+              <span className="text-champagne italic font-serif">On Google Maps</span>
+            </h2>
+
+            <p className="font-body text-warm-gray font-light text-base sm:text-lg leading-relaxed">
+              We believe in complete authenticity. Rather than publishing unverified static testimonials on our website, all client reviews, photos, and feedback are hosted live and unfiltered on our verified Google Maps business listing.
+            </p>
+          </div>
+
+          {/* Central Google Verification Card */}
+          <div
+            ref={cardRef}
+            className="bg-white border border-charcoal/10 rounded-[32px] p-8 sm:p-12 shadow-[0_20px_50px_-15px_rgba(31,31,28,0.08)] relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 w-64 h-64 bg-champagne/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+              
+              {/* Left Column: Rating Badge & Details */}
+              <div className="lg:col-span-7 space-y-6">
+                <div className="flex flex-wrap items-baseline gap-4">
+                  <span className="font-num text-6xl sm:text-7xl font-bold text-charcoal tracking-tight">
+                    {SALON_INFO.rating}
+                  </span>
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-1.5 text-champagne">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-champagne text-champagne" />
+                      ))}
+                    </div>
+                    <span className="font-lbl text-xs text-warm-gray uppercase tracking-widest block">
+                      Based on {SALON_INFO.reviewCount}+ public Google reviews
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-2 border-t border-border-light">
+                  <div className="flex items-center gap-2 text-sm text-charcoal">
+                    <MapPin className="w-4 h-4 text-champagne shrink-0" />
+                    <span>{SALON_INFO.address.shop}, Opposite Kurla Court, LBS Marg, Mumbai</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-warm-gray">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Public reviews written by real patrons with Google accounts</span>
+                  </div>
+                </div>
+
+                <p className="font-body text-xs sm:text-sm text-warm-gray leading-relaxed font-light">
+                  Explore before-and-after customer photos, recent haircuts, balayage transformations, and honest client experiences directly on Google Maps.
+                </p>
               </div>
 
-              <h2 className="font-heading text-4xl sm:text-6xl lg:text-[72px] leading-[0.94] text-charcoal font-normal uppercase tracking-tight">
-                Authentic Voices <br />
-                <span className="text-champagne italic font-serif">Of Haute Coiffure</span>
-              </h2>
-
-              <p className="font-body text-warm-gray font-light text-base sm:text-lg leading-relaxed max-w-xl">
-                Unfiltered endorsements from patrons across Mumbai who trust Salman & Farmaan Malik for architectural precision haircuts, couture bridal styling, and restorative hair wellness.
-              </p>
-
-              <div className="flex flex-wrap items-center gap-4 pt-2">
+              {/* Right Column: Direct Verification Actions */}
+              <div className="lg:col-span-5 flex flex-col gap-3.5 bg-cream/50 p-6 sm:p-8 rounded-2xl border border-charcoal/5">
+                <span className="text-lbl text-[10px] tracking-[0.24em] text-champagne uppercase font-semibold block">
+                  TRANSPARENT REVIEWS
+                </span>
+                
                 <a
-                  href="https://maps.google.com/?q=Salman+Hair+Studio+Kurla+West+Mumbai"
+                  href={SALON_INFO.googleMapsUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-white border border-charcoal/15 text-charcoal hover:border-champagne hover:text-champagne active:scale-95 transition-all text-xs tracking-widest uppercase font-medium shadow-sm hover:shadow-md cursor-pointer"
+                  className="w-full h-13 px-6 bg-charcoal text-white hover:bg-champagne hover:text-charcoal active:scale-95 transition-all text-xs tracking-widest uppercase font-medium rounded-xl shadow-md flex items-center justify-between cursor-pointer"
                 >
-                  <span>Verify on Google Maps</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-champagne" />
+                  <span>Read 360+ Google Reviews</span>
+                  <ArrowUpRight className="w-4 h-4 text-champagne" />
                 </a>
 
                 <Link
                   href="/booking"
-                  className="inline-flex items-center gap-2 h-11 px-6 rounded-xl bg-charcoal text-white hover:bg-champagne hover:text-charcoal active:scale-95 transition-all text-xs tracking-widest uppercase font-medium shadow-md hover:shadow-lg cursor-pointer"
+                  className="w-full h-13 px-6 bg-white text-charcoal border border-charcoal/15 hover:border-champagne hover:text-champagne active:scale-95 transition-all text-xs tracking-widest uppercase font-medium rounded-xl shadow-sm flex items-center justify-between cursor-pointer"
                 >
-                  <Calendar className="w-3.5 h-3.5" />
-                  <span>Experience It Yourself →</span>
+                  <span>Book Atelier Session</span>
+                  <Calendar className="w-4 h-4 text-champagne" />
                 </Link>
-              </div>
-            </div>
 
-            {/* Right: Authentic Google Rating Breakdown Card */}
-            <div
-              ref={ratingBoxRef}
-              className="lg:col-span-5 bg-white border border-charcoal/10 rounded-[32px] p-6 sm:p-8 shadow-[0_20px_50px_-15px_rgba(31,31,28,0.1)] relative overflow-hidden space-y-6"
-            >
-              {/* Subtle Gold Ambient Glow */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-champagne/10 rounded-full blur-2xl pointer-events-none" />
-
-              {/* Score Header */}
-              <div className="flex items-center justify-between border-b border-border-light pb-5">
-                <div className="space-y-1">
-                  <div className="flex items-baseline gap-2">
-                    <span className="font-num text-5xl font-bold text-charcoal tracking-tight">4.7</span>
-                    <span className="text-xs font-lbl text-warm-gray uppercase tracking-widest">/ 5.0</span>
-                  </div>
-                  <div className="flex items-center gap-1 text-champagne">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-champagne text-champagne" />
-                    ))}
-                  </div>
-                </div>
-
-                <div className="text-right space-y-0.5">
-                  <span className="font-num text-2xl font-bold text-charcoal block">360+</span>
-                  <span className="text-[10px] font-lbl text-warm-gray uppercase tracking-widest block">
-                    Public Reviews
-                  </span>
-                  <a
-                    href="https://maps.google.com/?q=Salman+Hair+Studio+Kurla+West+Mumbai"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-[10px] text-warm-gray hover:text-champagne font-medium transition-colors"
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Google Maps
-                  </a>
-                </div>
-              </div>
-
-              {/* Real Distribution Progress Bars */}
-              <div className="space-y-2.5">
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="font-lbl text-[10px] text-warm-gray w-8">5 Star</span>
-                  <div className="flex-1 h-2 rounded-full bg-cream overflow-hidden">
-                    <div
-                      className="rating-bar-fill h-full bg-champagne rounded-full"
-                      data-width="91%"
-                      style={{ width: '91%' }}
-                    />
-                  </div>
-                  <span className="font-num text-[11px] text-charcoal font-medium w-8 text-right">91%</span>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="font-lbl text-[10px] text-warm-gray w-8">4 Star</span>
-                  <div className="flex-1 h-2 rounded-full bg-cream overflow-hidden">
-                    <div
-                      className="rating-bar-fill h-full bg-champagne/60 rounded-full"
-                      data-width="7%"
-                      style={{ width: '7%' }}
-                    />
-                  </div>
-                  <span className="font-num text-[11px] text-charcoal font-medium w-8 text-right">7%</span>
-                </div>
-
-                <div className="flex items-center gap-3 text-xs">
-                  <span className="font-lbl text-[10px] text-warm-gray w-8">3 Star</span>
-                  <div className="flex-1 h-2 rounded-full bg-cream overflow-hidden">
-                    <div
-                      className="rating-bar-fill h-full bg-champagne/30 rounded-full"
-                      data-width="2%"
-                      style={{ width: '2%' }}
-                    />
-                  </div>
-                  <span className="font-num text-[11px] text-charcoal font-medium w-8 text-right">2%</span>
-                </div>
-              </div>
-
-              {/* Location Stamp */}
-              <div className="pt-2 flex items-center justify-between text-xs text-warm-gray border-t border-border-light">
-                <span className="flex items-center gap-1.5 text-[11px]">
-                  <MapPin className="w-3.5 h-3.5 text-champagne" />
-                  Opp. Kurla Court, LBS Marg, Mumbai
-                </span>
-                <span className="text-[10px] font-lbl tracking-widest uppercase text-champagne font-semibold">
-                  TOP RATED
-                </span>
-              </div>
-            </div>
-
-          </div>
-
-          {/* ── 3. INTERACTIVE SERVICE FILTER TABS ───────────────────────── */}
-          <div ref={filterRef} className="space-y-4 pt-4">
-            <div className="flex items-center justify-between flex-wrap gap-4 border-b border-border-light pb-4">
-              <div className="flex items-center gap-2 flex-wrap">
-                {FILTER_CATEGORIES.map((cat) => {
-                  const isActive = activeFilter === cat.id;
-                  return (
-                    <button
-                      key={cat.id}
-                      onClick={() => setActiveFilter(cat.id)}
-                      className={`
-                        h-10 px-4 sm:px-5 rounded-full text-xs font-heading sm:font-inter uppercase tracking-[0.16em] font-medium transition-all duration-200 cursor-pointer flex items-center gap-2 active:scale-95
-                        ${
-                          isActive
-                            ? 'bg-charcoal text-white shadow-md'
-                            : 'bg-white border border-charcoal/10 text-warm-gray hover:text-charcoal hover:border-charcoal/30'
-                        }
-                      `}
-                    >
-                      {isActive && <span className="w-1.5 h-1.5 rounded-full bg-champagne animate-pulse" />}
-                      <span>{cat.label}</span>
-                      <span
-                        className={`text-[10px] font-num px-1.5 py-0.5 rounded-full ${
-                          isActive ? 'bg-white/20 text-white' : 'bg-cream text-warm-gray'
-                        }`}
-                      >
-                        {cat.count}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="text-xs text-warm-gray font-light">
-                Showing <strong className="text-charcoal font-medium">{filteredReviews.length}</strong> testimonials
-              </div>
-            </div>
-          </div>
-
-          {/* ── 4. MASONRY GRID OF DETAILED REAL REVIEWS ─────────────────── */}
-          <div
-            ref={gridRef}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-          >
-            {filteredReviews.map((rev) => {
-              return (
-                <div
-                  key={rev.id}
-                  className="group bg-white border border-charcoal/10 hover:border-champagne/50 rounded-[28px] p-6 sm:p-7 shadow-[0_8px_30px_rgba(31,31,28,0.04)] hover:shadow-[0_20px_50px_-10px_rgba(200,167,110,0.18)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between space-y-5 select-none"
+                <a
+                  href={SALON_INFO.whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full h-11 px-6 bg-transparent text-warm-gray hover:text-charcoal active:scale-95 transition-all text-[11px] tracking-wider uppercase font-medium flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  {/* Top Bar: Reviewer info & Google G badge */}
-                  <div className="space-y-3">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        {/* Initials avatar instead of stock photos */}
-                        <div className="w-11 h-11 rounded-full bg-champagne/20 border border-champagne/30 shrink-0 flex items-center justify-center">
-                          <span className="font-heading text-sm font-semibold text-champagne">
-                            {rev.initials || rev.author.split(' ').map(n => n[0]).join('').slice(0,2)}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-heading text-base text-charcoal font-semibold block leading-tight">
-                              {rev.author}
-                            </span>
-                          </div>
-                          <span className="text-[10px] font-body text-warm-gray block leading-snug">
-                            {rev.role}
-                          </span>
-                        </div>
-                      </div>
+                  <MessageCircle className="w-3.5 h-3.5 text-champagne" />
+                  <span>Ask Questions on WhatsApp</span>
+                </a>
+              </div>
 
-                      {/* Read on Google link */}
-                      <a
-                        href={SALON_INFO.googleMapsUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-7 h-7 rounded-full bg-cream/70 border border-charcoal/10 flex items-center justify-center shrink-0 hover:border-champagne transition-colors"
-                        title="Read reviews on Google Maps"
-                        aria-label="Read on Google Maps"
-                      >
-                        <span className="font-bold text-xs text-charcoal font-serif">G</span>
-                      </a>
-                    </div>
-
-                    {/* Rating Stars + Relative Date */}
-                    <div className="flex items-center justify-between pt-1">
-                      <div className="flex items-center gap-1">
-                        {[...Array(rev.rating)].map((_, idx) => (
-                          <Star key={idx} className="w-3.5 h-3.5 fill-champagne text-champagne" />
-                        ))}
-                      </div>
-                      <span className="text-[11px] font-lbl text-warm-gray/80 tracking-wider">
-                        {rev.date}
-                      </span>
-                    </div>
-
-                    {/* Service & Stylist Tags */}
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      <span className="px-2.5 py-1 rounded-lg bg-cream/80 text-[10px] font-lbl tracking-wider uppercase text-charcoal font-medium">
-                        {rev.categoryLabel}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-champagne/10 text-[10px] font-lbl tracking-wider uppercase text-champagne font-semibold">
-                        ✂ {rev.stylist}
-                      </span>
-                    </div>
-
-                    {/* Review Quote Text */}
-                    <p className="font-body text-charcoal/90 text-sm leading-relaxed pt-2 font-light">
-                      “{rev.quote}”
-                    </p>
-                  </div>
-
-                  {/* Bottom Footer: Authentic Testimonial & Outbound verification */}
-                  <div className="flex items-center justify-between pt-4 border-t border-border-light text-xs">
-                    <span className="inline-flex items-center gap-1.5 text-[11px] text-warm-gray font-medium">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-champagne" />
-                      Client Testimonial
-                    </span>
-
-                    <a
-                      href={SALON_INFO.googleMapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-[11px] text-warm-gray hover:text-champagne transition-colors"
-                    >
-                      <span>Google Maps</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </div>
-              );
-            })}
+            </div>
           </div>
 
-          {/* ── 5. BOTTOM PROOF BANNER ───────────────────────────────────── */}
-          <div className="bg-charcoal text-white rounded-[32px] p-8 sm:p-12 text-center relative overflow-hidden shadow-2xl space-y-6">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(200,167,110,0.15)_0%,transparent_70%)] pointer-events-none" />
-
-            <div className="max-w-2xl mx-auto space-y-3 relative z-10">
-              <span className="text-lbl text-[10px] tracking-[0.28em] text-champagne uppercase font-semibold block">
-                JOIN OVER 15,000+ SATISFIED CLIENTS
+          {/* Core Service Commitments */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+            <div className="p-6 rounded-2xl bg-white border border-charcoal/10 space-y-2">
+              <span className="text-lbl text-[10px] text-champagne tracking-widest uppercase font-semibold block">
+                01 • PRECISION CUTTING
               </span>
-              <h2 className="font-heading text-3xl sm:text-4xl lg:text-5xl text-white font-normal uppercase tracking-tight">
-                Ready for Your Own Transformation?
-              </h2>
-              <p className="font-body text-white/70 font-light text-sm sm:text-base leading-relaxed">
-                Book your personalized 1-on-1 session with Salman & Farmaan Malik today. Experience luxury salon artistry in Kurla West.
+              <h3 className="font-heading text-lg text-charcoal font-medium">
+                Diagnostic Architecture
+              </h3>
+              <p className="text-xs text-warm-gray font-light leading-relaxed">
+                Every fade, scissor cut, and beard sculpting session is calculated against facial bone structure with zero rushed appointments.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-              <Link href="/booking">
-                <button className="w-full sm:w-auto h-[52px] px-8 bg-champagne text-charcoal hover:bg-white active:scale-95 transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-semibold rounded-2xl shadow-lg cursor-pointer flex items-center justify-center gap-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>Book Your Appointment</span>
-                </button>
-              </Link>
-              <a
-                href="https://maps.google.com/?q=Salman+Hair+Studio+Kurla+West+Mumbai"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full sm:w-auto h-[52px] px-8 bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all duration-300 font-inter text-xs tracking-[0.2em] uppercase font-medium rounded-2xl border border-white/15 cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Read 360+ Google Reviews</span>
-                <ArrowUpRight className="w-4 h-4 text-champagne" />
-              </a>
+            <div className="p-6 rounded-2xl bg-white border border-charcoal/10 space-y-2">
+              <span className="text-lbl text-[10px] text-champagne tracking-widest uppercase font-semibold block">
+                02 • CHEMICAL INTEGRITY
+              </span>
+              <h3 className="font-heading text-lg text-charcoal font-medium">
+                Couture Color &amp; Restorative Care
+              </h3>
+              <p className="text-xs text-warm-gray font-light leading-relaxed">
+                Organic European balayage foils, gentle toners, and formaldehyde-free smoothing formulas that prioritize follicle health.
+              </p>
+            </div>
+
+            <div className="p-6 rounded-2xl bg-white border border-charcoal/10 space-y-2">
+              <span className="text-lbl text-[10px] text-champagne tracking-widest uppercase font-semibold block">
+                03 • PRIVATE SANCTUARY
+              </span>
+              <h3 className="font-heading text-lg text-charcoal font-medium">
+                1-on-1 Dedicated Attention
+              </h3>
+              <p className="text-xs text-warm-gray font-light leading-relaxed">
+                Unhurried consultations opposite Kurla Court, ensuring your appointment receives undivided master stylist focus.
+              </p>
             </div>
           </div>
 

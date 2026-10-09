@@ -43,15 +43,6 @@ export default function TermsAndConditionsPage() {
             </p>
           </header>
 
-          {/* Legal Notice Callout */}
-          <div className="p-4 sm:p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-charcoal/80 mb-10 space-y-1">
-            <p className="font-semibold text-charcoal uppercase tracking-wider text-[11px]">
-              Studio Agreement Notice
-            </p>
-            <p className="font-light leading-relaxed">
-              These terms govern client appointments and services rendered at Salman Hair Studio. [OWNER APPROVAL REQUIRED: Final verification by salon ownership recommended prior to official statutory execution].
-            </p>
-          </div>
 
           {/* Content sections */}
           <article className="prose prose-neutral max-w-none space-y-10 font-body text-charcoal/90 text-sm sm:text-base leading-relaxed">
