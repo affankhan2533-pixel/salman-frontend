@@ -103,27 +103,21 @@ function BookingSection() {
   const [servicePreSelected, setServicePreSelected] = useState(false);
   const [activeGenderTab, setActiveGenderTab] = useState('all'); // 'all' | 'male' | 'female'
 
-  // Date selection (Hydration-safe dynamic Asia/Kolkata dates)
-  const [upcomingDates, setUpcomingDates] = useState(() => generateUpcomingDates());
-  const [selectedDateIso, setSelectedDateIso] = useState(() => upcomingDates[0]?.iso || '');
-  const [selectedDateLabel, setSelectedDateLabel] = useState(() => upcomingDates[0]?.label || '');
+  // Date selection: deterministic initial state for SSR & first client hydration
+  const [isMounted, setIsMounted] = useState(false);
+  const [upcomingDates, setUpcomingDates] = useState([]);
+  const [selectedDateIso, setSelectedDateIso] = useState('');
+  const [selectedDateLabel, setSelectedDateLabel] = useState('');
 
-  // Hydration-safe sync with live client Asia/Kolkata date
+  // Populate dynamic Asia/Kolkata dates after client mount (100% hydration-safe)
   useEffect(() => {
     const liveDates = generateUpcomingDates();
-    if (liveDates.length > 0 && liveDates[0].iso !== upcomingDates[0]?.iso) {
-      setUpcomingDates(liveDates);
-      setSelectedDateIso((prev) => {
-        if (liveDates.some((d) => d.iso === prev)) {
-          return prev;
-        }
-        return liveDates[0].iso;
-      });
-      setSelectedDateLabel((prev) => {
-        const found = liveDates.find((d) => d.iso === selectedDateIso);
-        return found ? found.label : liveDates[0].label;
-      });
+    setUpcomingDates(liveDates);
+    if (liveDates.length > 0) {
+      setSelectedDateIso(liveDates[0].iso);
+      setSelectedDateLabel(liveDates[0].label);
     }
+    setIsMounted(true);
   }, []);
 
   // Time slot selection
@@ -384,6 +378,7 @@ function BookingSection() {
 
   // 4. Fetch availability, setup Socket.io real-time listener, & 15-second background polling
   useEffect(() => {
+    if (!selectedDateIso) return;
     fetchAvailability(selectedDateIso, selectedService);
 
     // Socket.io Real-Time Synchronization
@@ -794,8 +789,18 @@ function BookingSection() {
 
                     {/* Quick Date Chips (Next 14 days with horizontal scroll fade hint) */}
                     <div className="relative">
-                      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none pr-6">
-                        {upcomingDates.map((dObj) => {
+                      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none pr-6 min-h-[46px]">
+                        {!isMounted ? (
+                          // Deterministic placeholder skeleton chips reserving matching layout space to minimize CLS
+                          Array.from({ length: 6 }).map((_, idx) => (
+                            <div
+                              key={idx}
+                              className="px-4 py-3 rounded-2xl border border-charcoal/10 bg-white/40 shrink-0 min-w-[96px] h-[44px] animate-pulse"
+                              aria-hidden="true"
+                            />
+                          ))
+                        ) : (
+                          upcomingDates.map((dObj) => {
                           const isSelected = selectedDateIso === dObj.iso;
                           return (
                             <button
@@ -810,7 +815,8 @@ function BookingSection() {
                               <span className="block">{dObj.label}</span>
                             </button>
                           );
-                        })}
+                        })
+                        )}
                       </div>
                       {/* Subtle right gradient fade to hint scrollability on mobile */}
                       <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-[#F7F4EE] to-transparent pointer-events-none sm:hidden" />

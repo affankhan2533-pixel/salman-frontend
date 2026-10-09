@@ -352,6 +352,18 @@ function isWebGLAvailable() {
   }
 }
 
+// ─── RELIABLE FIRST VISIBLE FRAME DETECTOR ─────────────────────────────────────
+function FirstFrameReporter({ onRendered }) {
+  const renderedRef = useRef(false);
+  useFrame(() => {
+    if (!renderedRef.current) {
+      renderedRef.current = true;
+      onRendered();
+    }
+  });
+  return null;
+}
+
 // ─── SCENE ROOT ─────────────────────────────────────────────────────────────
 function ScissorScene({ progressRef = 0, isVisible = true }) {
   const mouseTiltRef = useRef({ x: 0, y: 0 });
@@ -426,8 +438,13 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
           </div>
         )}
         <Canvas
-          onCreated={() => {
-            requestAnimationFrame(() => setFirstFrameRendered(true));
+          onCreated={(state) => {
+            try {
+              state.gl.render(state.scene, state.camera);
+              requestAnimationFrame(() => setFirstFrameRendered(true));
+            } catch {
+              // Best-effort initial buffer paint; FirstFrameReporter verifies via useFrame
+            }
           }}
           frameloop={shouldRender ? 'always' : 'never'}
           camera={{ position: [0, 0, camZ], fov: camFov }}
@@ -435,6 +452,7 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
           dpr={[1, deviceMode === 'mobile' ? 1.0 : 1.5]}
           style={{ background: 'transparent' }}
         >
+          <FirstFrameReporter onRendered={() => setFirstFrameRendered(true)} />
           <ambientLight intensity={0.7} />
           <KeyLight sweepX={pL} />
           <directionalLight position={[-5, 2, -3]} intensity={1.4} color="#dceeff" />

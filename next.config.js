@@ -49,7 +49,7 @@ const nextConfig = {
     return routes;
   },
   experimental: {
-    optimizePackageImports: ['lucide-react', '@react-three/drei', 'framer-motion', 'react-icons'],
+    optimizePackageImports: ['lucide-react', '@react-three/drei', 'react-icons'],
   },
   transpilePackages: ['three', '@react-three/fiber', '@react-three/drei', 'gsap'],
   webpack: (config, { isServer }) => {
