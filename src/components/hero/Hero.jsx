@@ -37,6 +37,7 @@ function Hero() {
 
   useEffect(() => {
     const timer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.hidden) return;
       setActiveHeroIdx((prev) => (prev + 1) % HERO_IMAGES.length);
     }, 5500);
     return () => clearInterval(timer);
@@ -275,21 +276,17 @@ function Hero() {
               href="/booking"
               onMouseEnter={() => setIsHoveredInteractive(true)}
               onMouseLeave={() => setIsHoveredInteractive(false)}
-              className="inline-block w-full sm:w-auto"
+              className="inline-flex items-center justify-center w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer border border-transparent hover:border-champagne/40"
             >
-              <button className="w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer border border-transparent hover:border-champagne/40">
-                Book Appointment
-              </button>
+              Book Appointment
             </Link>
             <Link
               href="/gallery"
               onMouseEnter={() => setIsHoveredInteractive(true)}
               onMouseLeave={() => setIsHoveredInteractive(false)}
-              className="inline-block w-full sm:w-auto"
+              className="inline-flex items-center justify-center w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-transparent text-charcoal border border-charcoal/40 hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] hover:-translate-y-[2px] cursor-pointer"
             >
-              <button className="w-full sm:w-auto h-[50px] sm:h-[54px] px-8 bg-transparent text-charcoal border border-charcoal/40 hover:border-charcoal hover:bg-charcoal hover:text-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] hover:-translate-y-[2px] cursor-pointer">
-                View Portfolio
-              </button>
+              View Portfolio
             </Link>
           </div>
         </div>

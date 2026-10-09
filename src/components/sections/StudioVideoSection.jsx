@@ -135,12 +135,13 @@ export default function StudioVideoSection() {
 
             {/* Action Bar */}
             <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-4">
-              <Link href="/booking" className="w-full sm:w-auto">
-                <button className="w-full sm:w-auto h-[52px] px-8 bg-champagne text-charcoal hover:bg-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-semibold rounded-2xl shadow-[0_12px_32px_-8px_rgba(200,167,110,0.35)] hover:shadow-white/20 active:scale-95 cursor-pointer flex items-center justify-center gap-3">
-                  <Calendar className="w-4 h-4" />
-                  <span>Reserve VIP Session</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <Link
+                href="/booking"
+                className="w-full sm:w-auto h-[52px] px-8 bg-champagne text-charcoal hover:bg-white transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-semibold rounded-2xl shadow-[0_12px_32px_-8px_rgba(200,167,110,0.35)] hover:shadow-white/20 active:scale-95 cursor-pointer flex items-center justify-center gap-3"
+              >
+                <Calendar className="w-4 h-4" />
+                <span>Reserve VIP Session</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
 
               {/* Audio Toggle Button */}
@@ -199,7 +200,7 @@ export default function StudioVideoSection() {
                     <span>ATELIER LIVE</span>
                   </div>
                   <span className="text-[10px] font-num tracking-widest text-champagne bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-champagne/30">
-                    4K PRO
+                    1080P PRO
                   </span>
                 </div>
 

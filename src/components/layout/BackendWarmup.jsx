@@ -15,7 +15,7 @@ export default function BackendWarmup() {
     const timer = setTimeout(async () => {
       if (!isMounted) return;
       try {
-        await api.get('/health', { timeout: 10000 });
+        await api.get('/health', { timeout: 10000, skipRetry: true });
       } catch {
         /* Silent ping failure — backend may still be cold-starting */
       }

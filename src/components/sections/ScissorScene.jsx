@@ -1,5 +1,7 @@
 'use client';
 
+import ScissorsSVGPoster from '@/components/common/ScissorsSVGPoster';
+
 import React, {
   useRef,
   useState,
@@ -27,7 +29,11 @@ class CanvasErrorBoundary extends Component {
   }
   render() {
     if (this.state.hasError) {
-      return null;
+      return (
+        <div className="w-full h-full flex items-center justify-center pointer-events-none">
+          <ScissorsSVGPoster className="w-24 h-40 opacity-50" />
+        </div>
+      );
     }
     return this.props.children;
   }
@@ -332,10 +338,15 @@ function isWebGLAvailable() {
   if (typeof window === 'undefined') return false;
   try {
     const canvas = document.createElement('canvas');
-    return !!(
+    const gl =
       window.WebGLRenderingContext &&
-      (canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl'))
-    );
+      (canvas.getContext('webgl2') || canvas.getContext('webgl') || canvas.getContext('experimental-webgl'));
+    if (!gl) return false;
+    const loseContext = gl.getExtension('WEBGL_lose_context');
+    if (loseContext) {
+      loseContext.loseContext();
+    }
+    return true;
   } catch {
     return false;
   }
@@ -347,6 +358,7 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
   const [deviceMode, setDeviceMode] = useState('desktop');
   const [isTabActive, setIsTabActive] = useState(true);
   const [hasWebGL, setHasWebGL] = useState(true);
+  const [firstFrameRendered, setFirstFrameRendered] = useState(false);
 
   useEffect(() => {
     setHasWebGL(isWebGLAvailable());
@@ -389,7 +401,11 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
   }, [deviceMode]);
 
   if (!hasWebGL) {
-    return null;
+    return (
+      <div className="w-full h-full flex items-center justify-center pointer-events-none">
+        <ScissorsSVGPoster className="w-24 h-40 opacity-50" />
+      </div>
+    );
   }
 
   const progVal = typeof progressRef === 'object' ? progressRef.current : progressRef;
@@ -403,8 +419,16 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
 
   return (
     <CanvasErrorBoundary>
-      <div className="w-full h-full pointer-events-none bg-transparent">
+      <div className="relative w-full h-full pointer-events-none bg-transparent">
+        {!firstFrameRendered && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-500 z-0">
+            <ScissorsSVGPoster className="w-24 h-40 opacity-40 animate-pulse" />
+          </div>
+        )}
         <Canvas
+          onCreated={() => {
+            requestAnimationFrame(() => setFirstFrameRendered(true));
+          }}
           frameloop={shouldRender ? 'always' : 'never'}
           camera={{ position: [0, 0, camZ], fov: camFov }}
           gl={{ alpha: true, antialias: true, powerPreference: 'default' }}

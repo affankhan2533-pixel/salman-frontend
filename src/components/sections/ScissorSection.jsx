@@ -4,31 +4,8 @@ import React, { useEffect, useRef, useState, memo } from 'react';
 import dynamic from 'next/dynamic';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
-// Static SVG fallback — visible immediately and while 3D canvas loads
-export function ScissorsSVGPoster({ className = '' }) {
-  return (
-    <svg
-      viewBox="0 0 120 200"
-      className={className}
-      aria-hidden="true"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      {/* Blade Left */}
-      <path d="M58 100 L52 28 Q60 4 60 4 Q68 4 68 28 L62 100" fill="#f8fafc" stroke="#C8A76E" strokeWidth="0.5" />
-      {/* Blade Right */}
-      <path d="M62 100 L68 28 Q60 4 60 4 Q52 4 52 28 L58 100" fill="#f0f4f8" stroke="#C8A76E" strokeWidth="0.3" />
-      {/* Handle Left */}
-      <path d="M40 120 Q42 108 58 100" stroke="#d4af37" strokeWidth="4" strokeLinecap="round" fill="none" />
-      <circle cx="32" cy="134" r="12" stroke="#d4af37" strokeWidth="3" fill="none" />
-      {/* Handle Right */}
-      <path d="M80 120 Q78 108 62 100" stroke="#d4af37" strokeWidth="4" strokeLinecap="round" fill="none" />
-      <circle cx="88" cy="134" r="11" stroke="#d4af37" strokeWidth="3" fill="none" />
-      {/* Pivot */}
-      <circle cx="60" cy="100" r="5" fill="#d4af37" />
-    </svg>
-  );
-}
+import ScissorsSVGPoster from '@/components/common/ScissorsSVGPoster';
+export { ScissorsSVGPoster };
 
 // Dynamically import 3D R3F Scissor Scene (SSR Disabled for Three.js Canvas)
 const ScissorScene = dynamic(() => import('./ScissorScene'), {

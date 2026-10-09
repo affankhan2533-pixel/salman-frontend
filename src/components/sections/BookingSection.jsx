@@ -41,16 +41,22 @@ const FORMATTED_SERVICES = ALL_SERVICES.map((s) => ({
   desc: `${s.gender === 'male' ? 'Men\'s' : 'Women\'s'} ${s.name} crafted with atelier precision at Kurla West.`,
 }));
 
-// Generate next 14 days for quick selection chips
-const generateUpcomingDates = () => {
+// Generate next 14 days for quick selection chips (Asia/Kolkata timezone safe)
+const getKolkataToday = () => {
+  const now = new Date();
+  const kolkataStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' });
+  const [y, m, d] = kolkataStr.split('-').map(Number);
+  return new Date(y, m - 1, d);
+};
+
+const generateUpcomingDates = (baseDate) => {
   const dates = [];
   const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  const today = new Date();
+  const start = baseDate || getKolkataToday();
 
   for (let i = 0; i < 14; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
 
     const year = d.getFullYear();
     const monthStr = (d.getMonth() + 1).toString().padStart(2, '0');
@@ -69,8 +75,6 @@ const generateUpcomingDates = () => {
   }
   return dates;
 };
-
-const UPCOMING_DATES = generateUpcomingDates();
 
 const buildWhatsAppUrl = (booking) => {
   const lines = [
@@ -99,9 +103,28 @@ function BookingSection() {
   const [servicePreSelected, setServicePreSelected] = useState(false);
   const [activeGenderTab, setActiveGenderTab] = useState('all'); // 'all' | 'male' | 'female'
 
-  // Date selection
-  const [selectedDateIso, setSelectedDateIso] = useState(UPCOMING_DATES[0].iso);
-  const [selectedDateLabel, setSelectedDateLabel] = useState(UPCOMING_DATES[0].label);
+  // Date selection (Hydration-safe dynamic Asia/Kolkata dates)
+  const [upcomingDates, setUpcomingDates] = useState(() => generateUpcomingDates());
+  const [selectedDateIso, setSelectedDateIso] = useState(() => upcomingDates[0]?.iso || '');
+  const [selectedDateLabel, setSelectedDateLabel] = useState(() => upcomingDates[0]?.label || '');
+
+  // Hydration-safe sync with live client Asia/Kolkata date
+  useEffect(() => {
+    const liveDates = generateUpcomingDates();
+    if (liveDates.length > 0 && liveDates[0].iso !== upcomingDates[0]?.iso) {
+      setUpcomingDates(liveDates);
+      setSelectedDateIso((prev) => {
+        if (liveDates.some((d) => d.iso === prev)) {
+          return prev;
+        }
+        return liveDates[0].iso;
+      });
+      setSelectedDateLabel((prev) => {
+        const found = liveDates.find((d) => d.iso === selectedDateIso);
+        return found ? found.label : liveDates[0].label;
+      });
+    }
+  }, []);
 
   // Time slot selection
   const [availabilitySlots, setAvailabilitySlots] = useState([]);
@@ -235,10 +258,11 @@ function BookingSection() {
 
     const sInput = serviceItem?.name || serviceItem?.id || '';
 
-    // Retry configuration with bounded exponential backoff
-    // Delays: 3s, 6s, 12s -> Total retry window ~ 50-60s to accommodate Render cold start
+    // Enforce dedicated 70-second finite overall elapsed budget to accommodate Render cold start (30-50s)
+    const TOTAL_BUDGET_MS = 70000;
+    const startTime = Date.now();
     const maxRetries = 3;
-    const retryDelays = [3000, 6000, 12000];
+    const retryDelays = [2000, 4000, 8000];
 
     let attempt = 0;
     let success = false;
@@ -250,15 +274,25 @@ function BookingSection() {
           return;
         }
 
+        const elapsed = Date.now() - startTime;
+        const remainingBudget = Math.max(0, TOTAL_BUDGET_MS - elapsed);
+
+        // If less than 2s remaining in total budget, stop retrying
+        if (attempt > 0 && remainingBudget < 2000) {
+          break;
+        }
+
         if (attempt > 0 && !isSilent) {
           setLoadingMessage(
-            `Waking server and checking available times... This may take a moment on first load (Attempt ${attempt + 1}/${maxRetries + 1}).`
+            `Connecting to live availability... Server is waking up (Attempt ${attempt + 1}/${maxRetries + 1}).`
           );
         }
 
         try {
+          const timeoutForAttempt = Math.min(30000, remainingBudget);
           const response = await bookingService.getAvailability(dateIso, sInput, {
             signal: controller.signal,
+            timeout: timeoutForAttempt,
           });
 
           if (fetchSeqRef.current !== currentSeq || controller.signal.aborted) {
@@ -286,7 +320,7 @@ function BookingSection() {
             return matching && matching.available ? matching : null;
           });
         } catch (err) {
-          // Ignore aborted / cancelled requests
+          // Ignore aborted / cancelled requests immediately
           if (
             err.name === 'CanceledError' ||
             err.name === 'AbortError' ||
@@ -307,7 +341,14 @@ function BookingSection() {
 
           attempt++;
           if (attempt <= maxRetries) {
-            const delay = retryDelays[attempt - 1] || 8000;
+            const currentElapsed = Date.now() - startTime;
+            const currentRemaining = Math.max(0, TOTAL_BUDGET_MS - currentElapsed);
+            if (currentRemaining <= 3000) {
+              break;
+            }
+            const plannedDelay = retryDelays[attempt - 1] || 6000;
+            const delay = Math.min(plannedDelay, currentRemaining - 2000);
+
             await new Promise((resolve) => {
               resolveRetryDelayRef.current = resolve;
               activeRetryTimerRef.current = setTimeout(() => {
@@ -754,7 +795,7 @@ function BookingSection() {
                     {/* Quick Date Chips (Next 14 days with horizontal scroll fade hint) */}
                     <div className="relative">
                       <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none pr-6">
-                        {UPCOMING_DATES.map((dObj) => {
+                        {upcomingDates.map((dObj) => {
                           const isSelected = selectedDateIso === dObj.iso;
                           return (
                             <button

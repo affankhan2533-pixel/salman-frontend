@@ -12,8 +12,6 @@ const getDefaultApiUrl = () => {
 
 const API_BASE_URL = getDefaultApiUrl();
 
-
-
 const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 45000,
@@ -39,13 +37,25 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor: Retry on Network Error
+// Interceptor: Retry on Network Error (respecting aborts, cancellations, and skipRetry)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
     if (!originalRequest) return Promise.reject(error);
+
+    // Never retry if request was cancelled/aborted or explicitly configured to skip retries
+    if (
+      originalRequest.skipRetry ||
+      axios.isCancel(error) ||
+      error.name === 'CanceledError' ||
+      error.name === 'AbortError' ||
+      error.code === 'ERR_CANCELED' ||
+      originalRequest.signal?.aborted
+    ) {
+      return Promise.reject(error);
+    }
 
     originalRequest._retryCount = originalRequest._retryCount || 0;
 
@@ -59,6 +69,9 @@ api.interceptors.response.use(
       originalRequest._retryCount += 1;
       const delayMs = originalRequest._retryCount === 1 ? 1500 : 4000;
       await new Promise((resolve) => setTimeout(resolve, delayMs));
+      if (originalRequest.signal?.aborted) {
+        return Promise.reject(error);
+      }
       return api(originalRequest);
     }
     return Promise.reject(error);

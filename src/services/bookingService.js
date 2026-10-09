@@ -3,6 +3,8 @@ import api from './api';
 export const bookingService = {
   /**
    * Fetch live slot availability for a date & service
+   * Uses skipRetry: true to let BookingSection enforce the dedicated 70-second cold-start budget
+   * without nested interceptor retries.
    * @param {string} date - YYYY-MM-DD
    * @param {string} [service] - Service ID, slug, or title
    * @param {Object} [config] - Axios request options (e.g. signal)
@@ -11,7 +13,11 @@ export const bookingService = {
     const params = new URLSearchParams();
     if (date) params.append('date', date);
     if (service) params.append('service', service);
-    const response = await api.get('/appointments/availability?' + params.toString(), config);
+    const requestConfig = {
+      skipRetry: true,
+      ...config,
+    };
+    const response = await api.get('/appointments/availability?' + params.toString(), requestConfig);
     return response.data;
   },
 

@@ -147,11 +147,12 @@ function AboutSection() {
 
             {/* DISCOVER OUR STORY CTA BUTTON */}
             <div className="pt-4">
-              <Link href="/about" className="inline-block">
-                <button className="h-[52px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer flex items-center gap-3 border border-transparent hover:border-champagne/40">
-                  <span>DISCOVER OUR STORY</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+              <Link
+                href="/about"
+                className="inline-flex h-[52px] px-8 bg-charcoal text-white hover:bg-champagne hover:text-charcoal transition-all duration-300 font-inter text-xs tracking-[0.22em] uppercase font-medium rounded-[14px] shadow-[0_8px_20px_-4px_rgba(31,31,28,0.18)] hover:shadow-[0_12px_28px_-4px_rgba(197,160,89,0.3)] hover:-translate-y-[2px] cursor-pointer items-center gap-3 border border-transparent hover:border-champagne/40"
+              >
+                <span>DISCOVER OUR STORY</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
