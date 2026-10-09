@@ -165,7 +165,7 @@ function AboutSection() {
           {STATS_DATA.map((stat, idx) => (
             <div key={stat.label} className="space-y-1 text-center sm:text-left">
               <span className="font-num text-3xl sm:text-4xl font-bold text-charcoal block tracking-tight">
-                <span ref={(el) => (desktopStatRefs.current[idx] = el)}>0</span>
+                <span ref={(el) => (desktopStatRefs.current[idx] = el)}>{stat.target}</span>
                 <span className="text-champagne font-medium">{stat.suffix}</span>
               </span>
               <span className="text-lbl text-[10px] sm:text-xs tracking-[0.2em] text-warm-gray uppercase block font-medium">

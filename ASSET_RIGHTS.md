@@ -22,7 +22,8 @@ Following our comprehensive production and legal compliance audit:
 
 | Asset Path / Category | Description | Ownership & License Status | Action / Recommendation |
 | :--- | :--- | :--- | :--- |
-| `/videos/WhatsApp 2026-08-16 22-00-16.mp4` (28.3 MB) | Real studio haircut & styling reel captured inside Kurla West atelier | **Proprietary:** Owned by Salman Hair Studio. Original studio footage. | Lazy-loaded on viewport entry with `preload="none"`. Recommend transcoding with ffmpeg to 1080p MP4 (~3MB) and WebM (~2MB) for optimal mobile data conservation. |
+| `/videos/studio-showcase.mp4` (2.54 MB) & `/videos/studio-poster.webp` (10 KB) | Optimized H.264 High 1080p web stream (+faststart) & initial frame poster | **Proprietary:** Owned by Salman Hair Studio. Transcoded from raw 28.3MB reel. | **Optimized:** 91% size reduction from 28.3MB to 2.54MB. Lazy-loaded on viewport entry with `preload="none"`. Instant start with faststart header. |
+| `/videos/WhatsApp 2026-08-16 22-00-16.mp4` (28.3 MB) | Original master studio haircut & styling reel captured inside Kurla West atelier | **Proprietary:** Master footage archive. | Kept as uncompressed master archive. Production uses `studio-showcase.mp4`. |
 | `/images/hero/*.png` | Hero carousel images showcasing signature cuts & fades | **Proprietary / Client Portfolio:** Original client cuts photographed at the atelier. | Next.js Image component automatically serves responsive WebP/AVIF variants. Recommend normalizing filenames (replacing spaces with hyphens). |
 | `/images/branding/*.png` | Salon interior sanctuary, styling station, and consultation suite | **Proprietary:** Studio photography by Salman Hair Studio / Developer. | Validated. Converted on-demand by Next.js image optimizer. |
 | `/images/gallery/*.png`, `*.jpeg` | Portfolio transformations, bridal coiffure, and color treatments | **Proprietary:** Client transformations photographed in-salon. | Validated. |

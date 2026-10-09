@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import { gsap, ScrollTrigger } from '@/lib/gsap';
 
 // Static SVG fallback — visible immediately and while 3D canvas loads
-function ScissorsSVGPoster({ className = '' }) {
+export function ScissorsSVGPoster({ className = '' }) {
   return (
     <svg
       viewBox="0 0 120 200"
@@ -33,7 +33,11 @@ function ScissorsSVGPoster({ className = '' }) {
 // Dynamically import 3D R3F Scissor Scene (SSR Disabled for Three.js Canvas)
 const ScissorScene = dynamic(() => import('./ScissorScene'), {
   ssr: false,
-  loading: () => null,
+  loading: () => (
+    <div className="w-full h-full flex items-center justify-center">
+      <ScissorsSVGPoster className="w-24 h-40 opacity-40 animate-pulse" />
+    </div>
+  ),
 });
 
 class ScissorSectionErrorBoundary extends React.Component {
@@ -48,7 +52,13 @@ class ScissorSectionErrorBoundary extends React.Component {
     console.warn('ScissorSection 3D component notice:', err);
   }
   render() {
-    if (this.state.hasError) return null;
+    if (this.state.hasError) {
+      return (
+        <div className="w-full h-full flex items-center justify-center">
+          <ScissorsSVGPoster className="w-24 h-40 opacity-50" />
+        </div>
+      );
+    }
     return this.props.children;
   }
 }

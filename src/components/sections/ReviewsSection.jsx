@@ -7,7 +7,6 @@ import { Container } from '@/components/ui';
 import {
   Star,
   CheckCircle2,
-  ThumbsUp,
   ExternalLink,
   Sparkles,
   Scissors,
@@ -36,7 +35,6 @@ const ALL_REVIEWS = [
     stylist: 'Aasha & Salman',
     quote:
       'I had an amazing experience getting my hair coloured at Salman Hair Studio! The staff, especially Aasha, were incredibly welcoming and took the time to really understand the ash blonde tone I was aiming for. Salman personally checked the toner lift halfway through to ensure zero damage. The Olaplex treatment left my hair softer than before coloring. Definitely my go-to salon in Kurla!',
-    helpfulCount: 18,
   },
   {
     id: 2,
@@ -50,7 +48,6 @@ const ALL_REVIEWS = [
     stylist: 'Salman Malik',
     quote:
       'From the moment I sat in Salman bhai\'s chair, I knew I was in expert hands. The scissor work and taper fade were razor sharp without any irritation. Worth every single rupee. Make sure you book an appointment in advance because he gets packed on weekends.',
-    helpfulCount: 14,
   },
   {
     id: 3,
@@ -64,7 +61,6 @@ const ALL_REVIEWS = [
     stylist: 'Farmaan & Team',
     quote:
       'Farmaan did my bridal hair for my reception and I couldn\'t stop looking in the mirror. With the heavy dupatta and jewelry, I was worried it would shift, but the pins stayed comfortable and locked for the entire event. All my guests were complimenting the volume and crown styling. Thank you Salman Hair Studio for making my big day stress-free!',
-    helpfulCount: 25,
   },
   {
     id: 4,
@@ -78,7 +74,6 @@ const ALL_REVIEWS = [
     stylist: 'Salman & Farmaan',
     quote:
       'Salman and Farmaan are true masters of their trade. No rushing, no cookie-cutter cuts. Salman studied my hair crown whorl and suggested a textured fringe that completely changed my profile. The scalp massage during shampooing was unreal. Easily the best salon in Kurla West.',
-    helpfulCount: 11,
   },
   {
     id: 5,
@@ -92,7 +87,6 @@ const ALL_REVIEWS = [
     stylist: 'Farmaan Malik',
     quote:
       'Did Nanoplastia with Farmaan after years of frizzy monsoon hair in Mumbai. It has been two months now, and after every wash my hair dries naturally straight with zero frizz and mirror shine! The care instructions they provided were super detailed.',
-    helpfulCount: 21,
   },
   {
     id: 6,
@@ -106,7 +100,6 @@ const ALL_REVIEWS = [
     stylist: 'Farmaan',
     quote:
       'Opposite Kurla Court on LBS Marg, this is hands-down the most hygienic and premium grooming studio in the area. Farmaan did precision beard shaping aligning with my jawline. Clean sanitized blades, fresh disposable capes, and very respectful staff. 10/10 service.',
-    helpfulCount: 9,
   },
   {
     id: 7,
@@ -120,7 +113,6 @@ const ALL_REVIEWS = [
     stylist: 'Aasha',
     quote:
       'Aasha is a magician with hair color! I wanted subtle honey babylights that blend into dark Indian roots naturally. She blended the foil sections with so much patience and the gloss toner gave it a high-end editorial finish.',
-    helpfulCount: 16,
   },
   {
     id: 8,
@@ -134,7 +126,6 @@ const ALL_REVIEWS = [
     stylist: 'Salman Malik',
     quote:
       'Salman has been cutting my hair for years now. Even after moving to Powai, I still drive down to Kurla West for my haircut. The level of precision, clean drop fades, and scissor balance is unmatched by any franchised commercial chain. Always consistent.',
-    helpfulCount: 12,
   },
   {
     id: 9,
@@ -148,7 +139,6 @@ const ALL_REVIEWS = [
     stylist: 'Aasha & Farmaan',
     quote:
       'Saved my heat-damaged hair! I had brittle split ends from frequent straightening. The Hair Botox infused deep moisture back into the cuticles without taking away my natural wave. The studio has a cozy, private atmosphere where you don\'t feel hurried. Highly recommend!',
-    helpfulCount: 8,
   },
   {
     id: 10,
@@ -162,7 +152,6 @@ const ALL_REVIEWS = [
     stylist: 'Farmaan',
     quote:
       'Clean, air-conditioned atelier with very welcoming hospitality. Farmaan pays attention to every minor detail—even the perimeter taper and ear trim were immaculate. Great pricing for the luxury standard they offer.',
-    helpfulCount: 7,
   },
   {
     id: 11,
@@ -176,7 +165,6 @@ const ALL_REVIEWS = [
     stylist: 'Aasha',
     quote:
       'Got my blowout and balayage touchup done before a family function. The bounce and shine lasted a full 3 days! Aasha is very gentle, explains every product she uses, and gave me great advice on sulfate-free shampoos.',
-    helpfulCount: 13,
   },
   {
     id: 12,
@@ -190,7 +178,6 @@ const ALL_REVIEWS = [
     stylist: 'Salman Malik',
     quote:
       'Best salon in Mumbai for men who care about their hair health. Salman diagnosed my scalp dryness and used an organic tea tree infusion. Hair felt instantly revitalized. Very polite and humble brothers.',
-    helpfulCount: 10,
   },
   {
     id: 13,
@@ -204,7 +191,6 @@ const ALL_REVIEWS = [
     stylist: 'Salman & Team',
     quote:
       'Booked Salman Studio for my sister\'s engagement and my own hair styling. Both looks turned out royal. They coordinated the hairstyle with our lehenga necklines perfectly. Everyone at the venue asked where we got our hair done!',
-    helpfulCount: 19,
   },
   {
     id: 14,
@@ -218,7 +204,6 @@ const ALL_REVIEWS = [
     stylist: 'Farmaan',
     quote:
       'First visit today after seeing their work on Instagram. The fade transition is flawless, completely seamless blend with zero line marks. Booking online was effortless and they took me in right at my slot time with no delay.',
-    helpfulCount: 15,
   },
 ];
 
@@ -242,7 +227,6 @@ const MARQUEE_QUOTES = [
 
 function ReviewsSection() {
   const [activeFilter, setActiveFilter] = useState('all');
-  const [helpfulVotes, setHelpfulVotes] = useState({});
   const sectionRef = useRef(null);
   const headerRef = useRef(null);
   const ratingBoxRef = useRef(null);
@@ -254,13 +238,6 @@ function ReviewsSection() {
     if (activeFilter === 'all') return ALL_REVIEWS;
     return ALL_REVIEWS.filter((rev) => rev.category === activeFilter);
   }, [activeFilter]);
-
-  const handleHelpfulClick = (id, currentCount) => {
-    setHelpfulVotes((prev) => ({
-      ...prev,
-      [id]: (prev[id] || currentCount) + 1,
-    }));
-  };
 
   // GSAP Animations
   useEffect(() => {
@@ -550,9 +527,6 @@ function ReviewsSection() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {filteredReviews.map((rev) => {
-              const helpfulCount = helpfulVotes[rev.id] || rev.helpfulCount;
-              const hasVoted = Boolean(helpfulVotes[rev.id]);
-
               return (
                 <div
                   key={rev.id}
@@ -621,26 +595,22 @@ function ReviewsSection() {
                     </p>
                   </div>
 
-                  {/* Bottom Footer: Testimonial label */}
+                  {/* Bottom Footer: Authentic Testimonial & Outbound verification */}
                   <div className="flex items-center justify-between pt-4 border-t border-border-light text-xs">
-                    <button
-                      onClick={() => handleHelpfulClick(rev.id, rev.helpfulCount)}
-                      className={`
-                        inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium transition-all duration-200 cursor-pointer active:scale-95
-                        ${
-                          hasVoted
-                            ? 'bg-champagne text-charcoal font-semibold'
-                            : 'bg-cream text-warm-gray hover:text-charcoal hover:bg-cream-soft'
-                        }
-                      `}
-                    >
-                      <ThumbsUp className={`w-3.5 h-3.5 ${hasVoted ? 'fill-charcoal' : ''}`} />
-                      <span>Helpful</span>
-                    </button>
-
-                    <span className="inline-flex items-center gap-1 text-[10px] text-warm-gray font-medium">
+                    <span className="inline-flex items-center gap-1.5 text-[11px] text-warm-gray font-medium">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-champagne" />
                       Client Testimonial
                     </span>
+
+                    <a
+                      href={SALON_INFO.googleMapsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[11px] text-warm-gray hover:text-champagne transition-colors"
+                    >
+                      <span>Google Maps</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
                   </div>
                 </div>
               );

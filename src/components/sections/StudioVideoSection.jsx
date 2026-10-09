@@ -179,7 +179,8 @@ export default function StudioVideoSection() {
               >
                 <video
                   ref={videoRef}
-                  data-src="/videos/WhatsApp%202026-08-16%2022-00-16.mp4"
+                  poster="/videos/studio-poster.webp"
+                  data-src="/videos/studio-showcase.mp4"
                   loop
                   muted={isMuted}
                   playsInline
