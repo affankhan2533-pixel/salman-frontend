@@ -4,6 +4,7 @@ import ScissorsSVGPoster from '@/components/common/ScissorsSVGPoster';
 
 import React, {
   useRef,
+  useCallback,
   useState,
   useEffect,
   useMemo,
@@ -354,13 +355,32 @@ function isWebGLAvailable() {
 
 // ─── RELIABLE FIRST VISIBLE FRAME DETECTOR ─────────────────────────────────────
 function FirstFrameReporter({ onRendered }) {
-  const renderedRef = useRef(false);
+  const reportedRef = useRef(false);
+  const rafIdRef = useRef(null);
+  const onRenderedRef = useRef(onRendered);
+  onRenderedRef.current = onRendered;
+
   useFrame(() => {
-    if (!renderedRef.current) {
-      renderedRef.current = true;
-      onRendered();
+    if (!reportedRef.current && !rafIdRef.current) {
+      // useFrame runs immediately before R3F draws the frame.
+      // Schedule a one-shot post-frame callback via requestAnimationFrame
+      // so the signal fires only after this frame has actually been rendered
+      // to the WebGL buffer, and avoid triggering React state setters during useFrame.
+      rafIdRef.current = requestAnimationFrame(() => {
+        reportedRef.current = true;
+        onRenderedRef.current?.();
+      });
     }
   });
+
+  useEffect(() => {
+    return () => {
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
+  }, []);
+
   return null;
 }
 
@@ -371,6 +391,10 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
   const [isTabActive, setIsTabActive] = useState(true);
   const [hasWebGL, setHasWebGL] = useState(true);
   const [firstFrameRendered, setFirstFrameRendered] = useState(false);
+
+  const handleFirstFrame = useCallback(() => {
+    setFirstFrameRendered(true);
+  }, []);
 
   useEffect(() => {
     setHasWebGL(isWebGLAvailable());
@@ -450,7 +474,7 @@ function ScissorScene({ progressRef = 0, isVisible = true }) {
           dpr={[1, deviceMode === 'mobile' ? 1.0 : 1.5]}
           style={{ background: 'transparent' }}
         >
-          <FirstFrameReporter onRendered={() => setFirstFrameRendered(true)} />
+          <FirstFrameReporter onRendered={handleFirstFrame} />
           <ambientLight intensity={0.7} />
           <KeyLight sweepX={pL} />
           <directionalLight position={[-5, 2, -3]} intensity={1.4} color="#dceeff" />
