@@ -32,7 +32,7 @@ function LoadingScreen() {
       });
       gsap.set(lineRef.current, { scaleX: 0 });
 
-      // 2. Apple Keynote Opening GSAP Timeline
+      // 2. Apple Keynote Opening GSAP Timeline (snappier transition)
       const tl = gsap.timeline({
         onComplete: () => {
           safeSessionStorage.setItem('salman_loaded', 'true');
@@ -40,53 +40,68 @@ function LoadingScreen() {
         },
       });
 
-      // Step 2: Center typography - SALMAN -> HAIR -> STUDIO fade in separately
-      tl.to(word1Ref.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 0.20)
-        .to(word2Ref.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 0.50)
-        .to(word3Ref.current, { opacity: 1, y: 0, duration: 0.45, ease: 'power3.out' }, 0.80)
+      // Step 2: Center typography - SALMAN -> HAIR -> STUDIO fade in smoothly
+      tl.to(word1Ref.current, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out' }, 0.1)
+        .to(word2Ref.current, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out' }, 0.25)
+        .to(word3Ref.current, { opacity: 1, y: 0, duration: 0.3, ease: 'power3.out' }, 0.4)
 
         // Step 3: Thin champagne gold line grows horizontally beneath logo
         .to(
           lineRef.current,
-          { scaleX: 1, duration: 0.65, ease: 'power2.inOut' },
-          1.15
+          { scaleX: 1, duration: 0.35, ease: 'power2.inOut' },
+          0.6
         )
 
-        // Step 4: Background slowly brightens / dissolves & Keynote Hero reveal trigger
+        // Step 4: Background dissolves smoothly
         .to(
           containerRef.current,
           {
             opacity: 0,
-            duration: 0.75,
+            duration: 0.4,
             ease: 'power2.inOut',
             onStart: () => {
-              // Target Navbar header & Hero elements for simultaneous Keynote entrance
               const headerEl = document.querySelector('header');
               if (headerEl) {
                 gsap.fromTo(
                   headerEl,
                   { y: -100, opacity: 0 },
-                  { y: 0, opacity: 1, duration: 1.1, ease: 'power3.out' }
+                  { y: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }
                 );
               }
             },
           },
-          1.80
+          1.0
         )
         .set(containerRef.current, { display: 'none' });
     });
 
-    return () => ctx.revert();
+    const handleQuickDismiss = () => {
+      safeSessionStorage.setItem('salman_loaded', 'true');
+      setIsLoaded(true);
+    };
+
+    window.addEventListener('keydown', handleQuickDismiss, { once: true });
+    return () => {
+      window.removeEventListener('keydown', handleQuickDismiss);
+      ctx.revert();
+    };
   }, []);
 
   if (isLoaded) {
     return null;
   }
 
+  const handleDismiss = () => {
+    safeSessionStorage.setItem('salman_loaded', 'true');
+    setIsLoaded(true);
+  };
+
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[9999] bg-[#F7F4EE] flex flex-col items-center justify-center pointer-events-auto select-none overflow-hidden px-4"
+      onClick={handleDismiss}
+      className="fixed inset-0 z-[9999] bg-[#F7F4EE] flex flex-col items-center justify-center pointer-events-auto select-none overflow-hidden px-4 cursor-pointer"
+      title="Click or press any key to skip"
     >
       {/* Center Screen Typography: SALMAN -> HAIR -> STUDIO */}
       <div className="flex flex-col items-center text-center space-y-1 sm:space-y-2">

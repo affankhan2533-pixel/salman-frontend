@@ -33,18 +33,7 @@ const nextConfig = {
       },
     ];
 
-    if (isDev) {
-      routes.push(
-        {
-          source: '/_next/static/:path*',
-          headers: [{ key: 'Cache-Control', value: 'no-store, max-age=0' }],
-        },
-        {
-          source: '/_next/:path*',
-          headers: [{ key: 'Cache-Control', value: 'no-store, max-age=0' }],
-        }
-      );
-    }
+
 
     return routes;
   },
