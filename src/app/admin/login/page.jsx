@@ -30,7 +30,7 @@ export default function AdminLoginPage() {
     try {
       const rawUrl = (process.env.NEXT_PUBLIC_API_URL || (
         process.env.NODE_ENV === 'production'
-          ? 'https://salman-backend.onrender.com'
+          ? 'https://api.salmanhairstudio.com'
           : 'http://localhost:5000'
       )).trim();
       const normalizedUrl = rawUrl.startsWith('http://') || rawUrl.startsWith('https://')

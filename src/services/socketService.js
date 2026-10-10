@@ -19,7 +19,7 @@ class SocketService {
       return normalize(process.env.NEXT_PUBLIC_API_URL).replace(/\/api\/?$/, '');
     }
     if (process.env.NODE_ENV === 'production') {
-      return 'https://salman-backend.onrender.com';
+      return 'https://api.salmanhairstudio.com';
     }
     return 'http://localhost:5000';
   }

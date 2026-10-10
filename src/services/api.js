@@ -6,7 +6,7 @@ const getDefaultApiUrl = () => {
     return raw.startsWith('http://') || raw.startsWith('https://') ? raw : `https://${raw}`;
   }
   if (process.env.NODE_ENV === 'production') {
-    return 'https://salman-backend.onrender.com/api';
+    return 'https://api.salmanhairstudio.com/api';
   }
   return 'http://localhost:5000/api';
 };

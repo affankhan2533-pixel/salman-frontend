@@ -38,7 +38,7 @@ import { safeLocalStorage } from '@/utils/storage';
 const getApiBaseUrl = () => {
   const raw = (process.env.NEXT_PUBLIC_API_URL || (
     process.env.NODE_ENV === 'production'
-      ? 'https://salman-backend.onrender.com'
+      ? 'https://api.salmanhairstudio.com'
       : 'http://localhost:5000'
   )).trim();
   const normalized = raw.startsWith('http://') || raw.startsWith('https://')
