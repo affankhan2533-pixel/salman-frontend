@@ -8,11 +8,15 @@ class SocketService {
   }
 
   getSocketUrl() {
+    const normalize = (u) => {
+      const trimmed = u.trim();
+      return trimmed.startsWith('http://') || trimmed.startsWith('https://') ? trimmed : `https://${trimmed}`;
+    };
     if (process.env.NEXT_PUBLIC_SOCKET_URL) {
-      return process.env.NEXT_PUBLIC_SOCKET_URL;
+      return normalize(process.env.NEXT_PUBLIC_SOCKET_URL);
     }
     if (process.env.NEXT_PUBLIC_API_URL) {
-      return process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, '');
+      return normalize(process.env.NEXT_PUBLIC_API_URL).replace(/\/api\/?$/, '');
     }
     if (process.env.NODE_ENV === 'production') {
       return 'https://salman-backend.onrender.com';

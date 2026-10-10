@@ -1,7 +1,10 @@
 import { SERVICES_DATA } from '@/lib/servicesData';
 
 export default function sitemap() {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salmanhairstudio.com';
+  const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salmanhairstudio.com';
+  const baseUrl = rawSiteUrl.startsWith('http://') || rawSiteUrl.startsWith('https://')
+    ? rawSiteUrl
+    : `https://${rawSiteUrl}`;
   const now = new Date();
 
   const staticRoutes = [

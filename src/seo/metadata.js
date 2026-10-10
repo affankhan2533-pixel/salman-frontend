@@ -1,6 +1,16 @@
 import { SALON_INFO } from '@/constants/salonInfo';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salmanhairstudio.com';
+const rawSiteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://salmanhairstudio.com';
+const baseUrl = rawSiteUrl.startsWith('http://') || rawSiteUrl.startsWith('https://')
+  ? rawSiteUrl
+  : `https://${rawSiteUrl}`;
+
+let metadataBaseUrl;
+try {
+  metadataBaseUrl = new URL(baseUrl);
+} catch {
+  metadataBaseUrl = new URL('https://salmanhairstudio.com');
+}
 
 export const defaultMetadata = {
   title: `${SALON_INFO.name} | Best Haircuts, Hair Styling & Treatment in Kurla West Mumbai`,
@@ -19,7 +29,7 @@ export const defaultMetadata = {
   authors: [{ name: 'Salman Hair Studio' }],
   creator: 'Salman Hair Studio',
   publisher: 'Salman Hair Studio',
-  metadataBase: new URL(baseUrl),
+  metadataBase: metadataBaseUrl,
   icons: {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',

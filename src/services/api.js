@@ -2,7 +2,8 @@ import axios from 'axios';
 
 const getDefaultApiUrl = () => {
   if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
+    const raw = process.env.NEXT_PUBLIC_API_URL.trim();
+    return raw.startsWith('http://') || raw.startsWith('https://') ? raw : `https://${raw}`;
   }
   if (process.env.NODE_ENV === 'production') {
     return 'https://salman-backend.onrender.com/api';

@@ -36,12 +36,15 @@ import {
 import { safeLocalStorage } from '@/utils/storage';
 
 const getApiBaseUrl = () => {
-  const raw = process.env.NEXT_PUBLIC_API_URL || (
+  const raw = (process.env.NEXT_PUBLIC_API_URL || (
     process.env.NODE_ENV === 'production'
       ? 'https://salman-backend.onrender.com'
       : 'http://localhost:5000'
-  );
-  return raw.replace(/\/api\/?$/, '');
+  )).trim();
+  const normalized = raw.startsWith('http://') || raw.startsWith('https://')
+    ? raw
+    : `https://${raw}`;
+  return normalized.replace(/\/api\/?$/, '');
 };
 
 const SERVICE_CATEGORIES = ['Haircuts', 'Coloring', 'Treatments', 'Styling'];

@@ -261,12 +261,15 @@ function GallerySection() {
           }
         }
 
-        const rawUrl = process.env.NEXT_PUBLIC_API_URL || (
+        const rawUrl = (process.env.NEXT_PUBLIC_API_URL || (
           process.env.NODE_ENV === 'production'
             ? 'https://salman-backend.onrender.com'
             : 'http://localhost:5000'
-        );
-        const API_URL = rawUrl.replace(/\/api\/?$/, '');
+        )).trim();
+        const normalizedUrl = rawUrl.startsWith('http://') || rawUrl.startsWith('https://')
+          ? rawUrl
+          : `https://${rawUrl}`;
+        const API_URL = normalizedUrl.replace(/\/api\/?$/, '');
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 3000);
 
